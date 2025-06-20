@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@tailwind reference;
+/* Semantic classes using Tailwind utilities */
+
+.form-container {
+  @apply w-80 rounded-lg bg-gray-900 p-8 text-gray-100 mx-auto mt-20;
+}
+
+.title {
+  @apply text-center text-xl font-bold mb-6;
+}
+
+.form {
+  @apply mt-6;
+}
+
+.input-group {
+  @apply mt-1 text-sm leading-5;
+}
+
+.input-group label {
+  @apply block text-gray-400 mb-1;
+}
+
+.input-group input {
+  @apply w-full rounded-md border border-gray-700 bg-gray-900 p-3 text-gray-100 
+         focus:border-purple-400 outline-none;
+}
+
+.forgot {
+  @apply flex justify-end text-xs text-gray-400 mt-2 mb-3;
+}
+
+.forgot a,
+.signup a {
+  @apply text-gray-100 no-underline text-sm;
+}
+
+.forgot a:hover,
+.signup a:hover {
+  @apply underline decoration-purple-400;
+}
+
+.sign {
+  @apply block w-full bg-purple-400 py-3 text-gray-900 rounded-md font-semibold;
+}
+
+.social-message {
+  @apply flex items-center pt-4;
+}
+
+.line {
+  @apply h-px flex-1 bg-gray-700;
+}
+
+.social-message .message {
+  @apply px-3 text-sm leading-5 text-gray-400;
+}
+
+.social-icons {
+  @apply flex justify-center;
+}
+
+.social-icons .icon {
+  @apply rounded-sm p-3 bg-transparent ml-2 border-none;
+}
+
+.social-icons .icon svg {
+  @apply h-5 w-5 fill-current text-white;
+}
+
+.signup {
+  @apply text-center text-xs leading-4 text-gray-400;
+}

@@ -2,24 +2,24 @@ FROM node:latest
 
 WORKDIR /app
 
-COPY package*.json ./
+COPY ./package*.json ./
 
 RUN npm install
 
 COPY . .
 
-EXPOSE 3000
+COPY ./src ./src
 
-CMD ["npm", "start"]
+CMD npx @tailwindcss/cli -i ./src/css/input.css -o ./src/css/style.css --watch
 
 
+##THIS IS FOR PRODUCTION USE AFTER
 
-#RUN npx @tailwindcss/cli -i ./src/style.css -o ./public/style.css --watch
+#RUN npm run build
 #
 #RUN npx tsc
 #
-#RUN npm install -g serve
+#RUN npx @tailwindcss/cli -i ./src/css/input.css -o ./dist/style.css
 #
-#EXPOSE 8080
-#
-#CMD ["npm", "run", "dev"]
+#RUN cp ./src/index.html ./dist/index.html
+

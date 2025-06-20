@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "npx @tailwindcss/cli -i ./src/css/input.css -o ./src/css/output.css --watch",
-    "start": "browser-sync start --server 'src' --files 'src/**/*' --no-ui --port 3000 --reload-delay 10"
+	"dev": "npx @tailwindcss/cli -i ./src/css/input.css -o ./src/css/style.css --watch",
+    "build:css": "npx @tailwindcss/cli -i ./src/css/input.css -o ./src/css/style.css",
+	"build:ts": "npx tsc",
+	"build:html": "cp ./src/index.html ./dist/index.html",
+	"build": "npm run build:css && npm run build:ts && npm run build:html"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +19,7 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@tailwindcss/cli": "^4.1.10"
+    "@tailwindcss/cli": "^4.1.10",
+	"typescript": "^5.0.0"
   }
 }
