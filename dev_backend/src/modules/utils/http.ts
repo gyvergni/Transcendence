@@ -24,8 +24,6 @@ export const httpErrorSchema = z.object({
     cause: z.string().optional(),
 });
 
-
-
 export const errorResponses = {
     400: z.object({
         message: z.string().describe("Validation failed"),
