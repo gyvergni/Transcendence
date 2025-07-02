@@ -1,0 +1,20 @@
+<div class="w-full max-w-md mx-auto p-4">
+  <label for="player-input" class="block text-gray-700 font-semibold mb-2">Select Player</label>
+  <input
+    id="player-input"
+    type="text"
+    placeholder="Enter player name..."
+    class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    autocomplete="off"
+  />
+  
+  <ul id="player-list" class="border border-gray-300 rounded-md mt-1 max-h-40 overflow-auto hidden bg-white shadow-md">
+    <!-- filtered player names appear here -->
+  </ul>
+  
+  <button
+    id="add-player-btn"
+    class="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none">
+    Add player
+  </button>
+</div>

@@ -1,12 +1,15 @@
 {
 	"name": "tailwind-quick",
 	"scripts": {
-		"watch": "npx @tailwindcss/cli -i ./src/css/input.css -o ./src/css/style.css --watch"
+		"watch": "npx @tailwindcss/cli -i ./src/css/input.css -o ./src/css/style.css --watch",
+		"build": "tsc --watch",
+		"dev": "watch build"
 	},
 	"devDependencies": {
 		"tailwindcss": "^4.1.10"
 	},
 	"dependencies": {
+		"@tailwindcss/aspect-ratio": "^0.4.2",
 		"@tailwindcss/cli": "^4.1.10"
 	}
 }
