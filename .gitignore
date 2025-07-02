@@ -1,7 +1,7 @@
 # Node
 dev_backend/node_modules/
-dist/
-build/
+dev_backend/dist/
+dev_backend/build/
 
 # Logs
 *.log
@@ -10,7 +10,7 @@ build/
 #*.sqlite
 
 # Prisma
-src/generated/
+/dev_backend/src/generated/
 
 # Environnement
 #.env
