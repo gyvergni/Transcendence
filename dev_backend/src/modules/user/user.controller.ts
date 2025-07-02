@@ -1,13 +1,11 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { createUser, findUserByPseudo, loginUser, findUsers, addFriend, updatePassword, logoutUser } from "./user.service";
-import { CreateUserBody, LoginUserInput, AddFriendInput, ChangePasswordInput } from "./user.schema";
 import { server } from "../..";
-import { z } from "zod";
 import { httpError } from "../utils/http";
 import { StatusCodes } from "http-status-codes";
 import { PrismaClient, Prisma } from "../../generated/prisma";
 import bcrypt from "bcrypt";
-import { ca, id } from "zod/v4/locales";
+import { createUser, findUserByPseudo, loginUser, findUsers, addFriend, updatePassword, logoutUser } from "./user.service";
+import { CreateUserBody, LoginUserInput, AddFriendInput, ChangePasswordInput } from "./user.schema";
 
 export async function createUserHandler(req: FastifyRequest<{Body: CreateUserBody}>, reply: FastifyReply) {
     const body = req.body;
@@ -48,7 +46,6 @@ export async function loginUserHandler(req: FastifyRequest<{Body: LoginUserInput
     }
 
     const unHashedPassword = await bcrypt.hash(body.password, 10);
-    console.log("Unhashed password:", unHashedPassword);
 
     const isPasswordValid = await bcrypt.compare(body.password, user.password);
     if (!isPasswordValid) {
@@ -90,35 +87,27 @@ export async function getUsersHandler(req: FastifyRequest, reply: FastifyReply) 
 
 export async function addFriendHandler(req: FastifyRequest<{Body: AddFriendInput}>, reply: FastifyReply) {
     const body = req.body;
-    const token = req.headers.authorization?.substring(7);
 
     try {
-        const user = await findUserByPseudo(body.pseudo);
+        const friend = await findUserByPseudo(body.pseudo);
 
-        if (!user) {
+        if (!friend) {
             return httpError({
                 reply,
                 message: "User not found",
                 code: StatusCodes.NOT_FOUND,
             });
         }
-        
-        const currentUser = await server.jwt.verify<{id: number}>(token || "");
-        if (!currentUser) {
-            return httpError({
-                reply,
-                message: "Invalid access token",
-                code: StatusCodes.UNAUTHORIZED,
-            });
-        }
 
-        await addFriend(currentUser.id, user.id);
+        const currentUser = req.user;
+
+        await addFriend(currentUser.id, friend.id);
         return reply.code(StatusCodes.OK).send({message: "Friend added successfully"});
 
     } catch (e) {
         console.error("Prisma error:", e);
         if (e instanceof Prisma.PrismaClientKnownRequestError) {
-            if (e.code === 'P2002') {
+            if (e.code ===   'P2002') {
                 return httpError({
                     reply,
                     message: "You are already friends with this user",
@@ -147,19 +136,11 @@ export async function addFriendHandler(req: FastifyRequest<{Body: AddFriendInput
 
 export async function changePasswordHandler(req: FastifyRequest<{Body: ChangePasswordInput}>, reply: FastifyReply) {
     const body = req.body;
-    const token = req.headers.authorization?.substring(7);
-    if (!token) {
-        return httpError({
-            reply,
-            message: "No access token provided",
-            code: StatusCodes.UNAUTHORIZED,
-        });
-    }
 
     try {
-        const user = await server.jwt.verify<{pseudo: string}>(token);
+        const currentUser = req.user;
 
-        const dbUser = await findUserByPseudo(user.pseudo);
+        const dbUser = await findUserByPseudo(currentUser.pseudo);
         if (!dbUser) {
             return httpError({
                 reply,

@@ -1,8 +1,9 @@
 import fastify, { FastifyInstance } from "fastify";
-import { createUserSchema, loginUserSchema, getUsersSchema, addFriendSchema, changePasswordSchema, logoutUserSchema } from "./user.schema";
-import { createUserHandler, loginUserHandler, getUsersHandler, addFriendHandler, changePasswordHandler, logoutUserHandler } from "./user.controller";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { log } from "console";
+
+import { createUserSchema, loginUserSchema, getUsersSchema, addFriendSchema, changePasswordSchema, logoutUserSchema } from "./user.schema";
+import { createUserHandler, loginUserHandler, getUsersHandler, addFriendHandler, changePasswordHandler, logoutUserHandler } from "./user.controller";
 
 export async function userRoutes(server: FastifyInstance) {
     server.withTypeProvider<ZodTypeProvider>().post("/create", {

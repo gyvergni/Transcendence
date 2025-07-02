@@ -3,13 +3,16 @@ import fjwt from "@fastify/jwt";
 import { fastifySwagger } from '@fastify/swagger';
 import { fastifySwaggerUi } from '@fastify/swagger-ui';
 import { userRoutes } from "./modules/user/user.route";
+import { guestRoutes } from "./modules/guest/guest.route";
 import {
   jsonSchemaTransform,
   serializerCompiler,
   validatorCompiler,
 } from "fastify-type-provider-zod";
 
-import { createUserSchema } from "./modules/user/user.schema";
+import { StatusCodes } from "http-status-codes";
+import { httpError } from "./modules/utils/http";
+
 
 export const server = Fastify({
     // logger: true,
@@ -21,13 +24,20 @@ declare module "fastify" {
     }
 };
 
+declare module "@fastify/jwt" {
+    export interface FastifyJWT {
+        payload: { id: number, pseudo: string };
+        user: { id: number, pseudo: string };
+    }
+}
+
 server.register(require('@fastify/jwt'), {
     secret: process.env.JWT_SECRET,
     sign: {
         algorithm: 'HS256',
         issuer: 'transcendence',
         audience: 'transcendence',
-        expiresIn: '60m', // x minutes
+        expiresIn: '365d', // m minutes / h hours /d days   
     },
     verify: {
         algorithms: ['HS256'],
@@ -36,12 +46,27 @@ server.register(require('@fastify/jwt'), {
     }
 });
 
-
 server.decorate("auth", async (request: FastifyRequest, reply: FastifyReply) => {
+    const token = request.headers.authorization?.substring(7);
+    if (!token) {
+        httpError({
+            reply,
+            code: StatusCodes.UNAUTHORIZED,
+            message: "No access token provided",
+        });
+        return undefined;
+    }
+
     try {
-        await request.jwtVerify();
+        const test = await request.jwtVerify();
+        console.log("User authenticated:", request.user);
     } catch (e) {
-        return reply.send(e);
+        console.error("Authentication error");
+        return httpError({
+            reply,
+            code: StatusCodes.UNAUTHORIZED,
+            message: 'Invalid access token',
+        });
     }
 });
 
@@ -74,7 +99,7 @@ async function main() {
     });
 
     server.register(userRoutes, {prefix: '/api/users'});
-    server
+    server.register(guestRoutes, {prefix: '/api/guests'});
 
     try {
         await server.listen({ port: 3000, host: "0.0.0.0" });

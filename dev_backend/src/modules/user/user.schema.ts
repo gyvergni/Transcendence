@@ -16,7 +16,7 @@ export const createUserSchema = {
         201: z.object({
             id: z.number(),
             pseudo: z.string(),
-        }), 
+        }),     
         400: errorResponses[400].describe("Bad Request"),
         409: errorResponses[409].describe("Conflict, Pseudo already exists"),
         500: errorResponses[500].describe("Internal Server Error"),

@@ -7,6 +7,7 @@ export async function createUser(input: CreateUserBody) {
         const identitie = await tx.identities.create({});
         const user = await tx.users.create({
             data: {
+                id: identitie.id,
                 pseudo: input.pseudo,
                 password: await bcrypt.hash(input.password, 10),
             },
@@ -24,13 +25,13 @@ export async function loginUser(id: number) {
 }
 
 export async function findUserByPseudo(pseudo: string) {
-    return prisma.users.findUnique({
+    return await prisma.users.findUnique({
         where: { pseudo }
     });
 };
 
 export async function findUsers() {
-    return prisma.users.findMany({
+    return await prisma.users.findMany({
         omit: {
             password: true,
         },
@@ -57,14 +58,14 @@ export async function addFriend(userId: number, friendId: number) {
 }
 
 export async function updatePassword(userPseudo: string, newPassword: string) {
-    return prisma.users.update({
+    return await prisma.users.update({
         where: {pseudo: userPseudo},
         data: {password: newPassword}
     });
 }
 
 export async function logoutUser(userId: number) {
-    return prisma.users.update({
+    return await prisma.users.update({
         where: { id: userId },
         data: { status: false },
     });
