@@ -5,24 +5,24 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./../../db/src/db.sqlite"
+  url      = env("DATABASE_URL")
 }
 
 model friends {
-  id                             Int    @id @default(autoincrement())
-  user_id                        Int?
-  friend_id                      Int?
-  users_friends_friend_idTousers users? @relation("friends_friend_idTousers", fields: [friend_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users_friends_user_idTousers   users? @relation("friends_user_idTousers", fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id                             Int   @id @default(autoincrement())
+  user_id                        Int
+  friend_id                      Int
+  users_friends_friend_idTousers users @relation("friends_friend_idTousers", fields: [friend_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_friends_user_idTousers   users @relation("friends_user_idTousers", fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([user_id, friend_id], map: "sqlite_autoindex_friends_1")
 }
 
 model guests {
   id         Int        @id @default(autoincrement())
-  user_id    Int?
-  pseudo     String?
-  users      users?     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user_id    Int
+  pseudo     String
+  users      users      @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   identities identities @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@unique([user_id, pseudo], map: "sqlite_autoindex_guests_1")
@@ -38,22 +38,22 @@ model identities {
 }
 
 model matchHistory {
-  id                                          Int         @id @default(autoincrement())
-  player1                                     Int?
-  player2                                     Int?
-  user_score                                  Int?
-  opponent_score                              Int?
-  date                                        DateTime?
-  identities_matchHistory_player2Toidentities identities? @relation("matchHistory_player2Toidentities", fields: [player2], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  identities_matchHistory_player1Toidentities identities? @relation("matchHistory_player1Toidentities", fields: [player1], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id                                          Int        @id @default(autoincrement())
+  player1                                     Int
+  player2                                     Int
+  user_score                                  Int
+  opponent_score                              Int
+  date                                        DateTime   @default(now())
+  identities_matchHistory_player2Toidentities identities @relation("matchHistory_player2Toidentities", fields: [player2], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  identities_matchHistory_player1Toidentities identities @relation("matchHistory_player1Toidentities", fields: [player1], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model stats {
-  id         Int         @id @default(autoincrement())
-  user_id    Int?        @unique(map: "sqlite_autoindex_stats_1")
-  win        Int?        @default(0)
-  lose       Int?        @default(0)
-  identities identities? @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id         Int        @id @default(autoincrement())
+  user_id    Int        @unique(map: "sqlite_autoindex_stats_1")
+  win        Int?       @default(0)
+  lose       Int?       @default(0)
+  identities identities @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model users {
