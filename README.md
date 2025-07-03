@@ -22,15 +22,16 @@
 
 ### Users
 
-- `GET /users/:username`
-- `PUT /users/change-username`
+- `PUT /users/change-username` ?
 
 ### Guest
 
-- `GET /guest/:username?guestname=`
 - `DELETE /guest/:id/delete`
-
 
 ### Stats
 
+ - `A Faire`
+
 ### Match History
+
+ - `A Faire`
