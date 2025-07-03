@@ -1,1 +1,20 @@
-/srcs/front/node_modules/
+# Node
+dev_backend/node_modules/
+dev_backend/dist/
+dev_backend/build/
+
+# Logs
+*.log
+
+# Bases de données locales
+#*.sqlite
+
+# Prisma
+/dev_backend/src/generated/
+
+# Environnement
+#.env
+
+# OS
+.DS_Store
+Thumbs.db
