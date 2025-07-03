@@ -5,12 +5,12 @@ export const getGuestListSchema = {
     tags: ["guest"],
     response: {
         200: z.object({
-            message: z.string().describe("Guest list retrieved successfully"),
-            numberOfGuests: z.number().describe("Number of guests in the list"),
+            message: z.string().describe("Guest list retrieved successfully").optional(),
+            numberOfGuests: z.number().describe("Number of guests in the list").optional(),
             guests: z.array(z.object({
                 id: z.number().describe("ID of the guest"),
                 pseudo: z.string().describe("Pseudo of the guest")
-            })).describe("List of guests")
+            })).describe("List of guests").optional(),
         }),
         400: errorResponses[400].describe("Bad Request"),
         500: errorResponses[500].describe("Internal Server Error"),
