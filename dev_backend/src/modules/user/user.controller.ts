@@ -71,10 +71,23 @@ export async function loginUserHandler(req: FastifyRequest<{Body: LoginUserInput
     return reply.code(StatusCodes.OK).send({accessToken: await server.jwt.sign(rest)});
 }
 
-export async function getUsersHandler(req: FastifyRequest, reply: FastifyReply) {
-    
+export async function getUsersHandler(req: FastifyRequest<{ Params: {username: string }}>, reply: FastifyReply) {
+
     try {
-        const users = await findUsers();
+        const username = req.params.username;
+        let users  
+        users = await findUsers();
+        if (username && username.length > 0) {
+            const user = users.find(u => u.pseudo === username);
+            if (!user) {
+                return httpError({
+                    reply,
+                    message: "User not found",
+                    code: StatusCodes.NOT_FOUND,
+                });
+            }
+            users = [user];
+        }
         return reply.code(StatusCodes.OK).send(users);
     } catch (e) {
         return httpError({
@@ -84,6 +97,7 @@ export async function getUsersHandler(req: FastifyRequest, reply: FastifyReply) 
         });
     }
 }
+
 
 export async function addFriendHandler(req: FastifyRequest<{Body: AddFriendInput}>, reply: FastifyReply) {
     const body = req.body;
