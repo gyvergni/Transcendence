@@ -39,7 +39,6 @@ function setupPlayerSelectLogic(container) {
     const addBtn = container.querySelector(".add-player-btn");
     const lockInBtn = container.querySelector(".lock-btn");
     let dropdownVisible = false;
-    // 🔽 Update dropdown options
     const updateDropdown = (term = "") => {
         dropdown.innerHTML = "";
         const matches = registeredUsers.filter(name => name.toLowerCase().includes(term.toLowerCase()));
@@ -63,7 +62,6 @@ function setupPlayerSelectLogic(container) {
         dropdown.classList.remove("hidden");
         dropdownVisible = true;
     };
-    // 👂 Input Events
     input.addEventListener("input", () => {
         const val = input.value.trim();
         updateDropdown(val);
@@ -71,14 +69,13 @@ function setupPlayerSelectLogic(container) {
     input.addEventListener("focus", () => {
         updateDropdown(input.value.trim());
     });
-    // 👋 Hide dropdown after brief delay (to allow clicks)
     input.addEventListener("blur", () => {
         setTimeout(() => {
             dropdown.classList.add("hidden");
             dropdownVisible = false;
         }, 150);
     });
-    // ➕ Add player
+    // Add player
     addBtn.addEventListener("click", () => {
         const name = input.value.trim();
         if (!name)
@@ -92,7 +89,7 @@ function setupPlayerSelectLogic(container) {
             updateDropdown(""); // Refresh with new name
         }
     });
-    // ✅ Lock in player
+    // Lock in player
     lockInBtn.addEventListener("click", () => {
         const name = input.value.trim();
         if (!registeredUsers.includes(name)) {

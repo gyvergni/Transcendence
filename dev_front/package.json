@@ -11,5 +11,10 @@
 	"dependencies": {
 		"@tailwindcss/aspect-ratio": "^0.4.2",
 		"@tailwindcss/cli": "^4.1.10"
-	}
+	},
+	"version": "1.0.0",
+	"main": "tailwind.config.js",
+	"author": "",
+	"license": "ISC",
+	"description": ""
 }

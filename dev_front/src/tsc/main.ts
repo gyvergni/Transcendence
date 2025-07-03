@@ -33,7 +33,7 @@ function setupPlayerSelectLogic(container: HTMLElement) {
 
   let dropdownVisible = false;
 
-  // 🔽 Update dropdown options
+
   const updateDropdown = (term = "") => {
     dropdown.innerHTML = "";
 
@@ -64,7 +64,7 @@ function setupPlayerSelectLogic(container: HTMLElement) {
     dropdownVisible = true;
   };
 
-  // 👂 Input Events
+
   input.addEventListener("input", () => {
     const val = input.value.trim();
     updateDropdown(val);
@@ -74,7 +74,6 @@ function setupPlayerSelectLogic(container: HTMLElement) {
     updateDropdown(input.value.trim());
   });
 
-  // 👋 Hide dropdown after brief delay (to allow clicks)
   input.addEventListener("blur", () => {
     setTimeout(() => {
       dropdown.classList.add("hidden");
@@ -82,7 +81,7 @@ function setupPlayerSelectLogic(container: HTMLElement) {
     }, 150);
   });
 
-  // ➕ Add player
+  // Add player
   addBtn.addEventListener("click", () => {
     const name = input.value.trim();
     if (!name) return;
@@ -95,7 +94,7 @@ function setupPlayerSelectLogic(container: HTMLElement) {
     }
   });
 
-  // ✅ Lock in player
+  // Lock in player
   lockInBtn.addEventListener("click", () => {
     const name = input.value.trim();
     if (!registeredUsers.includes(name)) {
@@ -168,7 +167,7 @@ function setupIconNav() {
 function  setGameView() 
 {
 	currentView="game";
-
+  
 	animatecontentBoxOut();
 }
 
