@@ -11,6 +11,7 @@ dev_backend/build/
 
 # Prisma
 /dev_backend/src/generated/
+/dev_backend/prisma/migrations/
 
 # Environnement
 #.env
