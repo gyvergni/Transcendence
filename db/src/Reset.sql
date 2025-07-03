@@ -1,4 +1,0 @@
--- SQLite
--- DELETE FROM friends;
--- DELETE FROM users;
--- DELETE FROM identities;

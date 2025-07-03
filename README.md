@@ -9,7 +9,7 @@
    ```
 2. Générer le client Prisma  
    ```bash
-   npx prisma generate
+   npx prisma migrate dev --name init
    ```
 3. Démarrer le serveur en mode développement  
    ```bash
