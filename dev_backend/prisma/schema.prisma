@@ -20,12 +20,13 @@ model friends {
 
 model guests {
   id         Int        @id @default(autoincrement())
+  active     Boolean    @default(true)
   user_id    Int
   pseudo     String
   users      users      @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   identities identities @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
-  @@unique([user_id, pseudo], map: "sqlite_autoindex_guests_1")
+  //@@unique([user_id, pseudo], map: "sqlite_autoindex_guests_1")
 }
 
 model identities {
@@ -39,27 +40,29 @@ model identities {
 
 model matchHistory {
   id                                          Int        @id @default(autoincrement())
-  player1                                     Int
-  player2                                     Int
-  user_score                                  Int
-  opponent_score                              Int
+  player1_id                                  Int
+  player2_id                                  Int
+  player1_score                               Int
+  player2_score                               Int
   date                                        DateTime   @default(now())
-  identities_matchHistory_player2Toidentities identities @relation("matchHistory_player2Toidentities", fields: [player2], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  identities_matchHistory_player1Toidentities identities @relation("matchHistory_player1Toidentities", fields: [player1], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  identities_matchHistory_player2Toidentities identities @relation("matchHistory_player2Toidentities", fields: [player2_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  identities_matchHistory_player1Toidentities identities @relation("matchHistory_player1Toidentities", fields: [player1_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model stats {
   id         Int        @id @default(autoincrement())
-  user_id    Int        @unique(map: "sqlite_autoindex_stats_1")
+  //user_id    Int        @unique(map: "sqlite_autoindex_stats_1")
   win        Int?       @default(0)
   lose       Int?       @default(0)
-  identities identities @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  identities identities @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model users {
   id                               Int        @id @default(autoincrement())
   pseudo                           String     @unique(map: "sqlite_autoindex_users_1")
   password                         String
+  game_username                    String     
+  avatar                           String     @default("default_avatar.png")
   status                           Boolean?   @default(false)
   friends_friends_friend_idTousers friends[]  @relation("friends_friend_idTousers")
   friends_friends_user_idTousers   friends[]  @relation("friends_user_idTousers")
