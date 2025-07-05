@@ -159,3 +159,19 @@ export const logoutUserSchema = {
         500: errorResponses[500].describe("Internal Server Error"),
     }
 } as const;
+
+export const changeAvatarSchema = {
+    tags: ["users"],
+    params: z.object({
+        filename: z.string().describe("The name of the avatar file"),
+    }),
+    response: {
+        200: z.object({
+            message: z.string().describe("Avatar changed successfully"),
+        }),
+        400: errorResponses[400].describe("Bad Request"),
+        401: errorResponses[401].describe("Unauthorized"),
+        404: errorResponses[404].describe("User not found"),
+        500: errorResponses[500].describe("Internal Server Error"),
+    }
+} as const;

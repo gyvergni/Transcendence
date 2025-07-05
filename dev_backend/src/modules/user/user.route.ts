@@ -1,7 +1,7 @@
 import fastify, { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 
-import { createUserSchema, loginUserSchema, getUsersSchema, addFriendSchema, changePasswordSchema, logoutUserSchema, changeUsernameSchema } from "./user.schema";
+import { createUserSchema, loginUserSchema, getUsersSchema, addFriendSchema, changePasswordSchema, logoutUserSchema, changeUsernameSchema, changeAvatarSchema } from "./user.schema";
 import { createUserHandler, loginUserHandler, getUsersHandler, addFriendHandler, changePasswordHandler, logoutUserHandler, deleteFriendHandler, changeUsernameHandler, changeAvatarHandler } from "./user.controller";
 
 export async function userRoutes(server: FastifyInstance) {
@@ -52,6 +52,7 @@ export async function userRoutes(server: FastifyInstance) {
     });
 
     server.put("/avatar/:filename", {
+        schema: changeAvatarSchema,
         preHandler: [server.auth],
         handler: changeAvatarHandler,
     })
