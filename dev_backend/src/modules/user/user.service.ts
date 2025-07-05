@@ -10,6 +10,12 @@ export async function createUser(input: CreateUserBody) {
                 id: identitie.id,
                 pseudo: input.pseudo,
                 password: await bcrypt.hash(input.password, 10),
+                game_username: input.pseudo,
+            },
+        });
+        await tx.stats.create({
+            data: {
+                id: identitie.id,
             },
         });
         return user;
@@ -48,13 +54,22 @@ export async function findUsers() {
 };
 
 export async function addFriend(userId: number, friendId: number) {
-    console.log("Adding friend:", userId, friendId);
     await prisma.friends.create({
         data: {
             user_id: userId,
             friend_id: friendId,
         }
-    })
+    });
+}
+
+export async function deleteFriend(userId: number, friendId: number) {
+    const result = await prisma.friends.deleteMany({
+        where: {
+            user_id: userId,
+            friend_id: friendId,
+        }
+    });
+    return result.count; // Return the count of deleted records
 }
 
 export async function updatePassword(userPseudo: string, newPassword: string) {
@@ -68,5 +83,19 @@ export async function logoutUser(userId: number) {
     return await prisma.users.update({
         where: { id: userId },
         data: { status: false },
+    });
+}
+
+export async function updateUsername(userId: number, newPseudo: string) {
+    return await prisma.users.update({
+        where: { id: userId },
+        data: { game_username: newPseudo },
+    });
+}
+
+export async function updateAvatar(userId: number, avatar: string) {
+    return await prisma.users.update({
+        where: { id: userId },
+        data: { avatar: avatar },
     });
 }

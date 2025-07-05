@@ -4,7 +4,14 @@ import { errorResponses } from '../utils/http';
 export const createUserSchema = {
     tags: ["users"],
     body: z.object({
-        pseudo: z.string(),
+        pseudo: z.string({
+            required_error: "Pseudo is required",
+            invalid_type_error: "Pseudo must be a string"
+        }).min(3, {
+            message: "Pseudo must be at least 3 characters"
+        }).max(20, {
+            message: "Pseudo must not exceed 20 characters"
+        }),
         password: z.string({
             required_error: "Password is required",
             invalid_type_error: "Password must be a string"
@@ -55,6 +62,7 @@ export const getUsersSchema = {
         200: z.array(z.object({
             id: z.number(),
             pseudo: z.string(),
+            game_username: z.string(),
             status: z.boolean(),
         })),
         400: errorResponses[400].describe("Bad Request"),
@@ -72,8 +80,8 @@ export const addFriendSchema = {
         })
     }),
     response: {
-        200: z.object({
-            message: z.string().describe("Friend added successfully"),
+        201: z.object({
+            message: z.string().describe("Friend added / deleted successfully"),
         }),
         400: errorResponses[400].describe("Bad Request"),
         401: errorResponses[401].describe("Unauthorized"),
@@ -107,9 +115,38 @@ export const changePasswordSchema = {
         422: errorResponses[422].describe("Unprocessable Entity, Invalid old password"),
         500: errorResponses[500].describe("Internal Server Error"),
     }
-} as const;
+} as const;     
 
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema.body>;
+
+export const changeUsernameSchema = {
+    tags: ["users"],
+    body: z.object({
+        password: z.string({
+            required_error: "Old password is required",
+            invalid_type_error: "Old password must be a string"}),
+        newPseudo: z.string({
+            required_error: "New pseudo is required",
+            invalid_type_error: "New pseudo must be a string"
+        }).min(3, {
+            message: "New pseudo must be at least 3 characters"
+        }).max(20, {
+            message: "New pseudo must not exceed 20 characters"
+        }),
+    }),
+    response: {
+        200: z.object({
+            message: z.string().describe("Game Username changed successfully"),
+        }),
+        400: errorResponses[400].describe("Bad Request"),
+        401: errorResponses[401].describe("Unauthorized"),
+        404: errorResponses[404].describe("User not found"),
+        422: errorResponses[422].describe("Unprocessable Entity, Invalid password"),
+        500: errorResponses[500].describe("Internal Server Error"),
+    }
+} as const;
+
+export type ChangeUsernameInput = z.infer<typeof changeUsernameSchema.body>;
 
 export const logoutUserSchema = {
     tags: ["users"],

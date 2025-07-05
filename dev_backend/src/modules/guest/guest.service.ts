@@ -3,11 +3,13 @@ import prisma from "../../utils/prisma";
 export async function getGuestList(id: number) {
     return await prisma.guests.findMany({
         where: {
-            user_id: id
+            user_id: id,
+            active: true,
         },
         select: {
             id: true,
-            pseudo: true
+            pseudo: true,
+            active: true,
         }
     })
 }
@@ -22,6 +24,23 @@ export async function createGuest(userId: number, guestPseudo: string) {
                 pseudo: guestPseudo,
             }
         });
+        await tx.stats.create({
+            data: {
+                id: identitie.id,
+            },
+        });
         return guest;
+    })
+}
+
+export async function deleteGuest(guestId: number) {
+    await prisma.guests.update({
+        where: {
+            id: guestId,
+        },
+        data: {
+            active: false,
+            pseudo: "Deleted Guest",
+        }
     })
 }

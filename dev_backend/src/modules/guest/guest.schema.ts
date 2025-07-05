@@ -9,7 +9,7 @@ export const getGuestListSchema = {
             numberOfGuests: z.number().describe("Number of guests in the list").optional(),
             guests: z.array(z.object({
                 id: z.number().describe("ID of the guest"),
-                pseudo: z.string().describe("Pseudo of the guest")
+                pseudo: z.string().describe("Pseudo of the guest"),
             })).describe("List of guests").optional(),
         }),
         400: errorResponses[400].describe("Bad Request"),
@@ -25,6 +25,7 @@ export const createGuestSchema = {
     response: {
         201: z.object({
             message: z.string().describe("Guest created successfully"),
+            userPseudo: z.string().describe("Pseudo of the user who created the guest"),
             guestId: z.number().describe("ID of the created guest"),
             guestPseudo: z.string().describe("Pseudo of the created guest")
         }),

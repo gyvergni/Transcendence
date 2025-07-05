@@ -2,7 +2,7 @@ import fastify, { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 
 import { getGuestListSchema, createGuestSchema, deleteGuestSchema } from "./guest.schema";
-import { createGuestHandler, getGuestListByPseudoHandler } from "./guest.controller";
+import { createGuestHandler, deleteGuestHandler, getGuestListByPseudoHandler } from "./guest.controller";
 
 export async function guestRoutes(server: FastifyInstance) {
 
@@ -18,8 +18,9 @@ export async function guestRoutes(server: FastifyInstance) {
         handler: createGuestHandler,
     });
 
-    // server.withTypeProvider<ZodTypeProvider>().delete("/delete", {
-    //     schema: deleteGuestSchema,
-    //     handler: deleteGuestHandler,
-    // });
+    server.withTypeProvider<ZodTypeProvider>().delete("/delete", {
+        schema: deleteGuestSchema,
+        preHandler: [server.auth],
+        handler: deleteGuestHandler,
+    });
 }

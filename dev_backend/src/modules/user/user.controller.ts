@@ -4,8 +4,9 @@ import { httpError } from "../utils/http";
 import { StatusCodes } from "http-status-codes";
 import { PrismaClient, Prisma } from "../../generated/prisma";
 import bcrypt from "bcrypt";
-import { createUser, findUserByPseudo, loginUser, findUsers, addFriend, updatePassword, logoutUser } from "./user.service";
-import { CreateUserBody, LoginUserInput, AddFriendInput, ChangePasswordInput } from "./user.schema";
+import { createUser, findUserByPseudo, loginUser, findUsers, addFriend, updatePassword, logoutUser, deleteFriend, updateUsername, updateAvatar } from "./user.service";
+import { CreateUserBody, LoginUserInput, AddFriendInput, ChangePasswordInput, ChangeUsernameInput } from "./user.schema";
+import { getGuestList } from "../guest/guest.service";
 
 export async function createUserHandler(req: FastifyRequest<{Body: CreateUserBody}>, reply: FastifyReply) {
     const body = req.body;
@@ -65,8 +66,8 @@ export async function loginUserHandler(req: FastifyRequest<{Body: LoginUserInput
             code: StatusCodes.INTERNAL_SERVER_ERROR,
         });
     }
-
-    const {password, status, ...rest} = user;
+    
+    const {password, status, game_username, avatar, ...rest} = user;
 
     return reply.code(StatusCodes.OK).send({accessToken: await server.jwt.sign(rest)});
 }
@@ -112,11 +113,17 @@ export async function addFriendHandler(req: FastifyRequest<{Body: AddFriendInput
                 code: StatusCodes.NOT_FOUND,
             });
         }
-
+        if (friend.id === req.user.id) {
+            return httpError({
+                reply,
+                message: "You cannot add yourself as a friend",
+                code: StatusCodes.UNPROCESSABLE_ENTITY,
+            });
+        }
         const currentUser = req.user;
 
         await addFriend(currentUser.id, friend.id);
-        return reply.code(StatusCodes.OK).send({message: "Friend added successfully"});
+        return reply.code(StatusCodes.CREATED).send({message: "Friend added successfully"});
 
     } catch (e) {
         console.error("Prisma error:", e);
@@ -129,23 +136,49 @@ export async function addFriendHandler(req: FastifyRequest<{Body: AddFriendInput
                 });
             }
         }
-        if (e instanceof Prisma.PrismaClientUnknownRequestError) {
-            if (e.message.includes("CHECK constraint failed: user_id != friend_id")) {
-                return httpError({
-                    reply,
-                    message: "You cannot add yourself as a friend",
-                    code: StatusCodes.UNPROCESSABLE_ENTITY,
-                });
-            }
-        }
         return httpError({
             reply,
             message: "Failed to find user",
             code: StatusCodes.INTERNAL_SERVER_ERROR,
         });
     }
-    
+}
 
+export async function deleteFriendHandler(req: FastifyRequest<{Body: AddFriendInput}>, reply: FastifyReply) {
+    console.log("Delete friend handler called");
+    const body = req.body;
+
+    try {
+        const friend = await findUserByPseudo(body.pseudo);
+
+        if (!friend) {
+            return httpError({
+                reply,
+                message: "User not found",
+                code: StatusCodes.NOT_FOUND,
+            });
+        }
+        const currentUser = req.user;
+
+        const count = await deleteFriend(currentUser.id, friend.id);
+        console.log("Count of deleted friends:", count);
+        if (count === 0) {
+            return httpError({
+                reply,
+                message: "You are not friends with this user",
+                code: StatusCodes.UNPROCESSABLE_ENTITY,
+            });
+        }
+        return reply.code(StatusCodes.OK).send({message: "Friend deleted successfully"});
+
+    } catch (e) {
+        console.error("Prisma error:", e);
+        return httpError({
+            reply,
+            message: "Failed to find user",
+            code: StatusCodes.INTERNAL_SERVER_ERROR,
+        });
+    }
 }
 
 export async function changePasswordHandler(req: FastifyRequest<{Body: ChangePasswordInput}>, reply: FastifyReply) {
@@ -186,6 +219,61 @@ export async function changePasswordHandler(req: FastifyRequest<{Body: ChangePas
     }
 }
 
+
+export async function changeUsernameHandler(req: FastifyRequest<{Body: ChangeUsernameInput}>, reply: FastifyReply) {
+    const body = req.body;
+    if (body.newPseudo === "Deleted Guest") {
+        return httpError({
+            reply,
+            code: StatusCodes.BAD_REQUEST,
+            message: "Pseudo 'Deleted Guest' is reserved and cannot be used",
+        });
+    }
+    try {
+        const currentUser = req.user;
+
+        const dbUser = await findUserByPseudo(currentUser.pseudo);
+        if (!dbUser) {
+            return httpError({
+                reply,
+                message: "User not found",
+                code: StatusCodes.NOT_FOUND,
+            });
+        }
+
+        if (await bcrypt.compare(body.password, dbUser.password) === false) {
+            return httpError({
+                reply,
+                message: "Invalid password",
+                code: StatusCodes.UNPROCESSABLE_ENTITY,
+            });
+        }
+
+        const guestList = await getGuestList(currentUser.id);
+        if (guestList.some(guest => guest.pseudo === body.newPseudo)) {
+            return httpError({
+                reply,
+                message: "This pseudo is already taken by a guest",
+                code: StatusCodes.UNPROCESSABLE_ENTITY,
+            });
+        }
+        await updateUsername(dbUser.id, body.newPseudo);
+        return reply.code(StatusCodes.OK).send({message: "Game Username changed successfully"});
+    } catch (e) {
+        return httpError({
+            reply,
+            message: "Failed to change username",
+            code: StatusCodes.INTERNAL_SERVER_ERROR,
+        });
+    }
+}
+
+
+
+
+
+
+
 export async function logoutUserHandler(req: FastifyRequest, reply: FastifyReply) {
     const token = req.headers.authorization?.substring(7);
 
@@ -204,6 +292,30 @@ export async function logoutUserHandler(req: FastifyRequest, reply: FastifyReply
         return httpError({
             reply,
             message: "Failed to logout user",
+            code: StatusCodes.INTERNAL_SERVER_ERROR,
+        });
+    }
+}
+
+export async function changeAvatarHandler(req: FastifyRequest<{Params: {filename: string}}>, reply: FastifyReply) {
+    const avatar = req.params.filename;
+    const currentUser = req.user;
+
+    if (!avatar || avatar.length === 0) {
+        return httpError({
+            reply,
+            message: "Avatar cannot be empty",
+            code: StatusCodes.UNPROCESSABLE_ENTITY,
+        });
+    }
+
+    try {
+        await updateAvatar(currentUser.id, avatar);
+        return reply.code(StatusCodes.OK).send({message: "Avatar changed successfully"});
+    } catch (e) {
+        return httpError({
+            reply,
+            message: "Failed to change avatar",
             code: StatusCodes.INTERNAL_SERVER_ERROR,
         });
     }
