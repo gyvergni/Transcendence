@@ -8,6 +8,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.loadAISelect = loadAISelect;
 const navbar = document.getElementById("navbar");
 const doorLeft = document.getElementById("door-left");
 const doorRight = document.getElementById("door-right");
@@ -272,6 +274,47 @@ function setupTournament() {
         setGameView();
     });
 }
+function check_login(login_in, password_in) {
+    return __awaiter(this, void 0, void 0, function* () {
+        fetch('http://localhost:3000/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: login_in,
+                password: password_in,
+            }),
+        });
+    });
+}
+function add_player(player_name) {
+    return __awaiter(this, void 0, void 0, function* () {
+        fetch('http://localhost:3000/api/add_player', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                player: player_name,
+            }),
+        });
+    });
+}
+function add_profile(username, password) {
+    return __awaiter(this, void 0, void 0, function* () {
+        fetch('http://localhost:3000/api/add_profile', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                username: username,
+                password: password,
+            }),
+        });
+    });
+}
 function loadPlayerSelect(id) {
     return __awaiter(this, void 0, void 0, function* () {
         const html = yield fetch("views/player-selection.html").then(res => res.text());
@@ -283,13 +326,57 @@ function loadPlayerSelect(id) {
         return selectionBox;
     });
 }
+function loadAISelect(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const res = yield fetch("../view/ai-selection.html");
+        const html = yield res.text();
+        const wrapper = document.createElement("div");
+        wrapper.innerHTML = html.trim();
+        const selector = wrapper.firstElementChild;
+        let selectedDifficulty = null;
+        const buttons = selector.querySelectorAll(".difficulty-btn");
+        buttons.forEach((btn) => {
+            btn.addEventListener("click", () => {
+                // Deselect all
+                buttons.forEach((b) => b.classList.remove("bg-cyan-700"));
+                // Select current
+                btn.classList.add("bg-cyan-700");
+                selectedDifficulty = btn.dataset.difficulty;
+            });
+        });
+        const lockBtn = selector.querySelector(".lock-in-btn");
+        lockBtn === null || lockBtn === void 0 ? void 0 : lockBtn.addEventListener("click", () => {
+            if (!selectedDifficulty) {
+                alert("Please select a difficulty first.");
+                return;
+            }
+            console.log(`AI difficulty locked in: ${selectedDifficulty}`);
+            // TODO: Save this selection in game state, or send to backend
+        });
+        return selector;
+    });
+}
 function createPlayerSlot(id) {
     const template = document.getElementById("player-slot-template");
     const clone = template.content.firstElementChild.cloneNode(true);
     clone.id = id;
-    clone.addEventListener("click", () => __awaiter(this, void 0, void 0, function* () {
+    clone.addEventListener("click", (event) => __awaiter(this, void 0, void 0, function* () {
+        const target = event.target;
+        const roleElement = target.closest("[data-role]");
+        if (!roleElement)
+            return;
         const container = clone.parentElement;
-        const selector = yield loadPlayerSelect(id);
+        const role = roleElement.dataset.role;
+        let selector;
+        if (role === "player") {
+            selector = yield loadPlayerSelect(id);
+        }
+        else if (role === "ai") {
+            selector = yield loadAISelect(id); // Adjust function name as needed
+        }
+        else {
+            return;
+        }
         container.replaceChild(selector, clone);
     }));
     return clone;

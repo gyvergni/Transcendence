@@ -6,7 +6,8 @@
 		"dev": "watch build"
 	},
 	"devDependencies": {
-		"tailwindcss": "^4.1.10"
+		"tailwindcss": "^4.1.10",
+		"typescript": "^5.8.3"
 	},
 	"dependencies": {
 		"@tailwindcss/aspect-ratio": "^0.4.2",

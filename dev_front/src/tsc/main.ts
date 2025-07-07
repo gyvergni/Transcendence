@@ -316,6 +316,51 @@ function setupTournament() {
 }
 
 
+async function check_login(login_in: string, password_in: string)
+{
+	fetch('http://localhost:3000/api/login', 
+	{
+	  method: 'POST',
+	  headers: {
+	    'Content-Type': 'application/json',
+	  },
+	  body: JSON.stringify({
+	    username: login_in,
+	    password: password_in,
+	  }),
+	});
+
+}
+
+async function add_player(player_name: string)
+{
+	fetch('http://localhost:3000/api/add_player',
+	{
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({
+			player: player_name,
+		}),
+	});
+}
+
+async function add_profile(username: string, password: string)
+{
+	fetch('http://localhost:3000/api/add_profile',
+	{
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({
+			username: username,
+			password: password,
+		}),
+	});
+}
+
 async function loadPlayerSelect(id: string): Promise<HTMLElement> {
   const html = await fetch("views/player-selection.html").then(res => res.text());
   const temp = document.createElement("div");
@@ -327,15 +372,65 @@ async function loadPlayerSelect(id: string): Promise<HTMLElement> {
   return selectionBox;
 }
 
+export async function loadAISelect(id: string): Promise<HTMLElement> {
+  const res = await fetch("../view/ai-selection.html");
+  const html = await res.text();
+
+  const wrapper = document.createElement("div");
+  wrapper.innerHTML = html.trim();
+
+  const selector = wrapper.firstElementChild as HTMLElement;
+
+  let selectedDifficulty: string | null = null;
+
+  const buttons = selector.querySelectorAll<HTMLButtonElement>(".difficulty-btn");
+  buttons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      // Deselect all
+      buttons.forEach((b) => b.classList.remove("bg-cyan-700"));
+      // Select current
+      btn.classList.add("bg-cyan-700");
+      selectedDifficulty = btn.dataset.difficulty!;
+    });
+  });
+
+  const lockBtn = selector.querySelector<HTMLButtonElement>(".lock-in-btn");
+  lockBtn?.addEventListener("click", () => {
+    if (!selectedDifficulty) {
+      alert("Please select a difficulty first.");
+      return;
+    }
+
+    console.log(`AI difficulty locked in: ${selectedDifficulty}`);
+    // TODO: Save this selection in game state, or send to backend
+  });
+
+  return selector;
+}
 
 function createPlayerSlot(id: string): HTMLElement {
   const template = document.getElementById("player-slot-template") as HTMLTemplateElement;
   const clone = template.content.firstElementChild!.cloneNode(true) as HTMLElement;
   clone.id = id;
 
-  clone.addEventListener("click", async () => {
+  clone.addEventListener("click", async (event) => {
+    const target = event.target as HTMLElement;
+    const roleElement = target.closest("[data-role]") as HTMLElement | null;
+
+    if (!roleElement) return;
+
     const container = clone.parentElement!;
-    const selector = await loadPlayerSelect(id);
+    const role = roleElement.dataset.role;
+
+    let selector: HTMLElement;
+    if (role === "player") {
+      selector = await loadPlayerSelect(id);
+    } else if (role === "ai") {
+      selector = await loadAISelect(id); // Adjust function name as needed
+    } else {
+      return;
+    }
+
     container.replaceChild(selector, clone);
   });
 

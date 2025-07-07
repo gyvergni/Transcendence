@@ -26,13 +26,15 @@
 
    <body>
 
+	<canvas id="renderCanvas"></canvas>
+
 	<script>
         var padle1_up = false;
         var padle1_down = false;
         var padle2_up = false;
         var padle2_down = false;
 
-        const canvas = document.getElementById("game-canvas"); // Get the canvas element
+        const canvas = document.getElementById("renderCanvas"); // Get the canvas element
         const engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
         const createScene = function () {
 
@@ -179,3 +181,5 @@
    </body>
 
 </html>
+
+I have this script for the game. How do I make sure the game is displayed in the canvas ?

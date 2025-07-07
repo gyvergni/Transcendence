@@ -11,10 +11,18 @@
 
 	  <!-- Player selection template-->
 		<template id="player-slot-template">
-		  <div class="player-slot w-48 h-56 flex items-center justify-center bg-slate-800/50 border border-cyan-300 rounded-xl cursor-pointer hover:bg-slate-700 transition">
-		    <span class="text-4xl text-cyan-300">+</span>
-		  </div>
+			<div class="player-slot w-48 h-56 bg-slate-800/50 border border-cyan-300 rounded-xl overflow-hidden cursor-pointer transition hover:shadow-lg">
+			  	<!-- Player half -->
+			  	<div class="w-full h-1/2 flex items-center justify-center border-b border-cyan-300 hover:bg-slate-700 transition" data-choice="player">
+			  	  <span class="text-xl text-cyan-300 pointer-events-none">Player</span>
+			  	</div>
+			  	<!-- AI half -->
+			  	<div class="w-full h-1/2 flex items-center justify-center hover:bg-slate-700 transition" data-choice="ai">
+			  	  <span class="text-xl text-cyan-300 pointer-events-none">AI</span>
+			  	</div>
+			</div>
 		</template>
+
 
 
       <!-- Doors -->
@@ -28,14 +36,17 @@
 
       <!-- Game Canvas + Frame -->
       <div id="canvas-wrapper" class="absolute z-20 h-full w-full">
-        <canvas id="game-canvas" class="absolute bg-black rounded-xl shadow-lg"
+        <iframe id="game-frame" src="views/game.html"
+			class="absolute rounded-xl shadow-lg"
 			style="
 				top: 21.6%;
 				left: 15%;
 				width: 70%;
 				height: 56%;
-				">
-		</canvas>
+				border: none;
+				z-index: 10; ">
+		</iframe>
+
         <img src="assets/window_frame.png"
         	class="absolute inset-0 w-full h-full object-fill z-20 pointer-events-none"
 				alt="window frame" />
