@@ -44,3 +44,29 @@ export async function deleteGuest(guestId: number) {
         }
     })
 }
+
+export async function getAllGuests() {
+    return await prisma.guests.findMany({
+        where: {
+            active: true,
+        },
+        select: {
+            id: true,
+            pseudo: true,
+            user_id: true,
+        }
+    });
+}
+
+export async function getInactiveGuests() {
+    return await prisma.guests.findMany({
+        where: {
+            active: false,
+        },
+        select: {
+            id: true,
+            pseudo: true,
+            user_id: true,
+        }
+    });
+}
