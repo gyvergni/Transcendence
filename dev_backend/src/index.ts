@@ -12,6 +12,7 @@ import {
 
 import { StatusCodes } from "http-status-codes";
 import { httpError } from "./modules/utils/http";
+import { statRoutes } from "./modules/stats/stats.route";
 
 
 export const server = Fastify({
@@ -56,10 +57,9 @@ server.decorate("auth", async (request: FastifyRequest, reply: FastifyReply) => 
         });
         return undefined;
     }
-
     try {
         const test = await request.jwtVerify();
-        console.log("User authenticated:", request.user);
+        console.log("User authenticated:", request.user);   
     } catch (e) {
         console.error("Authentication error");
         return httpError({
@@ -100,6 +100,7 @@ async function main() {
 
     server.register(userRoutes, {prefix: '/api/users'});
     server.register(guestRoutes, {prefix: '/api/guests'});
+    server.register(statRoutes, {prefix: '/api/stats'});
 
     try {
         await server.listen({ port: 3000, host: "0.0.0.0" });

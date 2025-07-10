@@ -76,7 +76,7 @@ export async function getUsersHandler(req: FastifyRequest<{ Params: {username: s
 
     try {
         const username = req.params.username;
-        let users  
+        let users;
         users = await findUsers();
         if (username && username.length > 0) {
             const user = users.find(u => u.pseudo === username);
@@ -98,7 +98,6 @@ export async function getUsersHandler(req: FastifyRequest<{ Params: {username: s
         });
     }
 }
-
 
 export async function addFriendHandler(req: FastifyRequest<{Body: AddFriendInput}>, reply: FastifyReply) {
     const body = req.body;
@@ -267,12 +266,6 @@ export async function changeUsernameHandler(req: FastifyRequest<{Body: ChangeUse
         });
     }
 }
-
-
-
-
-
-
 
 export async function logoutUserHandler(req: FastifyRequest, reply: FastifyReply) {
     const token = req.headers.authorization?.substring(7);
