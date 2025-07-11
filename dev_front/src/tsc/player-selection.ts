@@ -2,14 +2,15 @@
 const registeredUsers: string[] = ["alice", "bob", "carol", "dave", "eve", "frank"];
 
 
-function setupPlayerSelectLogic(container: HTMLElement) {
+function setupPlayerSelect(container: HTMLElement) {
 	const input = container.querySelector<HTMLInputElement>(".player-search-input")!;
 	const dropdown = container.querySelector<HTMLUListElement>(".autocomplete-list")!;
 	const addBtn = container.querySelector<HTMLButtonElement>(".add-player-btn")!;
 	const lockInBtn = container.querySelector<HTMLButtonElement>(".lock-btn")!;	
 	let dropdownVisible = false;		
 	const updateDropdown = (term = "") => {
-	  dropdown.innerHTML = "";	
+	  dropdown.innerHTML = "";
+	  // API GET Pour récupérer la liste des utilisateurs
 	  const matches = registeredUsers.filter(name =>
 	    name.toLowerCase().includes(term.toLowerCase())
 	  );	
@@ -47,7 +48,8 @@ function setupPlayerSelectLogic(container: HTMLElement) {
 	    dropdown.classList.add("hidden");
 	    dropdownVisible = false;
 	  }, 150);
-	});	
+	});
+
 	// Add player
 	addBtn.addEventListener("click", () => {
 	  const name = input.value.trim();
@@ -55,6 +57,7 @@ function setupPlayerSelectLogic(container: HTMLElement) {
 	  if (registeredUsers.includes(name)) {
 	    alert(`${name} is already registered.`);
 	  } else {
+		// API POST pour ajouter le guest 
 	    registeredUsers.push(name);
 	    alert(`Added ${name} to the list.`);
 	    updateDropdown(""); // Refresh with new name
@@ -62,6 +65,7 @@ function setupPlayerSelectLogic(container: HTMLElement) {
 	});	
 	// Lock in player
 	lockInBtn.addEventListener("click", () => {
+		// TODO enregistrer le joueur actif quelque part pour les calls API in-game et post-game
 	  const name = input.value.trim();
 	  if (!registeredUsers.includes(name)) {
 	    alert("Please select a valid registered player.");
@@ -81,7 +85,7 @@ async function loadPlayerSelect(id: string): Promise<HTMLElement> {
 	temp.innerHTML = html.trim();
 	const selectionBox = temp.firstElementChild as HTMLElement;
 	selectionBox.id = id;	
-	setupPlayerSelectLogic(selectionBox); // attach listeners, autocomplete, etc.
+	setupPlayerSelect(selectionBox); // attach listeners, autocomplete, etc.
 	return selectionBox;
 }
 

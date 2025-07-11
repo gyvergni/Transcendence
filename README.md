@@ -53,9 +53,13 @@ Dans views.ts/setupLoginEvents() => api login
 
 Dans views.ts/setupSignUpEvents() => api create profile
 
+Dans player-select.ts/setupPlayerSelect() => GET guests / POST guest
 
+Une fois que la logique game / front sera établie: POST les stats du guest et POST les stats du match dans historique
 
+Une fois que dashboard sera fait: GET toutes les stats du guest et historique des matchs. (En attendant tu peux déjà setup toutes les variables des stats dans un fichier dashboard.ts et je ferai l'affichage)
 
+Une fois que l'avatar sera setup: GET l'avatar
 
 
 ---

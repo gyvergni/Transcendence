@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 const registeredUsers = ["alice", "bob", "carol", "dave", "eve", "frank"];
-function setupPlayerSelectLogic(container) {
+function setupPlayerSelect(container) {
     const input = container.querySelector(".player-search-input");
     const dropdown = container.querySelector(".autocomplete-list");
     const addBtn = container.querySelector(".add-player-btn");
@@ -16,6 +16,7 @@ function setupPlayerSelectLogic(container) {
     let dropdownVisible = false;
     const updateDropdown = (term = "") => {
         dropdown.innerHTML = "";
+        // API GET Pour récupérer la liste des utilisateurs
         const matches = registeredUsers.filter(name => name.toLowerCase().includes(term.toLowerCase()));
         if (matches.length === 0) {
             dropdown.classList.add("hidden");
@@ -59,6 +60,7 @@ function setupPlayerSelectLogic(container) {
             alert(`${name} is already registered.`);
         }
         else {
+            // API POST pour ajouter le guest 
             registeredUsers.push(name);
             alert(`Added ${name} to the list.`);
             updateDropdown(""); // Refresh with new name
@@ -66,6 +68,7 @@ function setupPlayerSelectLogic(container) {
     });
     // Lock in player
     lockInBtn.addEventListener("click", () => {
+        // TODO enregistrer le joueur actif quelque part pour les calls API in-game et post-game
         const name = input.value.trim();
         if (!registeredUsers.includes(name)) {
             alert("Please select a valid registered player.");
@@ -84,7 +87,7 @@ function loadPlayerSelect(id) {
         temp.innerHTML = html.trim();
         const selectionBox = temp.firstElementChild;
         selectionBox.id = id;
-        setupPlayerSelectLogic(selectionBox); // attach listeners, autocomplete, etc.
+        setupPlayerSelect(selectionBox); // attach listeners, autocomplete, etc.
         return selectionBox;
     });
 }
