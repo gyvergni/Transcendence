@@ -1,7 +1,7 @@
 
 # Lancement du serveur
 
-## Étapes pour lancer le serveur (dans `dev_backend`)
+## Étapes pour lancer le serveur backend (dans `dev_backend`)
 
 1. Installer les dépendances  
    ```bash
@@ -18,20 +18,13 @@
 
 ---
 
-## Routes à implémenter
+## Étapes pour lancer le frontend (dans `dev_front`)
 
-### Users
-
-- `PUT /users/change-username` ?
-
-### Guest
-
-- `DELETE /guest/:id/delete`
-
-### Stats
-
- - `A Faire`
-
-### Match History
-
- - `A Faire`
+1. Installer les dépendances  
+   ```bash
+   pnpm install
+   ```
+2. Démarrer le serveur en mode développement    
+   ```bash
+   pnpm run dev
+   ```
