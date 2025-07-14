@@ -1,30 +1,30 @@
 # Node modules backend
-./dev_backend/node_modules/
-./dev_backend/package.json
-./dev_backend/pnpm-lock.yaml
+dev_backend/node_modules/
+dev_backend/package.json
+dev_backend/pnpm-lock.yaml
 
 # Node modules frontend
-./dev_frontend/node_modules/
-./dev_frontend/package.json
-./dev_frontend/pnpm-lock.yaml
-./dev_frontend/package-lock.json
+dev_frontend/node_modules/
+dev_frontend/package.json
+dev_frontend/pnpm-lock.yaml
+dev_frontend/package-lock.json
 
 # Build outputs
-./dev_backend/dist/
-./dev_backend/build/
+dev_backend/dist/
+dev_backend/build/
 
-./dev_frontend/dist/
-./dev_frontend/build/
+dev_frontend/dist/
+dev_frontend/build/
 
 # Logs
 *.log
 
 # Bases de données locales
-./dev_backend/prisma/db.sqlite
+dev_backend/prisma/db.sqlite
 
 # Prisma
-./dev_backend/src/generated/
-./dev_backend/prisma/migrations/
+dev_backend/src/generated/
+dev_backend/prisma/migrations/
 
 # Environnement
 #./dev_backend/.env
