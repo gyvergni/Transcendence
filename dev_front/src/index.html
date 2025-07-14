@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-slate-900 text-white font-[orbitron]">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Transcendence</title>
+    <link href="./css/style.css" rel="stylesheet" />
+  </head>
+  <body class="flex flex-col min-h-screen m-0 overflow-hidden">
+    <main id="main" class="flex-grow flex items-center justify-center p-4 relative overflow-hidden">
+
+	  <!-- Player selection template-->
+		<template id="player-slot-template">
+			<div class="player-slot w-48 h-56 bg-slate-800/50 border border-cyan-300 rounded-xl overflow-hidden cursor-pointer transition hover:shadow-lg">
+			  	<!-- Player half -->
+			  	<div class="w-full h-1/2 flex items-center justify-center border-b border-cyan-300 hover:bg-slate-700 transition" data-choice="player">
+			  	  <span class="text-xl text-cyan-300 pointer-events-none">Player</span>
+			  	</div>
+			  	<!-- AI half -->
+			  	<div class="w-full h-1/2 flex items-center justify-center hover:bg-slate-700 transition" data-choice="ai">
+			  	  <span class="text-xl text-cyan-300 pointer-events-none">AI</span>
+			  	</div>
+			</div>
+		</template>
+
+
+
+      <!-- Doors -->
+      <img id="door-left" src="assets/door_left.png"
+           class="absolute w-1/2 h-full left-0 top-0 z-30 object-fill transition-transform duration-1000"
+           alt="Left door"/>
+
+      <img id="door-right" src="assets/door_right.png"
+           class="absolute w-1/2 h-full right-0 top-0 z-30 object-fill transition-transform duration-1000"
+           alt="Right door"/>
+
+      <!-- Game Canvas + Frame -->
+      <div id="canvas-wrapper" class="absolute z-20 h-full w-full">
+        <iframe id="game-frame" src="views/game.html"
+			class="absolute rounded-xl shadow-lg"
+			style="
+				top: 21.6%;
+				left: 15%;
+				width: 70%;
+				height: 56%;
+				border: none;
+				z-index: 10; ">
+		</iframe>
+
+        <img src="assets/window_frame.png"
+        	class="absolute inset-0 w-full h-full object-fill z-20 pointer-events-none"
+				alt="window frame" />
+      </div>
+
+      <!-- Content Box -->
+      <div id="content-box"
+     class="transition-all duration-600 ease-in-out
+            opacity-0 scale-0 origin-center
+            absolute z-9999 bg-cyan-400/10 border border-cyan-300 backdrop-blur-md
+            p-10 rounded-xl shadow-lg space-y-6 hidden
+            before:absolute before:inset-0 before:z-[-1] before:bg-cyan-500/20">
+
+        <button id="back-btn" class="z-50 absolute top-4 left-4 text-white p-2 rounded hover:bg-cyan-800 transition"> ← </button>
+        <div id="content-inner" class="relative z-10"></div>
+      </div>
+
+      <script type="module" src="./dist/main.js"></script>
+    </main>
+  </body>
+</html>
