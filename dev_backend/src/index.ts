@@ -70,7 +70,7 @@ server.decorate("auth", async (request: FastifyRequest, reply: FastifyReply) => 
     }
 });
 
-server.get('/healthcheck', async function() {
+server.get('/api/healthcheck', async function() {
     return {status: "OK"};
 });
 
@@ -97,6 +97,10 @@ async function main() {
             deepLinking: false,
         }
     });
+
+	server.register(require('@fastify/cors'), { 
+		origin: true // or ['http://localhost:5173'] depending on your frontend
+	});
 
     server.register(userRoutes, {prefix: '/api/users'});
     server.register(guestRoutes, {prefix: '/api/guests'});
