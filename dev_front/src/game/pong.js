@@ -110,6 +110,28 @@ class Ball {
         this.resetDirection();
         this.startDelay = 0;
     }
+
+	calculateDistToBorder() {
+		const bx = this.mesh.position.x;
+		const distToBorder = 0;
+
+		if (dirX < 0)
+			distToBorder = 10 + bx;
+		else if (dirX > 0)
+			distToBorder = 10 - bx;
+		return distToBorder;
+	}
+
+	calculateDistToWall() {
+		const bz = this.mesh.position.z;
+		const distToBorder = 0;
+
+		if (dirZ < 0)
+			distToBorder = 5 + bz;
+		else if (dirZ > 0)
+			distToBorder = 5 - bz;
+		return distToBorder;
+	}
 }
 
 class Player {
@@ -196,16 +218,32 @@ class AIPlayer {
 		if (!this.is_movingToAI())
 			this.goToCenter();
 		else {
+			finalZ = predictZ();
+			if (finalZ > this.paddle.z())
+				this.paddle.move(true, false);
+			else if (finalZ < this.paddle.z())
+				this.paddle.move(false, true);
+		}
+	}
+
+	predictZ() {
+		let z = this.ball.mesh.position.z;
+		let x = this.ball.mesh.position.x;
+		let dirX = this.ball.dirX;
+		let dirZ = this.ball.dirZ;
+		const finalZ = 0;
 			while ((x >= -10 && dirX < 0) || (x <= 10 && dirX > 0))
 			{
-				if (dirX < 0)
-					x_to_border = 
-				x += dirX / 100;
-				z += dirZ / 100;
-				
-				if (z > 5 || z < - 5)
+				const distToBorder = this.ball.calculateDistToBorder();
+				const distToWall = this.ball.calculateDistToWall();
+				const steps = distToWall / Math.abs(dirZ);
+				z += dirZ * steps;
+				x += dirX * steps;
+				if (xWhenWallHit < 10 && xWhenWallHit > -10)
+					dirZ = -dirZ;
+				else
+					finalZ = z += dirZ * (distToBorder / Math.abs(dirX));
 			}
-		}
 	}
 
 	goToCenter() {
