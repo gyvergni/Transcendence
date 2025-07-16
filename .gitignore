@@ -13,7 +13,7 @@ dev_frontend/node_modules/
 dev_backend/dist/
 dev_backend/build/
 
-#dev_frontend/src/dist/
+dev_frontend/src/dist/
 dev_frontend/build/
 
 # Logs
