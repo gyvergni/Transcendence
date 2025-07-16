@@ -1,19 +1,19 @@
 # Node modules backend
 dev_backend/node_modules/
-dev_backend/package.json
-dev_backend/pnpm-lock.yaml
+#dev_backend/package.json
+#dev_backend/pnpm-lock.yaml
 
 # Node modules frontend
 dev_frontend/node_modules/
-dev_frontend/package.json
-dev_frontend/pnpm-lock.yaml
-dev_frontend/package-lock.json
+#dev_frontend/package.json
+#dev_frontend/pnpm-lock.yaml
+#dev_frontend/package-lock.json
 
 # Build outputs
 dev_backend/dist/
 dev_backend/build/
 
-dev_frontend/dist/
+#dev_frontend/src/dist/
 dev_frontend/build/
 
 # Logs
