@@ -46,10 +46,13 @@ export function  setGameView()
 function setupLoginEvents() {
 	uiManager.setCurrentView("login");
 	toggleBackButton(false);
-	const form = document.getElementById("login-form");
+	const form = document.getElementById("login-form") as HTMLFormElement;
 	const signupBtn = document.getElementById("signup-btn");
 	animateContentBoxIn();
 	form?.addEventListener("submit", (e) => {
+		const formData = new FormData(form);
+		const username = formData.get("username");
+		const password = formData.get("password");
 		// A  AJOUTER ICI API LOGIN
 		e.preventDefault();
 		setContentView("views/home.html");
@@ -87,7 +90,7 @@ function setupHomeEvents() {
 
 function setupSignupEvents() {
 	uiManager.setCurrentView("signup");
-	const form = document.getElementById("signup-form");
+	const form = document.getElementById("signup-form") as HTMLFormElement;
 	const loginBtn = document.getElementById("login-btn");
 
 	toggleBackButton(true, () => 
@@ -97,12 +100,15 @@ function setupSignupEvents() {
 
 	form?.addEventListener("submit", (e) => {
 		// TODO API Signup
+		const formData = new FormData(form);
+		const username = formData.get("username");
+		const password1 = formData.get("password1");
+		const password2 = formData.get("password2");
+		console.log(username);
+		console.log(password1);
+		console.log(password2);
 		e.preventDefault();
 		setContentView("views/home.html");
-	});
-
-	loginBtn?.addEventListener("click", () => {
-		setContentView("views/login.html");
 	});
 }
 

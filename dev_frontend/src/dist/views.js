@@ -58,6 +58,9 @@ function setupLoginEvents() {
     const signupBtn = document.getElementById("signup-btn");
     animateContentBoxIn();
     form === null || form === void 0 ? void 0 : form.addEventListener("submit", (e) => {
+        const formData = new FormData(form);
+        const username = formData.get("username");
+        const password = formData.get("password");
         // A  AJOUTER ICI API LOGIN
         e.preventDefault();
         setContentView("views/home.html");
@@ -98,11 +101,15 @@ function setupSignupEvents() {
     });
     form === null || form === void 0 ? void 0 : form.addEventListener("submit", (e) => {
         // TODO API Signup
+        const formData = new FormData(form);
+        const username = formData.get("username");
+        const password1 = formData.get("password1");
+        const password2 = formData.get("password2");
+        console.log(username);
+        console.log(password1);
+        console.log(password2);
         e.preventDefault();
         setContentView("views/home.html");
-    });
-    loginBtn === null || loginBtn === void 0 ? void 0 : loginBtn.addEventListener("click", () => {
-        setContentView("views/login.html");
     });
 }
 // Placeholder for future settings events
