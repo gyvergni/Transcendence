@@ -36,17 +36,19 @@
 
       <!-- Game Canvas + Frame -->
       <div id="canvas-wrapper" class="absolute z-20 h-full w-full">
-        <iframe id="game-frame" src="views/game.html"
-			class="absolute rounded-xl shadow-lg"
+        <canvas id="renderCanvas"
 			style="
+				position: absolute;
 				top: 21.6%;
 				left: 15%;
 				width: 70%;
 				height: 56%;
-				border: none;
-				z-index: 10; ">
-		</iframe>
-
+				border-radius: 0.75rem;
+				box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+				z-index: 10;"
+		></canvas>
+		<script src="https://cdn.babylonjs.com/babylon.js"></script>
+		<script src="game/pong.js" defer></script>
         <img src="assets/window_frame.png"
         	class="absolute inset-0 w-full h-full object-fill z-20 pointer-events-none"
 				alt="window frame" />
