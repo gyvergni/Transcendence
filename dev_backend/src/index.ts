@@ -13,57 +13,58 @@ import {
 import { StatusCodes } from "http-status-codes";
 import { httpError } from "./modules/utils/http";
 import { statRoutes } from "./modules/stats/stats.route";
-
+import websocket from '@fastify/websocket';
+import { wsRoute } from "./utils/ws";
 
 export const server = Fastify({
-    // logger: true,
+	// logger: true,
 }); 
 
 declare module "fastify" {
-    export interface FastifyInstance {
-        auth: any;
+	export interface FastifyInstance {
+		auth: any;
     }
 };
 
 declare module "@fastify/jwt" {
     export interface FastifyJWT {
-        payload: { id: number, pseudo: string };
+		payload: { id: number, pseudo: string };
         user: { id: number, pseudo: string };
     }
 }
 
 server.register(require('@fastify/jwt'), {
-    secret: process.env.JWT_SECRET,
+	secret: process.env.JWT_SECRET,
     sign: {
-        algorithm: 'HS256',
+		algorithm: 'HS256',
         issuer: 'transcendence',
         audience: 'transcendence',
         expiresIn: '365d', // m minutes / h hours /d days   
     },
     verify: {
-        algorithms: ['HS256'],
+		algorithms: ['HS256'],
         issuer: 'transcendence',
         audience: 'transcendence',
     }
 });
 
 server.decorate("auth", async (request: FastifyRequest, reply: FastifyReply) => {
-    const token = request.headers.authorization?.substring(7);
+	const token = request.headers.authorization?.substring(7);
     if (!token) {
         httpError({
-            reply,
+			reply,
             code: StatusCodes.UNAUTHORIZED,
             message: "No access token provided",
         });
         return undefined;
     }
     try {
-        const test = await request.jwtVerify();
+		const test = await request.jwtVerify();
         console.log("User authenticated:", request.user);   
     } catch (e) {
-        console.error("Authentication error");
+		console.error("Authentication error");
         return httpError({
-            reply,
+			reply,
             code: StatusCodes.UNAUTHORIZED,
             message: 'Invalid access token',
         });
@@ -74,13 +75,16 @@ server.get('/api/healthcheck', async function() {
     return {status: "OK"};
 });
 
+
 async function main() {
-    
+	await server.register(websocket);
+  
     server.setValidatorCompiler(validatorCompiler);
     server.setSerializerCompiler(serializerCompiler);
-
+	
+	
     await server.register(require('@fastify/swagger'), {
-        openapi: {
+		openapi: {
             info: {
                 title: 'Fastify API',
                 description: 'API documentation for Fastify application',
@@ -99,12 +103,13 @@ async function main() {
     });
 
 	server.register(require('@fastify/cors'), { 
-		origin: true // or ['http://localhost:5173'] depending on your frontend
+		origin: true,
 	});
 
     server.register(userRoutes, {prefix: '/api/users'});
     server.register(guestRoutes, {prefix: '/api/guests'});
     server.register(statRoutes, {prefix: '/api/stats'});
+	server.register(wsRoute, {prefix: '/ws'});
 
     try {
         await server.listen({ port: 3000, host: "0.0.0.0" });

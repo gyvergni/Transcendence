@@ -55,5 +55,12 @@ export async function userRoutes(server: FastifyInstance) {
         schema: changeAvatarSchema,
         preHandler: [server.auth],
         handler: changeAvatarHandler,
-    })
+    });
+
+	server.get("/auth/validate-jwt-token", {
+		preHandler: [server.auth],
+		handler: async (request, reply) => {
+			reply.send({ message: "Token is valid" });
+		},
+	}	)
 }

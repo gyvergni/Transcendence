@@ -1,4 +1,4 @@
-import uiManager from "./main.js";
+import uiManager, { API_BASE_URL, connectWebSocket } from "./main.js";
 
 import {animateContentBoxOut, animateContentBoxIn, toggleBackButton} from "./animations.js";
 
@@ -38,8 +38,17 @@ export async function setContentView(viewPath: string) {
 
 export function  setGameView() 
 {
+	console.log("Setting game view");
 	uiManager.setCurrentView("game");
   	animateContentBoxOut();
+
+	if (!window.hasOwnProperty("gameLoaded")) {
+		const script = document.createElement("script");
+		script.src = "game/pong.js";
+		script.defer = true;
+		script.onload = () => { (window as any).gameLoaded = true; }; // Mark game as loaded
+		document.body.appendChild(script);
+	}
 }
 
 // Setup login form behavior
@@ -49,13 +58,31 @@ function setupLoginEvents() {
 	const form = document.getElementById("login-form") as HTMLFormElement;
 	const signupBtn = document.getElementById("signup-btn");
 	animateContentBoxIn();
-	form?.addEventListener("submit", (e) => {
-		const formData = new FormData(form);
-		const username = formData.get("username");
-		const password = formData.get("password");
-		// A  AJOUTER ICI API LOGIN
+	form?.addEventListener("submit", async(e) => {
 		e.preventDefault();
-		setContentView("views/home.html");
+		try {
+			const formData = new FormData(form);
+			const username = formData.get("username");
+			const password = formData.get("password");
+		// A  AJOUTER ICI API LOGIN
+			const loginResponse = await fetch(API_BASE_URL + "/users/login", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({ pseudo: username, password })
+			});
+			if (!loginResponse.ok) {
+				console.error("Login failed:", loginResponse.statusText);
+				return;
+			}
+			const data = await loginResponse.json();
+			localStorage.setItem("accessToken", data.accessToken);
+			connectWebSocket();
+			setContentView("views/home.html");
+		} catch (error) {
+			console.error("Login failed:", error);
+		}
 	});
 
 	signupBtn?.addEventListener("click", () => {

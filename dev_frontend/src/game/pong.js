@@ -1,7 +1,7 @@
 //################ customization variables ###########
 const padle_size = 5;
-let BallSpeed = 5;
-const BallSpeedLimit = 10;
+let BallSpeed = 10;
+const BallSpeedLimit = 30;
 let z_reaction = 0.25;
 
 // ######### utility #########
@@ -97,7 +97,8 @@ class Ball {
 
         if (hit && within && ((hitX < 0 && this.dirX < 0) || (hitX > 0 && this.dirX > 0))) {
             if (this.speed < BallSpeedLimit)
-                this.speed += 0.1;
+                this.speed += 0.5;
+			console.log(`Ball speed: ${this.speed}`);
             this.dirZ += bz - pz;
             const diff = (this.speed * this.speed - this.dirZ * this.dirZ);
             this.dirX = hitX > 0 ? -Math.sqrt(Math.abs(diff)) : Math.sqrt(Math.abs(diff));
@@ -106,7 +107,7 @@ class Ball {
 
     reset() {
         this.mesh.position.set(0, 0.5, 0);
-        this.speed = BallSpeed = 5;
+        this.speed = BallSpeed;
         this.resetDirection();
         this.startDelay = 0;
     }
