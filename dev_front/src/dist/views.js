@@ -11,6 +11,7 @@ import uiManager from "./main.js";
 import { animateContentBoxOut, animateContentBoxIn, toggleBackButton } from "./animations.js";
 import { createPlayerSlot } from "./player-selection.js";
 import { setupTournament } from "./tournament.js";
+import { startQuickMatch } from "./pong.js";
 function loadHTML(path) {
     return __awaiter(this, void 0, void 0, function* () {
         const res = yield fetch(path);
@@ -153,5 +154,8 @@ function setupQuickMatch() {
     container.appendChild(player2);
     startBtn === null || startBtn === void 0 ? void 0 : startBtn.addEventListener("click", () => {
         setGameView();
+        setTimeout(() => {
+            startQuickMatch("human", "eric", "ai", "medium");
+        }, 100); // delay allows canvas and layout to finish
     });
 }

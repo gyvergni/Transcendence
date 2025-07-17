@@ -14,6 +14,9 @@ importers:
       '@tailwindcss/cli':
         specifier: ^4.1.10
         version: 4.1.11
+      babylonjs:
+        specifier: ^8.16.3
+        version: 8.16.3
     devDependencies:
       concurrently:
         specifier: ^9.2.0
@@ -231,6 +234,9 @@ packages:
   ansi-styles@4.3.0:
     resolution: {integrity: sha512-zbB9rCJAT1rbjiVDb2hqKFHNYLxgtk8NURxZ3IZwD3F6NtxbXZQCnnSi1Lkx+IDohdPlFp222wVALIheZJQSEg==}
     engines: {node: '>=8'}
+
+  babylonjs@8.16.3:
+    resolution: {integrity: sha512-MCK0dduwSugdUGzX2DJjrGRx34Qa0gfZOIw5S0uWHCel09GRTFZ3tcBYdOe57s4qd14n26jFwZnVhmMN7YkkkA==}
 
   braces@3.0.3:
     resolution: {integrity: sha512-yQbXgO/OSZVD2IsiLlro+7Hf6Q18EJrKSEsdoMzKePKXct3gvD8oLcOQdIzGupr5Fj+EDe8gO/lxc1BzfMpxvA==}
@@ -662,6 +668,8 @@ snapshots:
   ansi-styles@4.3.0:
     dependencies:
       color-convert: 2.0.1
+
+  babylonjs@8.16.3: {}
 
   braces@3.0.3:
     dependencies:

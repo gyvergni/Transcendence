@@ -1,9 +1,11 @@
 import { UIManager } from "./ui-manager.js";
 import { animateContentBoxOut, animateContentBoxIn } from "./animations.js";
 import { setContentView } from "./views.js";
+let a = 5;
 const uiManager = new UIManager();
 export default uiManager;
 document.addEventListener("keydown", (e) => {
+    a = 4;
     if (e.key === "Escape" && uiManager.getIsAnimating() === false) {
         uiManager.setIsAnimating(true);
         if (uiManager.getCurrentView().includes("home")) {

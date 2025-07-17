@@ -16,7 +16,6 @@ function setupPlayerSelect(container) {
     let dropdownVisible = false;
     const updateDropdown = (term = "") => {
         dropdown.innerHTML = "";
-        // API GET Pour récupérer la liste des utilisateurs
         const matches = registeredUsers.filter(name => name.toLowerCase().includes(term.toLowerCase()));
         if (matches.length === 0) {
             dropdown.classList.add("hidden");
@@ -51,7 +50,6 @@ function setupPlayerSelect(container) {
             dropdownVisible = false;
         }, 150);
     });
-    // Add player
     addBtn.addEventListener("click", () => {
         const name = input.value.trim();
         if (!name)
@@ -60,15 +58,12 @@ function setupPlayerSelect(container) {
             alert(`${name} is already registered.`);
         }
         else {
-            // API POST pour ajouter le guest 
             registeredUsers.push(name);
             alert(`Added ${name} to the list.`);
-            updateDropdown(""); // Refresh with new name
+            updateDropdown("");
         }
     });
-    // Lock in player
     lockInBtn.addEventListener("click", () => {
-        // TODO enregistrer le joueur actif quelque part pour les calls API in-game et post-game
         const name = input.value.trim();
         if (!registeredUsers.includes(name)) {
             alert("Please select a valid registered player.");
@@ -80,14 +75,17 @@ function setupPlayerSelect(container) {
         container.replaceWith(readyBox);
     });
 }
-function loadPlayerSelect(id) {
+export function loadPlayerSelect(id) {
     return __awaiter(this, void 0, void 0, function* () {
-        const html = yield fetch("views/player-selection.html").then(res => res.text());
+        const html = yield fetch("../views/player-selection.html").then(res => res.text());
         const temp = document.createElement("div");
         temp.innerHTML = html.trim();
-        const selectionBox = temp.firstElementChild;
+        const selectionBox = temp.querySelector(".player-select");
+        if (!selectionBox) {
+            throw new Error("Could not find .player-select in player-selection.html");
+        }
         selectionBox.id = id;
-        setupPlayerSelect(selectionBox); // attach listeners, autocomplete, etc.
+        setupPlayerSelect(selectionBox);
         return selectionBox;
     });
 }
@@ -97,17 +95,18 @@ export function loadAISelect(id) {
         const html = yield res.text();
         const wrapper = document.createElement("div");
         wrapper.innerHTML = html.trim();
-        const selector = wrapper.firstElementChild;
+        const selector = wrapper.querySelector(".ai-selector");
+        if (!selector) {
+            throw new Error("❌ Could not find .ai-selector in ai-selection.html");
+        }
         let selectedDifficulty = null;
         const buttons = selector.querySelectorAll(".difficulty-btn");
         buttons.forEach((btn) => {
             btn.addEventListener("click", () => {
-                // Deselect all
                 buttons.forEach((b) => {
                     b.classList.remove("bg-cyan-700");
                     b.classList.add("bg-slate-700");
                 });
-                // Select current
                 btn.classList.remove("bg-slate-700");
                 btn.classList.add("bg-cyan-700");
                 selectedDifficulty = btn.dataset.difficulty;
@@ -122,16 +121,19 @@ export function loadAISelect(id) {
             console.log(`AI difficulty locked in: ${selectedDifficulty}`);
             const readyBox = document.createElement("div");
             readyBox.className = "text-green-400 text-center text-md font-semibold border border-green-400 p-4 rounded";
-            readyBox.textContent = `✅ Ready: ${name}`;
+            readyBox.textContent = `✅ Ready: AI (${selectedDifficulty})`;
             selector.replaceWith(readyBox);
-            // TODO: Save this selection in game state, or send to backend
         });
         return selector;
     });
 }
 export function createPlayerSlot(id) {
+    var _a;
     const template = document.getElementById("player-slot-template");
-    const clone = template.content.firstElementChild.cloneNode(true);
+    const clone = (_a = template.content.querySelector(".player-slot")) === null || _a === void 0 ? void 0 : _a.cloneNode(true);
+    if (!clone) {
+        throw new Error("❌ .player-slot not found in template");
+    }
     clone.id = id;
     clone.addEventListener("click", (event) => __awaiter(this, void 0, void 0, function* () {
         const target = event.target;
@@ -145,7 +147,7 @@ export function createPlayerSlot(id) {
             selector = yield loadPlayerSelect(id);
         }
         else if (role === "ai") {
-            selector = yield loadAISelect(id); // Adjust function name as needed
+            selector = yield loadAISelect(id);
         }
         else {
             return;

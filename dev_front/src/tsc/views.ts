@@ -6,6 +6,8 @@ import {createPlayerSlot} from "./player-selection.js";
 
 import {setupTournament} from "./tournament.js"
 
+import {startQuickMatch} from "./pong.js"
+
 async function loadHTML(path: string): Promise<string> {
 	const res = await fetch(path);
 	if (!res.ok)
@@ -163,5 +165,8 @@ function setupQuickMatch() {
 	startBtn?.addEventListener("click", () =>
 	{
 		setGameView();
-	})
+		setTimeout(() => {
+			startQuickMatch("human", "eric", "ai", "medium");
+		}, 100); // delay allows canvas and layout to finish
+	});
 }
