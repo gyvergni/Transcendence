@@ -1,18 +1,19 @@
 <h2 class="text-2xl font-semibold text-center mb-6">Create an account</h2>
-<form id="signup-form" class="space-y-4 w-full">
+<form id="signup-form" class="space-y-4 w-full" novalidate> 
+	<div id="login-error-message" class="text-red-700 block mb-2 text-center text-[1.1rem] font-bold -mx-4"></div>
   <div>
-    <label for="username" class="block mb-1">Username</label>
-    <input id="username" name="username" type="text"
+    <label for="signup-username" class="block mb-1">Username</label>
+    <input id="signup-username" name="signup-username" type="text" autocomplete="off" required
            class="w-full px-4 py-2 rounded bg-slate-700 text-white border border-slate-600 focus:outline-none focus:ring-2 focus:ring-purple-500" />
   </div>
   <div>
-    <label for="password" class="block mb-1">Password</label>
-    <input id="password1" name="password1" type="password"
+    <label for="signup-password" class="block mb-1">Password</label>
+    <input id="signup-password" name="signup-password" type="password" autocomplete="new-password" required
            class="w-full px-4 py-2 rounded bg-slate-900 text-white border border-slate-600 focus:outline-none focus:ring-2 focus:ring-purple-500" />
   </div>
   <div>
-    <label class="block mb-1">Verify password</label>
-    <input id="password2" name="password2" type="password"
+    <label for="signup-verify-password" class="block mb-1">Verify Password</label>
+    <input id="signup-verify-password" name="signup-verify-password" type="password" autocomplete="new-password" required
            class="w-full px-4 py-2 rounded bg-slate-900 text-white border border-slate-600 focus:outline-none focus:ring-2 focus:ring-purple-500" />
   </div>
   <button type="submit"

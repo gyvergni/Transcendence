@@ -9,6 +9,7 @@ import { API_BASE_URL } from "./features/utils-api.js";
 import { connectWebSocket } from "./features/auth.js";
 import { loginUser } from "./features/login.js";
 import { logoutUser } from "./features/logout.js";
+import { signupUser } from "./features/signup.js";
 
 async function loadHTML(path: string): Promise<string> {
 	const res = await fetch(path);
@@ -63,12 +64,26 @@ function setupLoginEvents() {
 	toggleBackButton(false);
 	const form = document.querySelector("#login-form") as HTMLFormElement;
 	const signupBtn = document.querySelector("#signup-btn");
+	const showPasswordBtn = document.querySelector("#show-password");
+
 	animateContentBoxIn();
 	form?.addEventListener("submit",(e) => loginUser(e, form));
 
 	signupBtn?.addEventListener("click", () => {
 		setContentView("views/signup.html");
 	});
+
+	showPasswordBtn?.addEventListener("click", () => {
+		const passwordInput = document.querySelector("#login-password") as HTMLInputElement;
+		const eyeOpen = document.querySelector("#eye-open") as SVGElement;
+		const eyeClosed = document.querySelector("#eye-closed") as SVGElement;
+		const isPassword = passwordInput.type === "password";
+		passwordInput.type = isPassword ? "text" : "password";
+		
+		eyeOpen?.classList.toggle("hidden", isPassword);
+		eyeClosed?.classList.toggle("hidden", !isPassword);
+		
+	})
 }
 
 // Setup home view behavior
@@ -97,26 +112,15 @@ function setupHomeEvents() {
 
 function setupSignupEvents() {
 	uiManager.setCurrentView("signup");
-	const form = document.getElementById("signup-form") as HTMLFormElement;
-	const loginBtn = document.getElementById("login-btn");
+	const form = document.querySelector("#signup-form") as HTMLFormElement;
+	const loginBtn = document.querySelector("#login-btn");
 
 	toggleBackButton(true, () => 
 	{
 		setContentView("views/login.html");
 	})
 
-	form?.addEventListener("submit", (e) => {
-		// TODO API Signup
-		const formData = new FormData(form);
-		const username = formData.get("username");
-		const password1 = formData.get("password1");
-		const password2 = formData.get("password2");
-		console.log(username);
-		console.log(password1);
-		console.log(password2);
-		e.preventDefault();
-		setContentView("views/home.html");
-	});
+	form?.addEventListener("submit", (e) => signupUser(e, form));
 }
 
 // Placeholder for future settings events
@@ -129,8 +133,8 @@ function setupSettingsEvents() {
 }
 
 function setupProfileEvents() {
-	const statsBtn = document.getElementById("stats-btn");
-	const logoutBtn = document.getElementById("logout-btn");
+	const statsBtn = document.querySelector("#stats-btn");
+	const logoutBtn = document.querySelector("#logout-btn");
 
 	uiManager.setCurrentView("profile");
 	toggleBackButton(true, () =>
@@ -146,7 +150,7 @@ function setupProfileEvents() {
 }
 
 function setupQuickMatch() {
-	const container = document.getElementById("player-select-container")!;
+	const container = document.querySelector("#player-select-container")!;
 	container.innerHTML = "";
 
   // Widen content box
@@ -159,7 +163,7 @@ function setupQuickMatch() {
 		uiManager.contentBox.classList.add("max-w-md");
 		setContentView("views/home.html");
 	});
-	const startBtn = document.getElementById("start-btn");
+	const startBtn = document.querySelector("#start-btn");
 	const player1 = createPlayerSlot("player1-select");
 	const player2 = createPlayerSlot("player2-select");
 

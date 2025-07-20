@@ -6,10 +6,8 @@ import { checkTokenValidity } from "./features/auth.js";
 const uiManager = new UIManager();
 export default uiManager;
 
-document.addEventListener("keydown", (e) => {
-	
-
-	if (e.key === "Escape" && uiManager.getIsAnimating() === false) {
+document.addEventListener("keydown", async (e) => {
+	if (e.key === "Escape" && uiManager.getIsAnimating() === false && await checkTokenValidity()) {
 		uiManager.setIsAnimating(true);
 		if (uiManager.getCurrentView().includes("home"))
 		{

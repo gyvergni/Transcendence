@@ -7,7 +7,7 @@ export async function checkTokenValidity() {
 		if (!token) {
 			console.log("No token found, redirecting to login view");
 			setContentView("views/login.html");
-			return ;
+			return false;
 		}
 		// console.log("Token	 found, checking validity...");
 	try {

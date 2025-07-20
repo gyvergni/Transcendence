@@ -23,10 +23,13 @@ export async function loginUser(e: Event, form: HTMLFormElement) {
 			},
 			body: JSON.stringify({ pseudo: username, password })
 		});
-		if (!loginResponse.ok) {
+		if (loginResponse.status === 401) {
 			// console.error("Login failed:", loginResponse.statusText);
 			errorDiv!.textContent = "Invalid username or password";
 			return;
+		} else if (!loginResponse.ok) {
+			errorDiv!.textContent = "Internal Error";
+			return ;
 		}
 		const data = await loginResponse.json();
 		localStorage.setItem("accessToken", data.accessToken);
