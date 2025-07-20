@@ -30,3 +30,6 @@
 
 }
 
+.was-validated input:invalid {
+	border-color: #c10007;
+}

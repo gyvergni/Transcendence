@@ -264,10 +264,11 @@ export async function changeUsernameHandler(req: FastifyRequest<{Body: ChangeUse
             message: "Failed to change username",
             code: StatusCodes.INTERNAL_SERVER_ERROR,
         });
-    }
+    }	
 }
 
 export async function logoutUserHandler(req: FastifyRequest, reply: FastifyReply) {
+	console.log("Logout handler called");
     const token = req.headers.authorization?.substring(7);
 
     if (!token) {

@@ -49,14 +49,14 @@ server.register(require('@fastify/jwt'), {
 });
 
 server.decorate("auth", async (request: FastifyRequest, reply: FastifyReply) => {
+	console.log("Authenticating user...");
 	const token = request.headers.authorization?.substring(7);
     if (!token) {
-        httpError({
+        return httpError({
 			reply,
             code: StatusCodes.UNAUTHORIZED,
             message: "No access token provided",
         });
-        return undefined;
     }
     try {
 		const test = await request.jwtVerify();
@@ -103,7 +103,9 @@ async function main() {
     });
 
 	server.register(require('@fastify/cors'), { 
-		origin: true,
+		origin: true, // Allow all origins
+		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+		credentials: true, // If you use cookies
 	});
 
     server.register(userRoutes, {prefix: '/api/users'});

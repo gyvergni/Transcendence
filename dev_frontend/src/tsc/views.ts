@@ -1,10 +1,14 @@
-import uiManager, { API_BASE_URL, connectWebSocket } from "./main.js";
+import uiManager from "./main.js";
 
 import {animateContentBoxOut, animateContentBoxIn, toggleBackButton} from "./animations.js";
 
 import {createPlayerSlot} from "./player-selection.js";
 
 import {setupTournament} from "./tournament.js"
+import { API_BASE_URL } from "./features/utils-api.js";
+import { connectWebSocket } from "./features/auth.js";
+import { loginUser } from "./features/login.js";
+import { logoutUser } from "./features/logout.js";
 
 async function loadHTML(path: string): Promise<string> {
 	const res = await fetch(path);
@@ -53,37 +57,14 @@ export function  setGameView()
 
 // Setup login form behavior
 function setupLoginEvents() {
+	const contentBox = document.querySelector("#content-box")! as HTMLElement;
+	contentBox.classList.add("w-[430px]");
 	uiManager.setCurrentView("login");
 	toggleBackButton(false);
-	const form = document.getElementById("login-form") as HTMLFormElement;
-	const signupBtn = document.getElementById("signup-btn");
+	const form = document.querySelector("#login-form") as HTMLFormElement;
+	const signupBtn = document.querySelector("#signup-btn");
 	animateContentBoxIn();
-	form?.addEventListener("submit", async(e) => {
-		e.preventDefault();
-		try {
-			const formData = new FormData(form);
-			const username = formData.get("username");
-			const password = formData.get("password");
-		// A  AJOUTER ICI API LOGIN
-			const loginResponse = await fetch(API_BASE_URL + "/users/login", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json"
-				},
-				body: JSON.stringify({ pseudo: username, password })
-			});
-			if (!loginResponse.ok) {
-				console.error("Login failed:", loginResponse.statusText);
-				return;
-			}
-			const data = await loginResponse.json();
-			localStorage.setItem("accessToken", data.accessToken);
-			connectWebSocket();
-			setContentView("views/home.html");
-		} catch (error) {
-			console.error("Login failed:", error);
-		}
-	});
+	form?.addEventListener("submit",(e) => loginUser(e, form));
 
 	signupBtn?.addEventListener("click", () => {
 		setContentView("views/signup.html");
@@ -108,7 +89,6 @@ function setupHomeEvents() {
 			else if (view === "tournament")
 				setContentView("views/tournament.html")
 			else {
-
 				setGameView();
 			}
 		});
@@ -162,9 +142,7 @@ function setupProfileEvents() {
 		// setContentView("views/stats.html"); // TODO Stats
 	});
 
-	logoutBtn?.addEventListener("click", () => {
-		setContentView("views/login.html");
-	});
+	logoutBtn?.addEventListener("click", () => logoutUser());
 }
 
 function setupQuickMatch() {

@@ -8,6 +8,7 @@
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
     --color-red-500: oklch(63.7% 0.237 25.331);
+    --color-red-700: oklch(50.5% 0.213 27.518);
     --color-red-900: oklch(39.6% 0.141 25.723);
     --color-red-950: oklch(25.8% 0.092 26.042);
     --color-yellow-400: oklch(85.2% 0.199 91.936);
@@ -276,6 +277,9 @@
   .m-4 {
     margin: calc(var(--spacing) * 4);
   }
+  .-mx-4 {
+    margin-inline: calc(var(--spacing) * -4);
+  }
   .mx-auto {
     margin-inline: auto;
   }
@@ -353,6 +357,9 @@
   }
   .w-48 {
     width: calc(var(--spacing) * 48);
+  }
+  .w-\[430px\] {
+    width: 430px;
   }
   .w-full {
     width: 100%;
@@ -677,6 +684,9 @@
     font-size: var(--text-xl);
     line-height: var(--tw-leading, var(--text-xl--line-height));
   }
+  .text-\[1\.1rem\] {
+    font-size: 1.1rem;
+  }
   .font-bold {
     --tw-font-weight: var(--font-weight-bold);
     font-weight: var(--font-weight-bold);
@@ -693,6 +703,9 @@
   }
   .text-purple-300 {
     color: var(--color-purple-300);
+  }
+  .text-red-700 {
+    color: var(--color-red-700);
   }
   .text-white {
     color: var(--color-white);
@@ -753,6 +766,10 @@
   .ease-in-out {
     --tw-ease: var(--ease-in-out);
     transition-timing-function: var(--ease-in-out);
+  }
+  .select-none {
+    -webkit-user-select: none;
+    user-select: none;
   }
   .before\:absolute {
     &::before {
@@ -921,6 +938,9 @@
 }
 .animate-hologram-pulse {
   animation: hologramPulse 4s ease-in-out infinite;
+}
+.was-validated input:invalid {
+  border-color: #c10007;
 }
 @property --tw-translate-x {
   syntax: "*";

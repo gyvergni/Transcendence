@@ -7,10 +7,10 @@ export async function wsRoute(server: FastifyInstance) {
 
 	server.get('/', { websocket: true }, (conn, req) => {
 		conn.on('message', async (msg: any) => {
-			console.log("Received message:", msg.toString());
+			// console.log("Received message:", msg.toString());
 			try {
 				const data = JSON.parse(msg.toString());
-				console.log("Received message:", data);
+				// console.log("Received message:", data);
 				if (data.type === "auth" && data.token) {
 					const user = await server.jwt.verify<{ id: number }>(data.token);
 					if (!onlineUsers.has(user.id)) {

@@ -3,6 +3,7 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 
 import { createUserSchema, loginUserSchema, getUsersSchema, addFriendSchema, changePasswordSchema, logoutUserSchema, changeUsernameSchema, changeAvatarSchema } from "./user.schema";
 import { createUserHandler, loginUserHandler, getUsersHandler, addFriendHandler, changePasswordHandler, logoutUserHandler, deleteFriendHandler, changeUsernameHandler, changeAvatarHandler } from "./user.controller";
+import { loginUser } from "./user.service";
 
 export async function userRoutes(server: FastifyInstance) {
     server.withTypeProvider<ZodTypeProvider>().post("/create", {
@@ -60,7 +61,13 @@ export async function userRoutes(server: FastifyInstance) {
 	server.get("/auth/validate-jwt-token", {
 		preHandler: [server.auth],
 		handler: async (request, reply) => {
-			reply.send({ message: "Token is valid" });
+			try {
+				loginUser(request.user.id);
+			} catch (error) {
+				console.error("Error while changing user status:", error);
+				return reply.status(500).send({ message: "Error while changing user status" });
+			}
+			return reply.status(200).send({ message: "Token is valid" });
 		},
-	}	)
+	});
 }
