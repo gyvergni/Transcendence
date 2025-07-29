@@ -7,6 +7,10 @@ import bcrypt from "bcrypt";
 import { createUser, findUserByPseudo, loginUser, findUsers, addFriend, updatePassword, logoutUser, deleteFriend, updateUsername, updateAvatar } from "./user.service";
 import { CreateUserBody, LoginUserInput, AddFriendInput, ChangePasswordInput, ChangeUsernameInput } from "./user.schema";
 import { getGuestList } from "../guest/guest.service";
+import { path } from "../../index"
+
+const { pipeline } = require('node:stream/promises');
+const fs = require('node:fs');
 
 export async function createUserHandler(req: FastifyRequest<{Body: CreateUserBody}>, reply: FastifyReply) {
     const body = req.body;
@@ -97,6 +101,35 @@ export async function getUsersHandler(req: FastifyRequest<{ Params: {username: s
             code: StatusCodes.INTERNAL_SERVER_ERROR,
         });
     }
+}
+
+export async function getMeHandler(req: FastifyRequest, reply: FastifyReply) {
+	try {
+		const user = req.user;
+		if (!user) {
+			return httpError({
+				reply,
+				message: "User not found",
+				code: StatusCodes.NOT_FOUND,
+			});
+		}
+		const dbUser = await findUserByPseudo(user.pseudo);
+		if (!dbUser) {
+			return httpError({
+				reply,
+				message: "User not found in database",
+				code: StatusCodes.NOT_FOUND,
+			});
+		}
+		const {password, ...rest} = dbUser;
+		return reply.code(StatusCodes.OK).send(rest);
+	} catch (e) {
+		return httpError({
+			reply,
+			message: "Failed to fetch user",
+			code: StatusCodes.INTERNAL_SERVER_ERROR,
+		});
+	}
 }
 
 export async function addFriendHandler(req: FastifyRequest<{Body: AddFriendInput}>, reply: FastifyReply) {
@@ -291,21 +324,40 @@ export async function logoutUserHandler(req: FastifyRequest, reply: FastifyReply
     }
 }
 
-export async function changeAvatarHandler(req: FastifyRequest<{Params: {filename: string}}>, reply: FastifyReply) {
-    const avatar = req.params.filename;
+export async function changeAvatarHandler(req: FastifyRequest, reply: FastifyReply) {
     const currentUser = req.user;
 
-    if (!avatar || avatar.length === 0) {
-        return httpError({
-            reply,
-            message: "Avatar cannot be empty",
-            code: StatusCodes.UNPROCESSABLE_ENTITY,
-        });
-    }
-
-    try {
-        await updateAvatar(currentUser.id, avatar);
-        return reply.code(StatusCodes.OK).send({message: "Avatar changed successfully"});
+	
+    // if (!avatar || avatar.length === 0) {
+		//     return httpError({
+			//         reply,
+			//         message: "Avatar cannot be empty",
+			//         code: StatusCodes.UNPROCESSABLE_ENTITY,
+			//     });
+			// }
+			
+	try {
+		const data = await (req as FastifyRequest & { file: () => Promise<any> }).file();
+	
+		// console.log("Received file data:", data); 
+	
+		if (!data) {
+			return httpError({
+				reply,
+				message: "No file uploaded",
+				code: StatusCodes.UNPROCESSABLE_ENTITY,
+			});
+		}
+	
+		const ext = path.extname(data.filename);
+		const fileName = 'avatar_' + currentUser.id + ext;
+		const filePath = path.join(__dirname, '../../../public/avatars', fileName);
+	
+		await pipeline(data.file, fs.createWriteStream(filePath));
+	
+		await updateAvatar(currentUser.id, fileName);
+        // await updateAvatar(currentUser.id, avatar);
+        return reply.code(StatusCodes.OK).send({message: "Avatar changed successfully", avatarUrl: `/public/avatars/${fileName}`});
     } catch (e) {
         return httpError({
             reply,
@@ -313,4 +365,28 @@ export async function changeAvatarHandler(req: FastifyRequest<{Params: {filename
             code: StatusCodes.INTERNAL_SERVER_ERROR,
         });
     }
+}
+
+export async function getAvatarHandler(req: FastifyRequest, reply: FastifyReply) {
+	const currentUser = req.user;
+
+	try {
+		const user = await findUserByPseudo(currentUser.pseudo);
+		if (!user || !user.avatar) {
+			return httpError({
+				reply,
+				message: "Avatar not found",
+				code: StatusCodes.NOT_FOUND,
+			});
+		}
+
+		const avatarUrl = `/public/avatars/${user.avatar}`;
+		return reply.code(StatusCodes.OK).send({avatarUrl});
+	} catch (e) {
+		return httpError({
+			reply,
+			message: "Failed to get avatar",
+			code: StatusCodes.INTERNAL_SERVER_ERROR,
+		});
+	}
 }

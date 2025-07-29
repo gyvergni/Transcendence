@@ -1,5 +1,6 @@
 import {z} from 'zod';
 import { errorResponses } from '../utils/http';
+import { getAvatarHandler } from './user.controller';
 
 export const createUserSchema = {
     tags: ["users"],
@@ -65,6 +66,22 @@ export const getUsersSchema = {
             game_username: z.string(),
             status: z.boolean(),
         })),
+        400: errorResponses[400].describe("Bad Request"),
+        401: errorResponses[401].describe("Unauthorized"),
+        500: errorResponses[500].describe("Internal Server Error"),
+    }
+} as const;
+
+export const getMeSchema = {
+    tags: ["users"],
+    response: {
+        200: z.object({
+            id: z.number(),
+            pseudo: z.string(),
+            game_username: z.string(),
+            status: z.boolean(),
+			avatar: z.string(),
+        }),
         400: errorResponses[400].describe("Bad Request"),
         401: errorResponses[401].describe("Unauthorized"),
         500: errorResponses[500].describe("Internal Server Error"),
@@ -162,12 +179,13 @@ export const logoutUserSchema = {
 
 export const changeAvatarSchema = {
     tags: ["users"],
-    params: z.object({
-        filename: z.string().describe("The name of the avatar file"),
-    }),
+    // params: z.object({
+    //     filename: z.string().describe("The name of the avatar file"),
+    // }),
     response: {
         200: z.object({
             message: z.string().describe("Avatar changed successfully"),
+			avatarUrl: z.string().describe("URL of the new avatar"),
         }),
         400: errorResponses[400].describe("Bad Request"),
         401: errorResponses[401].describe("Unauthorized"),

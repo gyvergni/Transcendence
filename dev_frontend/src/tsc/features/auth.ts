@@ -24,16 +24,22 @@ export async function checkTokenValidity() {
 			return true;
 		}
 		localStorage.removeItem("accessToken");
+		setContentView("views/login.html");
 		return false;
 	} catch (error) {
 		console.error("Error validating token:", error);
+		setContentView("views/login.html");
 		return false;
 	}
 };
 
 let websocket: WebSocket | null = null;
 
-export function connectWebSocket() {
+	export function connectWebSocket() {
+
+	if (websocket && websocket.readyState === WebSocket.OPEN) {
+		return ;
+	}
 	if (websocket) {
 		console.log("WebSocket already connected");
 		websocket.close();
@@ -77,4 +83,12 @@ export function disconnectWebSocket() {
 		websocket = null;
 		// console.log("WebSocket disconnected");
 	}
+}
+
+export function reconnectWebSocket() {
+	if (websocket) {
+		websocket.close();
+		websocket = null;
+	}
+	connectWebSocket();
 }

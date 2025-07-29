@@ -26,7 +26,6 @@ document.addEventListener("keydown", async (e) => {
 document.addEventListener("DOMContentLoaded",  async () => {
 	const isTokenValid = await checkTokenValidity();
 	if (!isTokenValid) {
-		setContentView("views/login.html");
 		return ;
 	}
 	// console.log("User is authenticated");

@@ -29,7 +29,7 @@ export async function wsRoute(server: FastifyInstance) {
 			}
 		})
 		conn.on('close', () => {
-			console.log("Connection closed: ");
+			// console.log("Connection closed: ");
 			const userId = (conn as any).userId;
 			if (userId && onlineUsers.has(userId)) {
 				onlineUsers.get(userId)!.delete(conn);

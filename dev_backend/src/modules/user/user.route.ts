@@ -1,8 +1,8 @@
 import fastify, { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 
-import { createUserSchema, loginUserSchema, getUsersSchema, addFriendSchema, changePasswordSchema, logoutUserSchema, changeUsernameSchema, changeAvatarSchema } from "./user.schema";
-import { createUserHandler, loginUserHandler, getUsersHandler, addFriendHandler, changePasswordHandler, logoutUserHandler, deleteFriendHandler, changeUsernameHandler, changeAvatarHandler } from "./user.controller";
+import { createUserSchema, loginUserSchema, getUsersSchema, addFriendSchema, changePasswordSchema, logoutUserSchema, changeUsernameSchema, changeAvatarSchema, getMeSchema } from "./user.schema";
+import { createUserHandler, loginUserHandler, getUsersHandler, addFriendHandler, changePasswordHandler, logoutUserHandler, deleteFriendHandler, changeUsernameHandler, changeAvatarHandler, getAvatarHandler, getMeHandler } from "./user.controller";
 import { loginUser } from "./user.service";
 
 export async function userRoutes(server: FastifyInstance) {
@@ -20,6 +20,12 @@ export async function userRoutes(server: FastifyInstance) {
         schema: getUsersSchema,
         preHandler: [server.auth],
         handler: getUsersHandler,
+    });
+
+	server.withTypeProvider<ZodTypeProvider>().get("/me", {
+        schema: getMeSchema,
+        preHandler: [server.auth],
+        handler: getMeHandler,
     });
 
     server.withTypeProvider<ZodTypeProvider>().post("/friend", {
@@ -52,11 +58,16 @@ export async function userRoutes(server: FastifyInstance) {
         handler: changeUsernameHandler,
     });
 
-    server.put("/avatar/:filename", {
+    server.post("/avatar", {
         schema: changeAvatarSchema,
         preHandler: [server.auth],
         handler: changeAvatarHandler,
     });
+
+	server.get("/avatar", {
+		preHandler: [server.auth],
+		handler: getAvatarHandler,
+	});
 
 	server.get("/auth/validate-jwt-token", {
 		preHandler: [server.auth],

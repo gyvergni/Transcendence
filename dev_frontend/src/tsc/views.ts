@@ -6,10 +6,11 @@ import {createPlayerSlot} from "./player-selection.js";
 
 import {setupTournament} from "./tournament.js"
 import { API_BASE_URL } from "./features/utils-api.js";
-import { connectWebSocket } from "./features/auth.js";
+import { checkTokenValidity, connectWebSocket } from "./features/auth.js";
 import { loginUser } from "./features/login.js";
 import { logoutUser } from "./features/logout.js";
 import { signupUser } from "./features/signup.js";
+import { accountEditAvatar, editIgUsername, editPassword, loadAccountAvatar, loadAccountInfo } from "./features/account.js";
 
 async function loadHTML(path: string): Promise<string> {
 	const res = await fetch(path);
@@ -36,6 +37,7 @@ export async function setContentView(viewPath: string) {
 	else if (viewPath.includes("profile")) setupProfileEvents();
 	else if (viewPath.includes("quick-match")) setupQuickMatch();
 	else if (viewPath.includes("tournament")) setupTournament();
+	else if (viewPath.includes("account")) setupAccountEvents();
 }
 
 
@@ -110,6 +112,48 @@ function setupHomeEvents() {
 	});
 }
 
+function setupAccountEvents() {
+	checkTokenValidity();
+	uiManager.setCurrentView("account");
+	animateContentBoxIn();
+	toggleBackButton(true, () => {
+		setContentView("views/profile.html");
+	});
+	// loadAccountAvatar();
+	loadAccountInfo();
+
+	// Edit avatar
+	document.querySelector("#account-edit-avatar")?.addEventListener('click', () => accountEditAvatar())
+
+	// Edit IG username
+	document.querySelector("#account-edit-igUsername")?.addEventListener("click", () => {
+		toggleBackButton(false);
+		document.querySelector("#edit-igUsername-form-container")?.classList.replace("hidden", "flex");
+	});
+	document.querySelector("#edit-igUsername-cancel-btn")?.addEventListener("click", () => {
+		toggleBackButton(true, () => {
+			setContentView("views/profile.html");
+		});
+		document.querySelector("#edit-igUsername-form-container")?.classList.replace("flex", "hidden");
+	});
+	const igUsernameForm = document.querySelector("#edit-igUsername-form") as HTMLFormElement;
+	igUsernameForm?.addEventListener("submit", (e) => editIgUsername(e, igUsernameForm));
+
+	// Edit password
+	document.querySelector("#account-edit-password")?.addEventListener("click", () => {
+		toggleBackButton(false);
+		document.querySelector("#edit-password-form-container")?.classList.replace("hidden", "flex");
+	});
+	document.querySelector("#edit-password-cancel-btn")?.addEventListener("click", () => {
+		toggleBackButton(true, () => {
+			setContentView("views/profile.html");
+		});
+		document.querySelector("#edit-password-form-container")?.classList.replace("flex", "hidden");
+	});
+	const passwordForm = document.querySelector("#edit-password-form") as HTMLFormElement;
+	passwordForm?.addEventListener("submit", (e) => editPassword(e, passwordForm));
+}
+
 function setupSignupEvents() {
 	uiManager.setCurrentView("signup");
 	const form = document.querySelector("#signup-form") as HTMLFormElement;
@@ -121,6 +165,30 @@ function setupSignupEvents() {
 	})
 
 	form?.addEventListener("submit", (e) => signupUser(e, form));
+	const showPasswordBtn = document.querySelector("#show-password");
+	const showConfirmPasswordBtn = document.querySelector("#show-verify-password");
+	showPasswordBtn?.addEventListener("click", () => {
+		const passwordInput = document.querySelector("#signup-password") as HTMLInputElement;
+		const eyeOpen = document.querySelector("#eye-open") as SVGElement;
+		const eyeClosed = document.querySelector("#eye-closed") as SVGElement;
+		const isPassword = passwordInput.type === "password";
+		passwordInput.type = isPassword ? "text" : "password";
+		
+		eyeOpen?.classList.toggle("hidden", isPassword);
+		eyeClosed?.classList.toggle("hidden", !isPassword);
+		
+	})
+	showConfirmPasswordBtn?.addEventListener("click", () => {
+		const confirmPasswordInput = document.querySelector("#signup-verify-password") as HTMLInputElement;
+		const eyeOpen = document.querySelector("#eye-open-confirm") as SVGElement;
+		const eyeClosed = document.querySelector("#eye-closed-confirm") as SVGElement;
+		const isPassword = confirmPasswordInput.type === "password";
+		confirmPasswordInput.type = isPassword ? "text" : "password";
+		
+		eyeOpen?.classList.toggle("hidden", isPassword);
+		eyeClosed?.classList.toggle("hidden", !isPassword);
+		
+	})
 }
 
 // Placeholder for future settings events
@@ -133,18 +201,24 @@ function setupSettingsEvents() {
 }
 
 function setupProfileEvents() {
-	const statsBtn = document.querySelector("#stats-btn");
-	const logoutBtn = document.querySelector("#logout-btn");
-
+	const statsBtn = document.querySelector("#stats-btn")!;
+	const accountBtn = document.querySelector("#account-btn")!;
+	const logoutBtn = document.querySelector("#logout-btn")!;
+	
 	uiManager.setCurrentView("profile");
 	toggleBackButton(true, () =>
 	{
 		setContentView("views/home.html");
 	});
-	statsBtn?.addEventListener("click", () => {
+	statsBtn.addEventListener("click", () => {
 		console.log("Show stats view");
-		// setContentView("views/stats.html"); // TODO Stats
+		setContentView("views/stats.html"); // TODO Stats
 	});
+
+	accountBtn.addEventListener("click", () => {
+		console.log("Show account");
+		setContentView("views/account.html");
+	})
 
 	logoutBtn?.addEventListener("click", () => logoutUser());
 }

@@ -20,6 +20,8 @@ export const server = Fastify({
 	// logger: true,
 }); 
 
+export const path = require('node:path');
+
 declare module "fastify" {
 	export interface FastifyInstance {
 		auth: any;
@@ -49,7 +51,7 @@ server.register(require('@fastify/jwt'), {
 });
 
 server.decorate("auth", async (request: FastifyRequest, reply: FastifyReply) => {
-	console.log("Authenticating user...");
+	// console.log("Authenticating user...");
 	const token = request.headers.authorization?.substring(7);
     if (!token) {
         return httpError({
@@ -60,15 +62,26 @@ server.decorate("auth", async (request: FastifyRequest, reply: FastifyReply) => 
     }
     try {
 		const test = await request.jwtVerify();
-        console.log("User authenticated:", request.user);   
+        // console.log("User authenticated:", request.user);   
     } catch (e) {
-		console.error("Authentication error");
+		// console.error("Authentication error");
         return httpError({
 			reply,
             code: StatusCodes.UNAUTHORIZED,
             message: 'Invalid access token',
         });
     }
+});
+
+server.register(require('@fastify/static'), {
+	root: path.join(__dirname, '../public/'),
+	prefix: '/api/public/',
+});
+
+server.register(require('@fastify/multipart'), {
+	limits: {
+		fileSize: 10 * 1024 * 1024, // 10 MB
+	},
 });
 
 server.get('/api/healthcheck', async function() {
@@ -78,7 +91,7 @@ server.get('/api/healthcheck', async function() {
 
 async function main() {
 	await server.register(websocket);
-  
+	
     server.setValidatorCompiler(validatorCompiler);
     server.setSerializerCompiler(serializerCompiler);
 	
@@ -96,13 +109,13 @@ async function main() {
 
     server.register(require('@fastify/swagger-ui'), {
         routePrefix: '/docs',
+		docExpansion: 'full',
         uiConfig: {
-            docExpansion: 'full',
             deepLinking: false,
         }
     });
 
-	server.register(require('@fastify/cors'), { 
+	await server.register(require('@fastify/cors'), { 
 		origin: true, // Allow all origins
 		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 		credentials: true, // If you use cookies

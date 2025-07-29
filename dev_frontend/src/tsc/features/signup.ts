@@ -2,7 +2,7 @@ import { lookupService } from "dns";
 import { setContentView } from "../views.js";
 import { API_BASE_URL } from "./utils-api.js";
 import { errorMonitor } from "events";
-import { connectWebSocket } from "./auth.js";
+import { connectWebSocket, reconnectWebSocket } from "./auth.js";
 
 const temp = false;
 
@@ -74,10 +74,10 @@ export async function signupUser(e: Event, form: HTMLFormElement) {
 		}
 		const data = await loginResponse.json();
 		localStorage.setItem("accessToken", data.accessToken);
-		connectWebSocket();
 		const contentBox = document.querySelector("#content-box")! as HTMLElement;
 		contentBox.classList.remove("w-[430px]");
 		setContentView("views/home.html");
+		reconnectWebSocket();
 
 	} catch (error) {
 		console.error("Signup failed:", error);
