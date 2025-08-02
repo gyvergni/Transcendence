@@ -13,6 +13,13 @@ export async function createUser(input: CreateUserBody) {
                 game_username: input.pseudo,
             },
         });
+		const twoFactorAuth = await tx.twoFactorAuth.create({
+			data: {
+				user_id: user.id,
+				status: false,
+				secret: null,
+			},
+		});
         await tx.stats.create({
             data: {
                 id: identitie.id,
@@ -98,4 +105,13 @@ export async function updateAvatar(userId: number, avatar: string) {
         where: { id: userId },
         data: { avatar: avatar },
     });
+}
+
+export async function twoFactorAuthStatus(userId: number) {
+	const user = await prisma.twoFactorAuth.findUnique({
+		where: { user_id: userId }});
+	if (!user) {
+		throw new Error("Two-factor authentication not found for this user.");
+	}
+	return user.status;
 }

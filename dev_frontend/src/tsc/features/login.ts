@@ -1,5 +1,5 @@
 import { setContentView } from "../views.js";
-import { connectWebSocket, reconnectWebSocket } from "./auth.js";
+import { a2fStatus, connectWebSocket, reconnectWebSocket } from "./auth.js";
 import { API_BASE_URL } from "./utils-api.js";
 
 
@@ -31,13 +31,22 @@ export async function loginUser(e: Event, form: HTMLFormElement) {
 			errorDiv!.textContent = "Internal Error";
 			return ;
 		}
-		const data = await loginResponse.json();
-		localStorage.setItem("accessToken", data.accessToken);
-		const contentBox = document.querySelector("#content-box")! as HTMLElement;
-		contentBox.classList.remove("w-[430px]");
-		setContentView("views/home.html");
-		reconnectWebSocket();
+		if (await a2fStatus() === false) {
+			const data = await loginResponse.json();
+			localStorage.setItem("accessToken", data.accessToken);
+			const contentBox = document.querySelector("#content-box")! as HTMLElement;
+			contentBox.classList.remove("w-[430px]");
+			setContentView("views/home.html");
+			reconnectWebSocket();
+		} else {
+			errorDiv!.textContent = "Two-factor authentication is enabled. Please complete the authentication process.";
+			await a2fLogin();
+		}
 	} catch (error) {
 		console.error("Login failed:", error);
 	}
 };
+
+async function a2fLogin() {
+	
+}

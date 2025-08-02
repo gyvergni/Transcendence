@@ -68,4 +68,13 @@ model users {
   friends_friends_user_idTousers   friends[]  @relation("friends_user_idTousers")
   guests                           guests[]
   identities                       identities @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  twoFactorAuth                    twoFactorAuth?
+}
+
+model twoFactorAuth {
+  id       Int    @id @default(autoincrement())
+  user_id  Int   @unique
+  status   Boolean @default(false)
+  secret   String?
+  user     users  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }

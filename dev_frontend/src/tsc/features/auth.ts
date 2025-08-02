@@ -92,3 +92,30 @@ export function reconnectWebSocket() {
 	}
 	connectWebSocket();
 }
+
+export async function a2fStatus() {
+	const token = localStorage.getItem("accessToken");
+	if (!token) {
+		console.error("No token found, cannot check 2FA status");
+		return false;
+	}
+	try {
+		const response = await fetch(API_BASE_URL + "/users/auth/two-factor-auth/status", {
+			method: "GET",
+			headers: {
+				"Authorization": `Bearer ${token}`,
+				"Content-Type": "application/json"
+			}
+		});
+		if (response.ok) {
+			const data = await response.json();
+			return data.status;
+		} else {
+			console.error("Failed to fetch 2FA status:", response.statusText);
+			return false;
+		}
+	} catch (error) {
+		console.error("Error checking 2FA status:", error);
+		return false;
+	}
+}
