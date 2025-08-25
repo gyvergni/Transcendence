@@ -1,6 +1,6 @@
 //################ customization variables ###########
 const padle_size = 5;
-let BallSpeed = 10;
+let BallSpeed = 5;
 const BallSpeedLimit = 30;
 let z_reaction = 0.25;
 
@@ -45,13 +45,18 @@ class Paddle {
 
 class Ball {
     constructor(scene) {
-        this.mesh = BABYLON.MeshBuilder.CreateSphere("GameObject", 
-            {diameter: 0.5}, scene);
+        this.mesh = BABYLON.MeshBuilder.CreateSphere("GameObject", {diameter: 0.5}, scene);
         this.mesh.position.set(0, 0.5, 0);
+		
+		this.score1 = 0;
+		this.score2 = 0;
+		this.particleSystem = new BABYLON.ParticleSystem("particles", 200, scene);
 
         this.speed = BallSpeed;
+		this.createScoreParticles(scene);
         this.resetDirection();
         this.startDelay = 0;
+		this.bounceParticles = 0;
     }
 
     resetDirection() {
@@ -74,12 +79,23 @@ class Ball {
         this.checkPaddleCollision(p_right, 10, 9.5);
 
         // Score and reset
-        if (this.mesh.position.x <= -11 || this.mesh.position.x >= 11)
+        if (this.mesh.position.x <= -11) {
+			this.score2 += 1;
+			this.popScoreParticles(this.mesh.position);
+			this.reset();
+		}
+		else if (this.mesh.position.x >= 11) {
+			this.score1 += 1;
+			this.popScoreParticles(this.mesh.position);
             this.reset();
+		}
 
         // Delay start
-        if (this.startDelay < 120)
-            this.startDelay++;
+        if (this.startDelay < 120) {
+			this.startDelay++;
+		}
+		if (this.startDelay == 30)
+			this.particleSystem.stop();
         if (this.startDelay === 120) {
             this.mesh.position.x += this.dirX / 100;
             this.mesh.position.z += this.dirZ / 100;
@@ -102,6 +118,7 @@ class Ball {
             this.dirZ += bz - pz;
             const diff = (this.speed * this.speed - this.dirZ * this.dirZ);
             this.dirX = hitX > 0 ? -Math.sqrt(Math.abs(diff)) : Math.sqrt(Math.abs(diff));
+			this.bounceParticles = 1;
         }
     }
 
@@ -112,27 +129,57 @@ class Ball {
         this.startDelay = 0;
     }
 
+	createScoreParticles(scene) {
+		//texture of particles
+		this.particleSystem.particleTexture = new BABYLON.Texture("game/textures/flare.png", scene);
+
+		// Size of each particle (random between...
+		this.particleSystem.minSize = 0.1;
+    	this.particleSystem.maxSize = 0.3;
+    	// Life time of each particle (random between...
+    	this.particleSystem.minLifeTime = 0.2;
+    	this.particleSystem.maxLifeTime = 0.8;
+
+		// Emission rate
+    	this.particleSystem.emitRate = 2000;
+
+		// Speed
+    	this.particleSystem.minEmitPower = 5;
+    	this.particleSystem.maxEmitPower = 6;
+    	this.particleSystem.updateSpeed = 0.005;
+
+	}
+
+	popScoreParticles(pos) {
+	
+		//set direction left padle
+		if (pos.x > 0) {
+			// color
+			this.particleSystem.color1 = new BABYLON.Color4(1.0, 1.0, 1.0, 1.0);
+			this.particleSystem.emitter = new BABYLON.Vector3(-11, 1, 0);
+			var BoxEmitterLeft = this.particleSystem.createBoxEmitter(new BABYLON.Vector3(6, 1, -2), new BABYLON.Vector3(6, -1, 2), new BABYLON.Vector3(-5, 0, 12), new BABYLON.Vector3(-5, 6, -12));
+		}
+		// for right padle
+		else {
+			// color
+			this.particleSystem.color1 = new BABYLON.Color4(1.0, 1.0, 1.0, 1.0);
+			this.particleSystem.emitter = new BABYLON.Vector3(11, 1, 0);
+			var BoxEmitterRight = this.particleSystem.createBoxEmitter(new BABYLON.Vector3(-6, -2, 2), new BABYLON.Vector3(-6, 1, -2), new BABYLON.Vector3(5, 0, 12), new BABYLON.Vector3(5, 6, -12));
+		}
+
+		// Start the particle system
+    	this.particleSystem.start();
+	}
+
 	calculateDistToBorder() {
-		const bx = this.mesh.position.x;
-		const distToBorder = 0;
+        const bx = this.mesh.position.x;
+        return this.dirX < 0 ? 10 + bx : 10 - bx;
+    }
 
-		if (dirX < 0)
-			distToBorder = 10 + bx;
-		else if (dirX > 0)
-			distToBorder = 10 - bx;
-		return distToBorder;
-	}
-
-	calculateDistToWall() {
-		const bz = this.mesh.position.z;
-		const distToBorder = 0;
-
-		if (dirZ < 0)
-			distToBorder = 5 + bz;
-		else if (dirZ > 0)
-			distToBorder = 5 - bz;
-		return distToBorder;
-	}
+    calculateDistToWall() {
+        const bz = this.mesh.position.z;
+        return this.dirZ < 0 ? 5 + bz : 5 - bz;
+    }
 }
 
 class Player {
@@ -158,7 +205,6 @@ class Player {
 		this.paddle.move(this.keys[this.upKey], this.keys[this.downKey]);
 	}
 }
-
 
 class AIPlayer {
 	constructor(paddle, ball, side, difficulty) {
@@ -256,14 +302,22 @@ class AIPlayer {
 }
 
 class Game {
-    constructor(canvas) {
+    constructor(canvas) // might need to add  player name and type 1 and 2 for createObjects
+	{
+		this.gameover = false;
         this.canvas = canvas;
         this.engine = new BABYLON.Engine(canvas, true);
         this.scene = new BABYLON.Scene(this.engine);
+		this.particleSystem = new BABYLON.ParticleSystem("particles", 20, this.scene);
+
+        this.groundLeft = BABYLON.MeshBuilder.CreateGround("ground", {width: 10, height: 11}, this.scene);
+		this.groundRight = BABYLON.MeshBuilder.CreateGround("ground", {width: 10, height: 11}, this.scene);
 
         this.createCameraAndLight();
         this.createGround();
+		this.createSkybox();
         this.createObjects();
+		this.createParticles();
         this.scene.registerBeforeRender(() => this.update());
 
         this.engine.runRenderLoop(() => this.scene.render());
@@ -275,18 +329,53 @@ class Game {
         camera.setTarget(BABYLON.Vector3.Zero());
 
 		const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), this.scene);
-        light.intensity = 0.5;
+        light.intensity = 0.8;
     }
 
     createGround() {
-        const ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 20, height: 11}, this.scene);
-        const groundMat = new BABYLON.StandardMaterial();
-        ground.material = groundMat;
-        groundMat.diffuseColor = new BABYLON.Color3(0, 0, 0);
+        //this.groundLeft = BABYLON.MeshBuilder.CreateGround("ground", {width: 10, height: 11}, this.scene);
+		this.groundLeft.position.set(-5, 0, 0);
+		//this.groundRight = BABYLON.MeshBuilder.CreateGround("ground", {width: 10, height: 11}, this.scene);
+		this.groundRight.position.set(5, 0, 0);
+
+        const groundLeftMat = new BABYLON.StandardMaterial("ScoreTexture", this.scene);
+		groundLeftMat.diffuseTexture = new BABYLON.Texture("game/textures/ground/Score0L.png", this.scene);
+		const groundRightMat = new BABYLON.StandardMaterial("ScoreTexture", this.scene);
+		groundRightMat.diffuseTexture = new BABYLON.Texture("game/textures/ground/Score0R.png", this.scene);
+
+        this.groundLeft.material = groundLeftMat;
+		this.groundRight.material = groundRightMat;
     }
 
+	changeGroundTexture() {
+		const groundLeftMat = new BABYLON.StandardMaterial("ScoreTexture", this.scene);
+		groundLeftMat.diffuseTexture = new BABYLON.Texture("game/textures/ground/Score" + this.ball.score1 + "L.png", this.scene);
+		const groundRightMat = new BABYLON.StandardMaterial("ScoreTexture", this.scene);
+		groundRightMat.diffuseTexture = new BABYLON.Texture("game/textures/ground/Score" + this.ball.score2 + "R.png", this.scene);
+		
+		this.groundLeft.material = groundLeftMat;
+		this.groundRight.material = groundRightMat;
+	}
+
+	createSkybox() {
+        const skyboxMaterial = new BABYLON.StandardMaterial("game/textures/skybox/skybox", this.scene);
+        skyboxMaterial.backFaceCulling = false;
+        skyboxMaterial.disableLighting = true;
+          
+        skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("game/textures/skybox/skybox", this.scene);
+        skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
+        skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
+        skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
+          
+        const skybox = BABYLON.MeshBuilder.CreateBox("skybox", { size: 29.0 }, this.scene);
+        skybox.material = skyboxMaterial;
+          
+        // error skybox does not display because script is running on local browser, need to be running on a webserver
+	}
+
     createObjects() {
-        const material = new BABYLON.StandardMaterial();
+		// compared to branch "front dev" it's missing AI attribution 
+        const material = new BABYLON.StandardMaterial("material", this.scene);
         material.diffuseColor = new BABYLON.Color3(1, 1, 1);
 
         this.p_left = new Paddle(this.scene, -10);
@@ -308,10 +397,73 @@ class Game {
         };
     }
 
+	createParticles() {
+		//texture of Particles
+		this.particleSystem.particleTexture = new BABYLON.Texture("game/textures/flare.png", this.scene);
+		// Where the particles come from
+    	this.particleSystem.emitter = BABYLON.Vector3.Zero(); // the starting location
+
+		// Size of each particle (random between...
+		this.particleSystem.minSize = 0.1;
+    	this.particleSystem.maxSize = 0.3;
+    	// Life time of each particle (random between...
+    	this.particleSystem.minLifeTime = 0.3;
+    	this.particleSystem.maxLifeTime = 1.5;
+
+		// Emission rate
+    	this.particleSystem.emitRate = 100;
+
+		// Speed
+    	this.particleSystem.minEmitPower = 1;
+    	this.particleSystem.maxEmitPower = 3;
+    	this.particleSystem.updateSpeed = 0.005;
+
+		// color
+		this.particleSystem.color1 = new BABYLON.Color4(0, 0, 0, 1.0);
+	}
+
+	popParticles(pos) {
+	
+		//set direction left padle
+		if (pos.x < 0) {
+			this.particleSystem.emitter = new BABYLON.Vector3(this.ball.mesh.position.x, this.ball.mesh.position.y, this.ball.mesh.position.z);
+			var pointEmitterLeft = this.particleSystem.createPointEmitter(new BABYLON.Vector3(3, 0.5, -1), new BABYLON.Vector3(3, -0.5, 1));
+		}
+		// for right padle
+		else {
+			this.particleSystem.emitter = new BABYLON.Vector3(this.ball.mesh.position.x, this.ball.mesh.position.y, this.ball.mesh.position.z);
+			var pointEmitterRight = this.particleSystem.createPointEmitter(new BABYLON.Vector3(-3, -0.5, 1), new BABYLON.Vector3(-3, 0.5, -1));
+		}
+
+		// Start the particle system
+    	this.particleSystem.start();
+		
+	}
+
+	updateParticles() {
+		if (this.ball.bounceParticles == 0)
+			this.particleSystem.stop();
+		if (this.ball.bounceParticles == 1) {
+			this.popParticles(this.ball.mesh.position);
+		}
+		if (this.ball.bounceParticles > 0)
+			this.ball.bounceParticles++;
+		if (this.ball.bounceParticles == 30)
+			this.ball.bounceParticles = 0;
+	}
+
     update() {
+		if (this.gameover == true) {
+			//this.engine.stopRenderLoop();
+			//return; // #################### TROUVER UN MOYEN DE SORTIR DU JEU ######################
+		}
 		this.player1.update();
 		this.player2.update();
 		this.ball.update(this.p_left, this.p_right);
+		this.changeGroundTexture();
+		this.updateParticles();
+		if (this.ball.score1 == 5 || this.ball.score2 == 5)
+			this.gameover = true;
 	}
 }
 
