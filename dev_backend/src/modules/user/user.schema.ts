@@ -47,7 +47,9 @@ export const loginUserSchema = {
     }),
     response: {
         200: z.object({
-            accessToken: z.string()
+            accessToken: z.string().optional(),
+            message: z.string().optional(),
+            loginSessionId: z.string().optional(),
         }),
         400: errorResponses[400].describe("Bad Request"),
         401: errorResponses[401].describe("Unauthorized, Invalid pseudo or password"),

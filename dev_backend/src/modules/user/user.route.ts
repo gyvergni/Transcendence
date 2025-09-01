@@ -4,7 +4,7 @@ import { ZodTypeProvider } from "fastify-type-provider-zod";
 import { createUserSchema, loginUserSchema, getUsersSchema, addFriendSchema, changePasswordSchema, logoutUserSchema, changeUsernameSchema, changeAvatarSchema, getMeSchema } from "./user.schema";
 import { createUserHandler, loginUserHandler, getUsersHandler, addFriendHandler, changePasswordHandler, logoutUserHandler, deleteFriendHandler, changeUsernameHandler, changeAvatarHandler, getAvatarHandler, getMeHandler } from "./user.controller";
 import { loginUser, twoFactorAuthStatus } from "./user.service";
-import { disableTwoFactorAuthHandler, enableTwoFactorAuthHandler, generateTwoFactorAuthHandler, verifyTwoFactorAuthHandler } from "../a2f";
+import { disableTwoFactorAuthHandler, enableTwoFactorAuthHandler, generateTwoFactorAuthHandler, verifyAndCompleteLogin, verifyTwoFactorAuthHandler } from "../a2f";
 
 export async function userRoutes(server: FastifyInstance) {
     server.withTypeProvider<ZodTypeProvider>().post("/create", {
@@ -101,7 +101,7 @@ export async function userRoutes(server: FastifyInstance) {
 		handler: generateTwoFactorAuthHandler,
 	});
 
-	server.post("/auth/two-factrr-auth/verify", {
+	server.post("/auth/two-factor-auth/enable", {
 		preHandler: [server.auth],
 		handler: enableTwoFactorAuthHandler
 	});
@@ -115,5 +115,7 @@ export async function userRoutes(server: FastifyInstance) {
 		preHandler: [server.auth],
 		handler: verifyTwoFactorAuthHandler
 	});
+
+    server.post("/auth/login/2fa-verify", verifyAndCompleteLogin);
 
 }

@@ -7,10 +7,10 @@ import {createPlayerSlot} from "./player-selection.js";
 import {setupTournament} from "./tournament.js"
 import { API_BASE_URL } from "./features/utils-api.js";
 import { checkTokenValidity, connectWebSocket } from "./features/auth.js";
-import { loginUser } from "./features/login.js";
+import { loginUser, submitLogin2FA } from "./features/login.js";
 import { logoutUser } from "./features/logout.js";
 import { signupUser } from "./features/signup.js";
-import { accountEditAvatar, editIgUsername, editPassword, loadAccountAvatar, loadAccountInfo } from "./features/account.js";
+import { account2FAHandler, accountEditAvatar, editIgUsername, editPassword, setup2FA, loadAccountAvatar, loadAccountInfo, enable2FA, disable2FA } from "./features/account.js";
 
 async function loadHTML(path: string): Promise<string> {
 	const res = await fetch(path);
@@ -39,7 +39,6 @@ export async function setContentView(viewPath: string) {
 	else if (viewPath.includes("tournament")) setupTournament();
 	else if (viewPath.includes("account")) setupAccountEvents();
 }
-
 
 //Transition to gameScreen
 
@@ -84,8 +83,17 @@ function setupLoginEvents() {
 		
 		eyeOpen?.classList.toggle("hidden", isPassword);
 		eyeClosed?.classList.toggle("hidden", !isPassword);
-		
 	})
+
+	// A2F Form
+	const cancel2FABtn = document.querySelector("#login-2fa-cancel");
+	cancel2FABtn?.addEventListener("click", () => {
+		toggleBackButton(false);
+		document.querySelector("#login-2fa-div")?.classList.add("hidden");
+	});
+
+	const form2FA = document.querySelector("#login-2fa-form") as HTMLFormElement;
+	form2FA?.addEventListener("submit", (e) => submitLogin2FA(e, form2FA));
 }
 
 // Setup home view behavior
@@ -119,7 +127,9 @@ function setupAccountEvents() {
 	toggleBackButton(true, () => {
 		setContentView("views/profile.html");
 	});
-	// loadAccountAvatar();
+	// loadAccountInfos;
+
+	// Load account infos
 	loadAccountInfo();
 
 	// Edit avatar
@@ -152,6 +162,20 @@ function setupAccountEvents() {
 	});
 	const passwordForm = document.querySelector("#edit-password-form") as HTMLFormElement;
 	passwordForm?.addEventListener("submit", (e) => editPassword(e, passwordForm));
+
+	// Edit A2F
+	document.querySelector("#toggle-2fa")?.addEventListener("click",  () => account2FAHandler());
+	document.querySelector("#edit-2fa-cancel-btn")?.addEventListener("click", () => {
+		toggleBackButton(true, () => {
+			setContentView("views/profile.html");
+		});
+		document.querySelector("#edit-2fa-form-container")?.classList.add("hidden");
+	});
+	const form2FA = document.querySelector("#edit-2fa-form") as HTMLFormElement;
+	form2FA?.addEventListener("submit", (e) => enable2FA(e, form2FA));
+ 
+	const formDisable2FA = document.querySelector("#disable-2fa-form") as HTMLFormElement;
+	formDisable2FA?.addEventListener("submit", (e) => disable2FA(e, formDisable2FA));
 }
 
 function setupSignupEvents() {

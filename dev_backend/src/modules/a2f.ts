@@ -1,6 +1,7 @@
 import speakeasy from "speakeasy";
 import qrcode from "qrcode";
 import prisma from "../utils/prisma";
+import bcrypt from "bcrypt";
 
 import { FastifyRequest, FastifyReply } from "fastify";
 
@@ -43,9 +44,9 @@ export class TwoFactorAuthService {
 		});
 	}
 
-	static async enableTwoFactorAuth(userId: number, secret: string) {
-		if (!this.verifyToken(secret, secret)) {
-			throw new Error("Invalid verification code");
+	static async enableTwoFactorAuth(userId: number, secret: string, token: string) {
+		if (!this.verifyToken(secret, token)) {
+			return { success: false, message: "Invalid token" };
 		}
 
 		await prisma.twoFactorAuth.update({
@@ -91,9 +92,7 @@ export class TwoFactorAuthService {
 
 }
 
-// interface TwoFactorAuthRequest extends FastifyRequest {
-// 	user: {id: number, pseudo: string};
-// }
+const tempSecret = new Map(); 
 
 export async function generateTwoFactorAuthHandler(req: FastifyRequest, reply: FastifyReply) {
 	try {
@@ -101,8 +100,10 @@ export async function generateTwoFactorAuthHandler(req: FastifyRequest, reply: F
 		const { secret, qrCodeUrl } = await TwoFactorAuthService.generateTempSecret(userId);
 		const qrCodeDataUrl = await TwoFactorAuthService.generateQRCode(qrCodeUrl);
 
+		const sessionId = crypto.randomUUID();
+		tempSecret.set(sessionId, { secret, userId, expires: Date.now() + 300000 }); // 5 minutes expiration
 		return reply.status(200).send({
-			secret,
+			sessionId,
 			qrCode: qrCodeDataUrl
 		});
 	} catch (error) {
@@ -113,10 +114,18 @@ export async function generateTwoFactorAuthHandler(req: FastifyRequest, reply: F
 
 export async function enableTwoFactorAuthHandler(req: FastifyRequest, reply: FastifyReply) {
 	try {
-		const { secret, token } = req.body as { secret: string, token: string };
+		const { sessionId, token } = req.body as { sessionId: string, token: string };
 		const userId = req.user.id;
+		const storedData = tempSecret.get(sessionId);
 
-		await TwoFactorAuthService.enableTwoFactorAuth(userId, secret);
+		if (!storedData || storedData.expires < Date.now()) {
+			return reply.status(400).send({ error: "Session expired or invalid" });
+		}
+
+		const res = await TwoFactorAuthService.enableTwoFactorAuth(userId, storedData.secret, token);
+		if (!res.success) {
+			return reply.status(401).send({ error: res.message });
+		}
 		return reply.status(200).send({ success: true, message: "Two-factor authentication enabled successfully" });
 	} catch (error) {
 		console.error("Error enabling two-factor auth:", error);
@@ -125,8 +134,31 @@ export async function enableTwoFactorAuthHandler(req: FastifyRequest, reply: Fas
 }
 
 export async function disableTwoFactorAuthHandler(req: FastifyRequest, reply: FastifyReply) {
+	console.log("Disabling 2FA...");
 	try {
 		const userId = req.user.id;
+		const { password, token} = req.body as { password: string, token: string};
+
+		if (!password || !token) {
+			return reply.status(400).send({ message: "Password and token are required" });
+		}
+
+		const user = await prisma.users.findUnique({
+			where: { id: userId }
+		});
+
+		if (!user) {
+			return reply.status(404).send({ message: "User not found" });
+		}
+
+		const isPasswordValid = await bcrypt.compare(password, user.password);
+		if (!isPasswordValid) {
+			return reply.status(401).send({ message: "Invalid password" });
+		}
+		const isTokenValid = await TwoFactorAuthService.verifyTwoFactorAuth(userId, token);
+		if (!isTokenValid) {
+			return reply.status(401).send({ message: "Invalid 2FA token" });
+		}
 
 		await TwoFactorAuthService.disableTwoFactorAuth(userId);
 		return reply.status(200).send({ success: true, message: "Two-factor authentication disabled successfully" });
@@ -150,4 +182,50 @@ export async function verifyTwoFactorAuthHandler(req: FastifyRequest, reply: Fas
 		console.error("Error verifying two-factor auth:", error);
 		reply.status(500).send({ error: "Internal Server Error" });
 	}
+}
+
+let pendingLoginSessions = new Map<string, { userId: number, expires: number }>();
+
+export async function createPendingLoginSession(userId: number): Promise<string> {
+    const sessionId = crypto.randomUUID();
+    const expires = Date.now() + 300000; // 5 minutes
+    pendingLoginSessions.set(sessionId, { userId, expires });
+    return sessionId;
+}
+
+export async function verifyAndCompleteLogin(req: FastifyRequest, reply: FastifyReply) {
+    try {
+        const { loginSessionId, token } = req.body as { loginSessionId: string, token: string };
+        const session = pendingLoginSessions.get(loginSessionId);
+
+        if (!session || session.expires < Date.now()) {
+            return reply.status(400).send({ error: "Login session expired or invalid" });
+        }
+
+        // Vérifier le token 2FA
+        const isValid = await TwoFactorAuthService.verifyTwoFactorAuth(session.userId, token);
+        if (!isValid) {
+            return reply.status(401).send({ error: "Invalid 2FA token" });
+        }
+
+        // Nettoyer la session temporaire
+        pendingLoginSessions.delete(loginSessionId);
+
+        // Générer le vrai JWT token
+        const user = await prisma.users.findUnique({ where: { id: session.userId } });
+        if (!user) {
+            return reply.status(404).send({ error: "User not found" });
+        }
+
+        const accessToken = req.server.jwt.sign({ id: user.id, pseudo: user.pseudo });
+        
+        return reply.status(200).send({ 
+            accessToken,
+            message: "Login successful" 
+        });
+
+    } catch (error) {
+        console.error("Error completing 2FA login:", error);
+        reply.status(500).send({ error: "Internal Server Error" });
+    }
 }

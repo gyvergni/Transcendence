@@ -64,6 +64,8 @@ let websocket: WebSocket | null = null;
 		} else if (data.type === 'error') {
 			console.error("WebSocket error:", data.message);
 			disconnectWebSocket();
+			localStorage.removeItem("accessToken");
+			setContentView("views/login.html");
 		}
 	}
 
@@ -93,11 +95,21 @@ export function reconnectWebSocket() {
 	connectWebSocket();
 }
 
-export async function a2fStatus() {
-	const token = localStorage.getItem("accessToken");
+export async function a2fStatus(data: any) {
+	let token;
+	if (data) {
+		try {
+			token = data.accessToken;
+		} catch (error) {
+			console.error("Error during temp connect to check A2F:", error);
+			return -1;
+		}
+	} else {
+		token = localStorage.getItem("accessToken");
+	}
 	if (!token) {
 		console.error("No token found, cannot check 2FA status");
-		return false;
+		return -1;
 	}
 	try {
 		const response = await fetch(API_BASE_URL + "/users/auth/two-factor-auth/status", {
@@ -111,11 +123,11 @@ export async function a2fStatus() {
 			const data = await response.json();
 			return data.status;
 		} else {
-			console.error("Failed to fetch 2FA status:", response.statusText);
-			return false;
+			console.error("Failed to fetch 2FA status, retry later:", response.statusText);
+			return -2;
 		}
 	} catch (error) {
-		console.error("Error checking 2FA status:", error);
-		return false;
+		console.error("Error checking 2FA status, retry later:", error);
+		return -2;
 	}
 }

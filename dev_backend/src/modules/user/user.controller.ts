@@ -4,10 +4,11 @@ import { httpError } from "../utils/http";
 import { StatusCodes } from "http-status-codes";
 import { PrismaClient, Prisma } from "../../generated/prisma";
 import bcrypt from "bcrypt";
-import { createUser, findUserByPseudo, loginUser, findUsers, addFriend, updatePassword, logoutUser, deleteFriend, updateUsername, updateAvatar } from "./user.service";
+import { createUser, findUserByPseudo, loginUser, findUsers, addFriend, updatePassword, logoutUser, deleteFriend, updateUsername, updateAvatar, twoFactorAuthStatus } from "./user.service";
 import { CreateUserBody, LoginUserInput, AddFriendInput, ChangePasswordInput, ChangeUsernameInput } from "./user.schema";
 import { getGuestList } from "../guest/guest.service";
 import { path } from "../../index"
+import { createPendingLoginSession } from "../a2f";
 
 const { pipeline } = require('node:stream/promises');
 const fs = require('node:fs');
@@ -62,7 +63,19 @@ export async function loginUserHandler(req: FastifyRequest<{Body: LoginUserInput
     }
 
     try {
-        await loginUser(user.id);
+        if (await twoFactorAuthStatus(user.id) === true) {
+            const loginSessionId = await createPendingLoginSession(user.id);
+            return reply.code(StatusCodes.OK).send({
+                message: "Two-factor authentication is enabled. Please complete the authentication process.",
+                loginSessionId,
+            });
+        }
+        else {
+            await loginUser(user.id);
+            const {password, status, game_username, avatar, ...rest} = user;
+        
+            return reply.code(StatusCodes.OK).send({accessToken: await server.jwt.sign(rest)});
+        }
     } catch (e) {
         return httpError({
             reply,
@@ -70,10 +83,6 @@ export async function loginUserHandler(req: FastifyRequest<{Body: LoginUserInput
             code: StatusCodes.INTERNAL_SERVER_ERROR,
         });
     }
-    
-    const {password, status, game_username, avatar, ...rest} = user;
-
-    return reply.code(StatusCodes.OK).send({accessToken: await server.jwt.sign(rest)});
 }
 
 export async function getUsersHandler(req: FastifyRequest<{ Params: {username: string }}>, reply: FastifyReply) {

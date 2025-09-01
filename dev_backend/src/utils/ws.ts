@@ -10,7 +10,6 @@ export async function wsRoute(server: FastifyInstance) {
 			// console.log("Received message:", msg.toString());
 			try {
 				const data = JSON.parse(msg.toString());
-				// console.log("Received message:", data);
 				if (data.type === "auth" && data.token) {
 					const user = await server.jwt.verify<{ id: number }>(data.token);
 					if (!onlineUsers.has(user.id)) {
@@ -21,9 +20,13 @@ export async function wsRoute(server: FastifyInstance) {
 					console.log("User connected:", user.id, "Total connections:", onlineUsers.get(user.id)!.size);
 					conn.send(JSON.stringify({ type: 'status', online: true}));
 					(conn as any).userId = user.id;
+				} 
+				else {
+					conn.send(JSON.stringify({ type: 'error', message: 'Invalid message type or missing token' }));
+					conn.close();
 				}
 			} catch (err) {
-				console.error("Error processing message:", err);
+				// console.error("Error processing message:", err);
 				conn.send(JSON.stringify({type: 'error', message: 'Invalid token' }));
 				conn.close();
 			}
