@@ -7,9 +7,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+// views.ts
 import uiManager from "./main.js";
-import { animateContentBoxOut, animateContentBoxIn, toggleBackButton } from "./animations.js";
+import { animateContentBoxIn, animateContentBoxOut, toggleBackButton } from "./animations.js";
 import { createPlayerSlot } from "./player-selection.js";
+import { PlayerConfig, MatchSetup } from "./models.js";
 import { setupTournament } from "./tournament.js";
 import { startQuickMatch } from "./pong.js";
 function loadHTML(path) {
@@ -20,7 +22,6 @@ function loadHTML(path) {
         return yield res.text();
     });
 }
-// Inject content into the content box and initialize events
 export function setContentView(viewPath) {
     return __awaiter(this, void 0, void 0, function* () {
         if (!uiManager.contentInner) {
@@ -41,17 +42,18 @@ export function setContentView(viewPath) {
         else if (viewPath.includes("profile"))
             setupProfileEvents();
         else if (viewPath.includes("quick-match"))
-            setupQuickMatch();
+            setQuickMatchView();
         else if (viewPath.includes("tournament"))
             setupTournament();
     });
 }
-//Transition to gameScreen
 export function setGameView() {
     uiManager.setCurrentView("game");
     animateContentBoxOut();
 }
-// Setup login form behavior
+// ---------------------------
+// Views
+// ---------------------------
 function setupLoginEvents() {
     uiManager.setCurrentView("login");
     toggleBackButton(false);
@@ -59,10 +61,6 @@ function setupLoginEvents() {
     const signupBtn = document.getElementById("signup-btn");
     animateContentBoxIn();
     form === null || form === void 0 ? void 0 : form.addEventListener("submit", (e) => {
-        const formData = new FormData(form);
-        const username = formData.get("username");
-        const password = formData.get("password");
-        // A  AJOUTER ICI API LOGIN
         e.preventDefault();
         setContentView("views/home.html");
     });
@@ -70,7 +68,6 @@ function setupLoginEvents() {
         setContentView("views/signup.html");
     });
 }
-// Setup home view behavior
 function setupHomeEvents() {
     uiManager.setCurrentView("home");
     animateContentBoxIn();
@@ -78,18 +75,16 @@ function setupHomeEvents() {
     document.querySelectorAll("[data-view]").forEach((btn) => {
         btn.addEventListener("click", () => {
             const view = btn.dataset.view;
-            if (view === "settings") {
+            if (view === "settings")
                 setContentView("views/settings.html");
-            }
             else if (view === "profile")
                 setContentView("views/profile.html");
             else if (view === "q-match")
                 setContentView("views/quick-match.html");
             else if (view === "tournament")
                 setContentView("views/tournament.html");
-            else {
+            else
                 setGameView();
-            }
         });
     });
 }
@@ -97,65 +92,50 @@ function setupSignupEvents() {
     uiManager.setCurrentView("signup");
     const form = document.getElementById("signup-form");
     const loginBtn = document.getElementById("login-btn");
-    toggleBackButton(true, () => {
-        setContentView("views/login.html");
-    });
+    toggleBackButton(true, () => setContentView("views/login.html"));
     form === null || form === void 0 ? void 0 : form.addEventListener("submit", (e) => {
-        // TODO API Signup
-        const formData = new FormData(form);
-        const username = formData.get("username");
-        const password1 = formData.get("password1");
-        const password2 = formData.get("password2");
-        console.log(username);
-        console.log(password1);
-        console.log(password2);
         e.preventDefault();
         setContentView("views/home.html");
     });
 }
-// Placeholder for future settings events
 function setupSettingsEvents() {
     uiManager.setCurrentView("settings");
-    toggleBackButton(true, () => {
-        setContentView("views/home.html");
-    });
+    toggleBackButton(true, () => setContentView("views/home.html"));
 }
 function setupProfileEvents() {
     const statsBtn = document.getElementById("stats-btn");
     const logoutBtn = document.getElementById("logout-btn");
     uiManager.setCurrentView("profile");
-    toggleBackButton(true, () => {
-        setContentView("views/home.html");
-    });
-    statsBtn === null || statsBtn === void 0 ? void 0 : statsBtn.addEventListener("click", () => {
-        console.log("Show stats view");
-        // setContentView("views/stats.html"); // TODO Stats
-    });
-    logoutBtn === null || logoutBtn === void 0 ? void 0 : logoutBtn.addEventListener("click", () => {
-        setContentView("views/login.html");
-    });
+    toggleBackButton(true, () => setContentView("views/home.html"));
+    statsBtn === null || statsBtn === void 0 ? void 0 : statsBtn.addEventListener("click", () => console.log("Show stats view"));
+    logoutBtn === null || logoutBtn === void 0 ? void 0 : logoutBtn.addEventListener("click", () => setContentView("views/login.html"));
 }
-function setupQuickMatch() {
+function setQuickMatchView() {
     const container = document.getElementById("player-select-container");
     container.innerHTML = "";
-    // Widen content box
     uiManager.contentBox.classList.remove("max-w-md");
-    uiManager.contentBox.classList.add("max-w-3xl"); // Wider for dual player select
+    uiManager.contentBox.classList.add("max-w-3xl");
     toggleBackButton(true, () => {
-        // Reset content box to default size when going back
         uiManager.contentBox.classList.remove("max-w-3xl");
         uiManager.contentBox.classList.add("max-w-md");
         setContentView("views/home.html");
     });
     const startBtn = document.getElementById("start-btn");
-    const player1 = createPlayerSlot("player1-select");
-    const player2 = createPlayerSlot("player2-select");
+    const player1Config = new PlayerConfig("human");
+    const player2Config = new PlayerConfig("human");
+    const match = new MatchSetup();
+    const player1 = createPlayerSlot("player1-select", player1Config, match);
+    const player2 = createPlayerSlot("player2-select", player2Config, match);
+    player1Config.position = 0; //left
+    player2Config.position = 1; //right
     container.appendChild(player1);
     container.appendChild(player2);
     startBtn === null || startBtn === void 0 ? void 0 : startBtn.addEventListener("click", () => {
+        if (!match.isReady()) {
+            alert("Both players must be locked in before starting!");
+            return;
+        }
         setGameView();
-        setTimeout(() => {
-            startQuickMatch("human", "eric", "ai", "medium");
-        }, 100); // delay allows canvas and layout to finish
+        setTimeout(() => startQuickMatch(player1Config, player2Config), 100);
     });
 }
