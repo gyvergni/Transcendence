@@ -1,4 +1,5 @@
-import * as BABYLON from 'babylonjs';
+import * as BABYLON from "https://cdn.jsdelivr.net/npm/babylonjs@6.48.0/babylon.js";
+
 // ################ customization variables ###########
 const paddle_size = 5;
 let BallSpeed = 10;

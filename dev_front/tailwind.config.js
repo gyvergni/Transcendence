@@ -1,5 +1,5 @@
 module.exports = {
-	content: ["./src/**/*.{html,js, css, ts, png}"],
+	content: ["./src/**/*.{html,js, css, ts, png}, ./fonts/*"],
 	theme: {
 	  extend: {
 		keyframes: {
@@ -36,8 +36,8 @@ module.exports = {
         orbitron: ['Orbitron', 'sans-serif'],
       	},
 		backgroundImage: {
-        'door-left': "url('/src/assets/door_left.png')",
-        'door-right': "url('/src/assets/door_left.png')",
+        'door-left': "url('/public/assets/door_left.png')",
+        'door-right': "url('/public/assets/door_left.png')",
 		}
 	  },
 	},

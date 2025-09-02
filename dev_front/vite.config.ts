@@ -4,7 +4,7 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   root: './src',  // Where index.html lives
   build: {
-    outDir: '../build',  // output folder, NOT needed in dev
+    outDir: './build',  // output folder, NOT needed in dev
     emptyOutDir: true,
   },
   server: {

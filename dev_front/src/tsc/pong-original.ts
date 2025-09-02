@@ -1,5 +1,6 @@
 
-import * as BABYLON from 'babylonjs';
+import * as BABYLON from "babylonjs";
+
 
 // ################ customization variables ###########
 const paddle_size = 5;

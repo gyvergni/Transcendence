@@ -1,5 +1,4 @@
-import * as BABYLON from 'babylonjs'
-
+import * as BABYLON from "babylonjs"
 import {PlayerConfig, AIDifficulty} from "./models.js";
 
 //################ customization variables ###########
