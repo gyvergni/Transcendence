@@ -1,7 +1,7 @@
 
 # Lancement du serveur
 
-## Étapes pour lancer le serveur (dans `dev_backend`)
+## Étapes pour lancer le serveur backend (dans `dev_backend`)
 
 1. Installer les dépendances  
    ```bash
@@ -9,7 +9,7 @@
    ```
 2. Générer le client Prisma  
    ```bash
-   npx prisma generate
+   npx prisma migrate dev --name init
    ```
 3. Démarrer le serveur en mode développement  
    ```bash
@@ -17,13 +17,19 @@
    ```
 
 ---
+      
+## Étapes pour lancer le frontend (dans `dev_front`)
 
+<<<<<<< HEAD
 ## Étapes pour lancer le front (dans `dev_front`)
 
+=======
+>>>>>>> origin/fullstack
 1. Installer les dépendances  
    ```bash
    pnpm install
    ```
+<<<<<<< HEAD
 2. Démarrer le serveur en mode développement  
    ```bash
    pnpm run dev
@@ -80,3 +86,9 @@ Une fois que l'avatar sera setup: GET l'avatar
 ### Match History
 
  - `A Faire`
+=======
+2. Démarrer le serveur en mode développement    
+   ```bash
+   pnpm run dev
+   ```
+>>>>>>> origin/fullstack
