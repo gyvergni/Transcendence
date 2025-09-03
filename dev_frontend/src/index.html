@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en" class="bg-slate-900 text-white font-[orbitron]">
   <head>
     <meta charset="UTF-8" />
@@ -25,12 +24,16 @@
 		</template>
       <!-- Doors -->
       <img id="door-left" src="assets/door_left.png"
-           class="absolute w-1/2 h-full left-0 top-0 z-30 object-fill transition-transform duration-1000"
-           alt="Left door"/>
+           class="select-none absolute w-1/2 h-full left-0 top-0 z-30 object-fill transition-transform duration-1000"
+           alt="Left door"
+		   draggable="false"
+		   oncontextmenu="return false;"/>
 
       <img id="door-right" src="assets/door_right.png"
-           class="absolute w-1/2 h-full right-0 top-0 z-30 object-fill transition-transform duration-1000"
-           alt="Right door"/>
+           class="select-none absolute w-1/2 h-full right-0 top-0 z-30 object-fill transition-transform duration-1000"
+           alt="Right door"
+		   draggable="false"
+		   oncontextmenu="return false;"/>
 
       <!-- Game Canvas + Frame -->
       <div id="canvas-wrapper" class="absolute z-20 h-full w-full">
@@ -56,7 +59,7 @@
             opacity-0 scale-0 origin-center
             absolute z-9999 bg-cyan-400/10 border border-cyan-300 backdrop-blur-md
             p-10 rounded-xl shadow-lg space-y-6 hidden
-            before:absolute before:inset-0 before:z-[-1] before:bg-cyan-500/20">
+            before:absolute before:inset-0 before:z-[-1] before:bg-cyan-500/20 before:rounded-xl">
 
         <button id="back-btn" class="z-50 absolute top-4 left-4 text-white p-2 rounded hover:bg-cyan-800 transition"> ← </button>
         <div id="content-inner" class="relative z-10"></div>

@@ -1,0 +1,44 @@
+networks:
+  transcendence: 
+    driver:  bridge
+
+services:
+  api:
+    container_name: api
+    build: ./dev_backend
+    image: image_api
+    volumes:
+      - api:/app
+    ports: 
+      - "3000:3000"
+    networks:
+      - transcendence
+    restart: always
+
+  nginx:
+    container_name: nginx
+    build: ./dev_frontend
+    image: image_nginx
+    volumes:
+      - nginx:/usr/share/nginx/html
+    depends_on:
+      - api
+    ports:
+      - "8443:443"
+    networks:
+      - transcendence
+    restart: always
+
+volumes:
+  api:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./app/api
+      o: bind
+  nginx:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./app/frontend
+      o: bind

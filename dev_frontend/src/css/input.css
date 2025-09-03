@@ -2,14 +2,14 @@
 
 @font-face {
 	font-family: 'Orbitron';
-	src: url('/fonts/Orbitron-Regular.ttf') format('truetype');
+	src: url('../fonts/Orbitron-Regular.ttf') format('truetype');
 	font-weight: normal;
 	font-style: normal;
 }
 
 @font-face {
 	font-family: 'Orbitron';
-	src: url('/fonts/Orbitron-SemiBold.ttf') format('truetype');
+	src: url('../fonts/Orbitron-SemiBold.ttf') format('truetype');
 	font-weight: bold;
 	font-style: normal;
 }
@@ -30,3 +30,10 @@
 
 }
 
+.was-validated input:invalid {
+	border-color: #c10007;
+}
+
+.wrong-signup-input {
+	border-color: #c10007;
+}

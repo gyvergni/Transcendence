@@ -26,6 +26,9 @@ dev_backend/prisma/db.sqlite
 dev_backend/src/generated/
 dev_backend/prisma/migrations/
 
+# Volumes docker
+app/
+
 # Environnement
 #./dev_backend/.env
 
