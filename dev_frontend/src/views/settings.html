@@ -1,21 +1,21 @@
 <div class="p-6 space-y-8 text-white">
 
-  <!-- Paddle Speed -->
+  <!-- Paddle Size -->
   <div>
-    <h2 class="text-xl font-semibold mb-2">Paddle Speed</h2>
-    <input type="range" id="paddle-speed" min="1" max="100" value="50"
+    <h2 class="text-xl font-semibold mb-2">Paddle Size <span id="paddle-size-value"></span></h2>
+    <input type="range" id="paddle-size" min="1" max="10" value="5"
       class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
   </div>
 
-  <!-- Background Color Selection -->
+  <!-- Paddle Color Selection -->
   <div>
-    <h2 class="text-xl font-semibold mb-2">Background Color</h2>
+    <h2 class="text-xl font-semibold mb-2">Paddle Color</h2>
     <div class="flex space-x-3">
-      <div class="w-10 h-10 rounded cursor-pointer bg-black border-2 border-transparent hover:ring-2 hover:ring-white" data-bg-color="#000000"></div>
-      <div class="w-10 h-10 rounded cursor-pointer bg-gray-700 border-2 border-transparent hover:ring-2 hover:ring-white" data-bg-color="#374151"></div>
-      <div class="w-10 h-10 rounded cursor-pointer bg-blue-500 border-2 border-transparent hover:ring-2 hover:ring-white" data-bg-color="#3b82f6"></div>
-      <div class="w-10 h-10 rounded cursor-pointer bg-green-500 border-2 border-transparent hover:ring-2 hover:ring-white" data-bg-color="#22c55e"></div>
-      <div class="w-10 h-10 rounded cursor-pointer bg-purple-600 border-2 border-transparent hover:ring-2 hover:ring-white" data-bg-color="#9333ea"></div>
+      <div class="w-10 h-10 rounded cursor-pointer bg-black border-2 border-transparent hover:ring-2 hover:ring-white" data-pdl-color="#ffffff"></div>
+      <div class="w-10 h-10 rounded cursor-pointer bg-gray-700 border-2 border-transparent hover:ring-2 hover:ring-white" data-pdl-color="#000000"></div>
+      <div class="w-10 h-10 rounded cursor-pointer bg-blue-500 border-2 border-transparent hover:ring-2 hover:ring-white" data-pdl-color="#3b82f6"></div>
+      <div class="w-10 h-10 rounded cursor-pointer bg-green-500 border-2 border-transparent hover:ring-2 hover:ring-white" data-pdl-color="#22c55e"></div>
+      <div class="w-10 h-10 rounded cursor-pointer bg-purple-600 border-2 border-transparent hover:ring-2 hover:ring-white" data-pdl-color="#9333ea"></div>
     </div>
   </div>
 
@@ -33,8 +33,8 @@
 
   <!-- Ball Size -->
   <div>
-    <h2 class="text-xl font-semibold mb-2">Ball Size</h2>
-    <input type="range" id="ball-size" min="1" max="10" value="5"
+    <h2 class="text-xl font-semibold mb-2">Ball Size <span id="ball-size-value"></span></h2>
+    <input type="range" id="ball-size" min="1" max="100" value="5"
       class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
   </div>
 
@@ -50,47 +50,4 @@
 
 </div>
 
-<script>
-  // Slider value update
-  const paddleSlider = document.getElementById("paddle-speed");
-  const paddleValue = document.getElementById("paddle-speed-value");
-  paddleSlider?.addEventListener("input", () => {
-    paddleValue.textContent = paddleSlider.value;
-  });
-
-  const ballSlider = document.getElementById("ball-size");
-  const ballValue = document.getElementById("ball-size-value");
-  ballSlider?.addEventListener("input", () => {
-    ballValue.textContent = ballSlider.value;
-  });
-
-  // Color selection
-  document.querySelectorAll("[data-bg-color]").forEach(div => {
-    div.addEventListener("click", () => {
-      document.querySelectorAll("[data-bg-color]").forEach(d => d.classList.remove("ring", "ring-white"));
-      div.classList.add("ring", "ring-white");
-      const color = div.getAttribute("data-bg-color");
-      console.log("Background color selected:", color);
-      // Save to settings or apply dynamically
-    });
-  });
-
-  document.querySelectorAll("[data-ball-color]").forEach(div => {
-    div.addEventListener("click", () => {
-      document.querySelectorAll("[data-ball-color]").forEach(d => d.classList.remove("ring", "ring-white"));
-      div.classList.add("ring", "ring-white");
-      const color = div.getAttribute("data-ball-color");
-      console.log("Ball color selected:", color);
-    });
-  });
-
-  // Language selection
-  document.querySelectorAll("[data-lang]").forEach(img => {
-    img.addEventListener("click", () => {
-      document.querySelectorAll("[data-lang]").forEach(i => i.classList.remove("ring", "ring-white"));
-      img.classList.add("ring", "ring-white");
-      const lang = img.getAttribute("data-lang");
-      console.log("Language selected:", lang);
-    });
-  });
-</script>
+<script src="./dist/settings.js"></script>
