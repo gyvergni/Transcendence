@@ -1,10 +1,24 @@
-import * as BABYLON from "babylonjs"
+
+//################ imports ############
+import * as BABYLON from 'babylonjs';
+import uiManager from "./main.js";
+import {animateContentBoxIn} from "./animations.js";
+import {setContentView} from "./views.js";
 import {PlayerConfig, AIDifficulty} from "./models.js";
 
+
 //################ customization variables ###########
-const padle_size = 5;
-let BallSpeed = 5;
+import { settings } from "./settings.js"
+
+const padle_size = settings.paddleSize;
+let PaddleColor = settings.paddleColor;
+let BallSize = settings.ballSize;
+let BallColor = settings.ballColor;
+
+
+
 const BallSpeedLimit = 30;
+let BallSpeed = 10;
 
 // ######### utility #########
 function getRandomInt(max: number) {
@@ -13,10 +27,10 @@ function getRandomInt(max: number) {
 
 // ################ Interfaces for clarity ############
 interface PlayerType {
-    update(): void;
-    config: PlayerConfig;
-    opponent: PlayerType | null;
-    paddle: Paddle;
+	update(): void;
+	config: PlayerConfig;
+	opponent: PlayerType | null;
+	paddle: Paddle;
 }
 
 // ################ Classes ####################
@@ -63,11 +77,11 @@ class Ball {
     startDelay: number = 0;
 	score1: number = 0;
 	score2: number = 0;
-	bounceParticles: number = 0;
+	pTimer: number = 0;
 	particleSystem: any;
 
     constructor(scene: BABYLON.Scene) {
-        this.mesh = BABYLON.MeshBuilder.CreateSphere("GameObject", {diameter: 0.5}, scene);
+        this.mesh = BABYLON.MeshBuilder.CreateSphere("GameObject", {diameter: BallSize * 0.1}, scene);
         this.mesh.position.set(0, 0.5, 0);
 		
 		this.score1 = 0;
@@ -78,7 +92,7 @@ class Ball {
 		this.createScoreParticles(scene);
         this.resetDirection();
         this.startDelay = 0;
-		this.bounceParticles = 0;
+		this.pTimer = 0;
     }
 
     resetDirection() {
@@ -140,7 +154,7 @@ class Ball {
             this.dirZ += bz - pz;
             const diff = (this.speed * this.speed - this.dirZ * this.dirZ);
             this.dirX = hitX > 0 ? -Math.sqrt(Math.abs(diff)) : Math.sqrt(Math.abs(diff));
-			this.bounceParticles = 1;
+			this.pTimer = 1;
         }
     }
 
@@ -153,7 +167,7 @@ class Ball {
 
 	createScoreParticles(scene: BABYLON.Scene) {
 		//texture of particles
-		this.particleSystem.particleTexture = new BABYLON.Texture("game/textures/flare.png", scene);
+		this.particleSystem.particleTexture = new BABYLON.Texture("assets/game/textures/flare.png", scene);
 
 		// Size of each particle (random between...
 		this.particleSystem.minSize = 0.1;
@@ -177,14 +191,14 @@ class Ball {
 		//set direction left padle
 		if (pos.x > 0) {
 			// color
-			this.particleSystem.color1 = new BABYLON.Color4(1.0, 0, 0, 1.0);
+			this.particleSystem.color1 = new BABYLON.Color4(1.0, 1.0, 1.0, 1.0);
 			this.particleSystem.emitter = new BABYLON.Vector3(-11, 1, 0);
 			var BoxEmitterLeft = this.particleSystem.createBoxEmitter(new BABYLON.Vector3(6, 1, -2), new BABYLON.Vector3(6, -1, 2), new BABYLON.Vector3(-5, 0, 12), new BABYLON.Vector3(-5, 6, -12));
 		}
 		// for right padle
 		else {
 			// color
-			this.particleSystem.color1 = new BABYLON.Color4(0, 0, 1.0, 1.0);
+			this.particleSystem.color1 = new BABYLON.Color4(1.0, 1.0, 1.0, 1.0);
 			this.particleSystem.emitter = new BABYLON.Vector3(11, 1, 0);
 			var BoxEmitterRight = this.particleSystem.createBoxEmitter(new BABYLON.Vector3(-6, -2, 2), new BABYLON.Vector3(-6, 1, -2), new BABYLON.Vector3(5, 0, 12), new BABYLON.Vector3(5, 6, -12));
 		}
@@ -205,19 +219,19 @@ class Ball {
 }
 
 class Player implements PlayerType {
-    keys: Record<string, boolean> = {};
-    upKey: string;
-    downKey: string;
-    paddle: Paddle;
-    config: PlayerConfig;
-    opponent: PlayerType | null = null;
+	keys: Record<string, boolean> = {};
+	upKey: string;
+	downKey: string;
+	paddle: Paddle;
+	config: PlayerConfig;
+	opponent: PlayerType | null = null;
 
 	constructor(paddle: Paddle, upKey: string, downKey: string, config: PlayerConfig) {
 		this.paddle = paddle;
 		this.upKey = upKey.toLowerCase();
 		this.downKey = downKey.toLowerCase();
 		this.keys = { [this.upKey]: false, [this.downKey]: false };
-        this.config = config;
+		this.config = config;
 
 		window.addEventListener("keydown", e => {
 			const key = e.key.toLowerCase();
@@ -238,174 +252,174 @@ class Player implements PlayerType {
 
 
 class AIPlayer implements PlayerType {
-    paddle: Paddle;
-    ball: Ball;
-    side: "left" | "right";
-    difficulty: AIDifficulty;
-    reactionTime: number;
-    target_z: number;
-    paddle_ref_z: number = 0;
-    movement_up: boolean = false;
-    movement_down: boolean = false;
-    config: PlayerConfig;
-    opponent: PlayerType | null = null;
-    ballDirZIntercept: number = 0;
-    ballDirXIntercept: number = 0;
+	paddle: Paddle;
+	ball: Ball;
+	side: "left" | "right";
+	difficulty: AIDifficulty;
+	reactionTime: number;
+	target_z: number;
+	paddle_ref_z: number = 0;
+	movement_up: boolean = false;
+	movement_down: boolean = false;
+	config: PlayerConfig;
+	opponent: PlayerType | null = null;
+	ballDirZIntercept: number = 0;
+	ballDirXIntercept: number = 0;
 
-    constructor(paddle: Paddle, ball: Ball, side: "left" | "right", config: PlayerConfig) {
-        this.paddle = paddle;
-        this.ball = ball;
-        this.side = side;
-        this.difficulty = config.difficulty;
-        this.reactionTime = 1;
-        this.target_z = 0;
-        this.config = config;
-    }
+	constructor(paddle: Paddle, ball: Ball, side: "left" | "right", config: PlayerConfig) {
+		this.paddle = paddle;
+		this.ball = ball;
+		this.side = side;
+		this.difficulty = config.difficulty;
+		this.reactionTime = 1;
+		this.target_z = 0;
+		this.config = config;
+	}
 
-    is_movingToAI(): boolean {
-        return (this.side === "left" && this.ball.dirX < 0) || (this.side === "right" && this.ball.dirX > 0);
-    }
+	is_movingToAI(): boolean {
+		return (this.side === "left" && this.ball.dirX < 0) || (this.side === "right" && this.ball.dirX > 0);
+	}
 
-    private frameCounter = 0;
+	private frameCounter = 0;
 	update() {
 		this.frameCounter++;
 		if (this.frameCounter >= this.reactionTime * 60) {
 			this.update_target();
 			this.frameCounter = 0;
-        }
-        //move to target
-        if (this.target_z > this.paddle_ref_z)
-        {
-            this.movement_down = false;
-            this.movement_up = true;
-            this.paddle_ref_z += 0.1;
-        }
-        else if (this.target_z < this.paddle_ref_z)
-        {
-            this.movement_up = false;
-            this.movement_down = true;
-            this.paddle_ref_z -= 0.1;
-        }
-        this.paddle.move(this.movement_up, this.movement_down);
-    }
+		}
+		//move to target
+		if (this.target_z > this.paddle_ref_z)
+		{
+			this.movement_down = false;
+			this.movement_up = true;
+			this.paddle_ref_z += 0.1;
+		}
+		else if (this.target_z < this.paddle_ref_z)
+		{
+			this.movement_up = false;
+			this.movement_down = true;
+			this.paddle_ref_z -= 0.1;
+		}
+		this.paddle.move(this.movement_up, this.movement_down);
+	}
 
-    update_target() {
-        if (this.difficulty === "easy")
-            this.behaviour_easy();
-        else if (this.difficulty === "medium")
-            this.behaviour_medium();
-        else
-            this.behaviour_hard();
-    }
+	update_target() {
+		if (this.difficulty === "easy")
+			this.behaviour_easy();
+		else if (this.difficulty === "medium")
+			this.behaviour_medium();
+		else
+			this.behaviour_hard();
+	}
 
-    behaviour_easy() {
-        if (!this.is_movingToAI()) 
-            return;
-        this.target_z = this.ball.mesh.position.z;
-        this.paddle_ref_z = this.paddle.z;
-        if (this.target_z > this.paddle.topZ)
-            this.paddle_ref_z = this.paddle.topZ;
-        else if (this.target_z < this.paddle.bottomZ)
-            this.paddle_ref_z = this.paddle.bottomZ;
-    }
+	behaviour_easy() {
+		if (!this.is_movingToAI()) 
+			return;
+		this.target_z = this.ball.mesh.position.z;
+		this.paddle_ref_z = this.paddle.z;
+		if (this.target_z > this.paddle.topZ)
+			this.paddle_ref_z = this.paddle.topZ;
+		else if (this.target_z < this.paddle.bottomZ)
+			this.paddle_ref_z = this.paddle.bottomZ;
+	}
 
-    behaviour_medium() {
-        if (!this.is_movingToAI())
-            this.target_z = 0;
-        this.target_z = this.predictZ();
-        this.paddle_ref_z = this.paddle.z;
-        if (this.target_z > this.paddle.topZ - 0.5)
-            this.paddle_ref_z = this.paddle.topZ - 0.5;
-        else if (this.target_z < this.paddle.bottomZ)
-            this.paddle_ref_z = this.paddle.bottomZ + 0.5;
-    }
+	behaviour_medium() {
+		if (!this.is_movingToAI())
+			this.target_z = 0;
+		this.target_z = this.predictZ();
+		this.paddle_ref_z = this.paddle.z;
+		if (this.target_z > this.paddle.topZ - 0.5)
+			this.paddle_ref_z = this.paddle.topZ - 0.5;
+		else if (this.target_z < this.paddle.bottomZ)
+			this.paddle_ref_z = this.paddle.bottomZ + 0.5;
+	}
 
-    behaviour_hard() {
-    if (!this.is_movingToAI()) {
-        this.target_z = 0; // go center when ball is not coming
-        return;
-    }
+	behaviour_hard() {
+	if (!this.is_movingToAI()) {
+		this.target_z = 0; // go center when ball is not coming
+		return;
+	}
 
-    // Choose which corner to aim for (based on opponent paddle position)
-    const z_target = this.opponent && this.opponent.paddle.z > 0 ? -5 : 5;
-    const x_target = this.side === "left" ? 10 : -10;
+	// Choose which corner to aim for (based on opponent paddle position)
+	const z_target = this.opponent && this.opponent.paddle.z > 0 ? -5 : 5;
+	const x_target = this.side === "left" ? 10 : -10;
 
-    // Ball info at paddle intersection
-    const bx = -x_target;
-    const bz = this.predictZ();
-    const dirX = this.ballDirXIntercept;
-    const dirZ = this.ballDirZIntercept;
+	// Ball info at paddle intersection
+	const bx = -x_target;
+	const bz = this.predictZ();
+	const dirX = this.ballDirXIntercept;
+	const dirZ = this.ballDirZIntercept;
 
-    // Slope needed to go from intercept to corner
-    const dx = x_target - (this.side === "left" ? -10 : 10); // paddle X position
-    const dz = z_target - bz;
-    const slope = dz / dx;
+	// Slope needed to go from intercept to corner
+	const dx = x_target - (this.side === "left" ? -10 : 10); // paddle X position
+	const dz = z_target - bz;
+	const slope = dz / dx;
 
-    // Desired outgoing dirZ based on slope
-    const dirX_out = dirX > 0 ? Math.sqrt(this.ball.speed ** 2 / (1 + slope ** 2))
-                              : -Math.sqrt(this.ball.speed ** 2 / (1 + slope ** 2));
-    const dirZ_out = slope * dirX_out;
+	// Desired outgoing dirZ based on slope
+	const dirX_out = dirX > 0 ? Math.sqrt(this.ball.speed ** 2 / (1 + slope ** 2))
+							  : -Math.sqrt(this.ball.speed ** 2 / (1 + slope ** 2));
+	const dirZ_out = slope * dirX_out;
 
-    // Figure out how much to offset paddle center to create that reflection
-    const requiredOffset = dirZ_out - dirZ;
+	// Figure out how much to offset paddle center to create that reflection
+	const requiredOffset = dirZ_out - dirZ;
 
-    this.target_z = bz - requiredOffset;
+	this.target_z = bz - requiredOffset;
 
-    // Find which end of paddle to move
-    if (this.target_z > this.paddle.topZ - 0.5)
-        this.paddle_ref_z = this.paddle.topZ - 0.5;
-    else if (this.target_z < this.paddle.bottomZ + 0.5)
-        this.paddle_ref_z = this.paddle.bottomZ + 0.5;
-    else
-        this.paddle_ref_z = this.target_z;
+	// Find which end of paddle to move
+	if (this.target_z > this.paddle.topZ - 0.5)
+		this.paddle_ref_z = this.paddle.topZ - 0.5;
+	else if (this.target_z < this.paddle.bottomZ + 0.5)
+		this.paddle_ref_z = this.paddle.bottomZ + 0.5;
+	else
+		this.paddle_ref_z = this.target_z;
 }
 
 
 
-    predictZ(): number {
-    let z = this.ball.mesh.position.z;
-    let x = this.ball.mesh.position.x;
-    let dirX = this.ball.dirX;
-    let dirZ = this.ball.dirZ;
-    let distToWall;
-    let targetX: number;
+	predictZ(): number {
+	let z = this.ball.mesh.position.z;
+	let x = this.ball.mesh.position.x;
+	let dirX = this.ball.dirX;
+	let dirZ = this.ball.dirZ;
+	let distToWall;
+	let targetX: number;
 
-    if (this.side == "left")
-        targetX = -10
-    else
-        targetX = 10;
-    while ((dirX < 0 && x > targetX) || (dirX > 0 && x < targetX)) {
-        // distance until next wall hit
-        if (dirZ > 0)
-            distToWall = 5 - z
-        else if (dirZ < 0)
-            distToWall = z + 5;
-        else
-            distToWall = 1000;
+	if (this.side == "left")
+		targetX = -10
+	else
+		targetX = 10;
+	while ((dirX < 0 && x > targetX) || (dirX > 0 && x < targetX)) {
+		// distance until next wall hit
+		if (dirZ > 0)
+			distToWall = 5 - z
+		else if (dirZ < 0)
+			distToWall = z + 5;
+		else
+			distToWall = 1000;
 
-        let stepsToWall = distToWall / Math.abs(dirZ);
+		let stepsToWall = distToWall / Math.abs(dirZ);
 
-        // distance until reaching paddle’s X
-        let distToPaddle = Math.abs(targetX - x);
-        let stepsToPaddle = distToPaddle / Math.abs(dirX);
+		// distance until reaching paddle’s X
+		let distToPaddle = Math.abs(targetX - x);
+		let stepsToPaddle = distToPaddle / Math.abs(dirX);
 
-        if (stepsToPaddle < stepsToWall) {
-            // Ball reaches paddle before hitting top/bottom
-            z += dirZ * stepsToPaddle;
-            this.ballDirZIntercept = dirZ;
-            this.ballDirXIntercept = dirX;
-            return z;
-        } else {
-            // Ball hits wall first
-            z += dirZ * stepsToWall;
-            x += dirX * stepsToWall;
-            dirZ = -dirZ; // bounce
-        }
-    }
-    this.ballDirZIntercept = dirZ;
-    this.ballDirXIntercept = dirX;
-    return z;
-    }
+		if (stepsToPaddle < stepsToWall) {
+			// Ball reaches paddle before hitting top/bottom
+			z += dirZ * stepsToPaddle;
+			this.ballDirZIntercept = dirZ;
+			this.ballDirXIntercept = dirX;
+			return z;
+		} else {
+			// Ball hits wall first
+			z += dirZ * stepsToWall;
+			x += dirX * stepsToWall;
+			dirZ = -dirZ; // bounce
+		}
+	}
+	this.ballDirZIntercept = dirZ;
+	this.ballDirXIntercept = dirX;
+	return z;
+	}
 }
 
 class Game {
@@ -416,15 +430,18 @@ class Game {
     p_left!: Paddle;
     p_right!: Paddle;
     player1!: PlayerType;
-    player1Config!: PlayerConfig;
+	player1Config!: PlayerConfig;
     player2!: PlayerType;
-    player2Config!: PlayerConfig;
+	player2Config!: PlayerConfig;
 	gameover: boolean;
 	particleSystem: any;
     groundLeft: BABYLON.Mesh;
 	groundRight: BABYLON.Mesh;
 
-    constructor(canvas: HTMLCanvasElement, player1Config: PlayerConfig, player2Config: PlayerConfig) // might need to add  player name and type 1 and 2 for createObjects
+    loadedTexturesL: any[] = [];
+    loadedTexturesR: any[] = [];
+
+    constructor(canvas: HTMLCanvasElement, player1Config: PlayerConfig, player2Config: PlayerConfig)
 	{
 		this.gameover = false;
         this.canvas = canvas;
@@ -432,7 +449,7 @@ class Game {
         this.scene = new BABYLON.Scene(this.engine);
 		this.particleSystem = new BABYLON.ParticleSystem("particles", 20, this.scene);
 
-        this.player1Config = player1Config;
+		this.player1Config = player1Config;
         this.player2Config = player2Config;
 
         this.groundLeft = BABYLON.MeshBuilder.CreateGround("ground", {width: 10, height: 11}, this.scene);
@@ -458,36 +475,39 @@ class Game {
     }
 
     createGround() {
-        //this.groundLeft = BABYLON.MeshBuilder.CreateGround("ground", {width: 10, height: 11}, this.scene);
+        // place ground mesh
 		this.groundLeft.position.set(-5, 0, 0);
-		//this.groundRight = BABYLON.MeshBuilder.CreateGround("ground", {width: 10, height: 11}, this.scene);
 		this.groundRight.position.set(5, 0, 0);
 
-        const groundLeftMat = new BABYLON.StandardMaterial("ScoreTexture", this.scene);
-		groundLeftMat.diffuseTexture = new BABYLON.Texture("game/textures/ground/Score0L.png", this.scene);
-		const groundRightMat = new BABYLON.StandardMaterial("ScoreTexture", this.scene);
-		groundRightMat.diffuseTexture = new BABYLON.Texture("game/textures/ground/Score0R.png", this.scene);
 
-        this.groundLeft.material = groundLeftMat;
-		this.groundRight.material = groundRightMat;
+        // load all score/ground textures
+        for (let i = 0; i <= 5; i++)
+        {
+            const groundLeftMat = new BABYLON.StandardMaterial("ScoreTexture", this.scene);
+            const groundRightMat = new BABYLON.StandardMaterial("ScoreTexture", this.scene);
+
+            groundLeftMat.diffuseTexture = new BABYLON.Texture("assets/game/textures/ground/Score" + i + "L.png", this.scene);
+		    groundRightMat.diffuseTexture = new BABYLON.Texture("assets/game/textures/ground/Score" + i + "R.png", this.scene);
+
+            this.loadedTexturesL.push(groundLeftMat);
+            this.loadedTexturesR.push(groundRightMat);
+        }
+
+        this.groundLeft.material = this.loadedTexturesL[0];
+		this.groundRight.material = this.loadedTexturesR[0];
     }
 
 	changeGroundTexture() {
-		const groundLeftMat = new BABYLON.StandardMaterial("ScoreTexture", this.scene);
-		groundLeftMat.diffuseTexture = new BABYLON.Texture("game/textures/ground/Score" + this.ball.score1 + "L.png", this.scene);
-		const groundRightMat = new BABYLON.StandardMaterial("ScoreTexture", this.scene);
-		groundRightMat.diffuseTexture = new BABYLON.Texture("game/textures/ground/Score" + this.ball.score2 + "R.png", this.scene);
-		
-		this.groundLeft.material = groundLeftMat;
-		this.groundRight.material = groundRightMat;
+		this.groundLeft.material = this.loadedTexturesL[this.ball.score1];
+		this.groundRight.material = this.loadedTexturesR[this.ball.score2];
 	}
 
 	createSkybox() {
-        const skyboxMaterial = new BABYLON.StandardMaterial("game/textures/skybox/skybox", this.scene);
+        const skyboxMaterial = new BABYLON.StandardMaterial("assets/game/textures/skybox/skybox", this.scene);
         skyboxMaterial.backFaceCulling = false;
         skyboxMaterial.disableLighting = true;
           
-        skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("game/textures/skybox/skybox", this.scene);
+        skyboxMaterial.reflectionTexture = new BABYLON.CubeTexture("assets/game/textures/skybox/skybox", this.scene);
         skyboxMaterial.reflectionTexture.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
         skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);
         skyboxMaterial.specularColor = new BABYLON.Color3(0, 0, 0);
@@ -499,14 +519,31 @@ class Game {
 	}
 
     createObjects() {
-		// compared to branch "front dev" it's missing AI attribution 
-        const material = new BABYLON.StandardMaterial("material", this.scene);
-        material.diffuseColor = new BABYLON.Color3(1, 1, 1);
+
+        // setup color from custom variable
+        const Bcolor_r = parseInt(BallColor.slice(1, 3), 16);
+        const Bcolor_g = parseInt(BallColor.slice(3, 5), 16);
+        const Bcolor_b = parseInt(BallColor.slice(5, 7), 16);
+
+        const Pcolor_r = parseInt(PaddleColor.slice(1, 3), 16);
+        const Pcolor_g = parseInt(PaddleColor.slice(3, 5), 16);
+        const Pcolor_b = parseInt(PaddleColor.slice(5, 7), 16);
+
+        // Paddle Material
+        const pmaterial = new BABYLON.StandardMaterial("material", this.scene);
+        pmaterial.diffuseColor = new BABYLON.Color3(Pcolor_r/255, Pcolor_g/255, Pcolor_b/255);
+
+        // Ball Material
+        const bmaterial = new BABYLON.StandardMaterial("material", this.scene);
+        bmaterial.diffuseColor = new BABYLON.Color3(Bcolor_r/255, Bcolor_g/255, Bcolor_b/255);
+
+        // Color3(r, g, b);
 
         this.p_left = new Paddle(this.scene, -10);
         this.p_right = new Paddle(this.scene, 10);
         this.ball = new Ball(this.scene);
-		//au lieu de p_left et p_right, on precise selon la box de sélection dans le front
+
+		// new player creation
 		if (this.player1Config.type == "human")
             this.player1 = new Player(this.p_left, "w", "s", this.player1Config);
         else
@@ -517,9 +554,11 @@ class Game {
             this.player2 = new AIPlayer(this.p_right, this.ball, "right", this.player2Config)
 		this.player1.opponent = this.player2;
         this.player2.opponent = this.player1;
-        this.p_left.mesh.material = material;
-        this.p_right.mesh.material = material;
-        this.ball.mesh.material = material;
+
+		//si AI ajoutée, on crée l'IA en précisant son niveau de difficulté
+        this.p_left.mesh.material = pmaterial;
+        this.p_right.mesh.material = pmaterial;
+        this.ball.mesh.material = bmaterial;
 
         const glow = new BABYLON.GlowLayer("glow", this.scene);
         glow.intensity = 0.5;
@@ -530,7 +569,7 @@ class Game {
 
 	createParticles() {
 		//texture of Particles
-		this.particleSystem.particleTexture = new BABYLON.Texture("game/textures/flare.png", this.scene);
+		this.particleSystem.particleTexture = new BABYLON.Texture("assets/game/textures/flare.png", this.scene);
 		// Where the particles come from
     	this.particleSystem.emitter = BABYLON.Vector3.Zero(); // the starting location
 
@@ -572,27 +611,30 @@ class Game {
 	}
 
 	updateParticles() {
-		if (this.ball.bounceParticles == 0)
+		if (this.ball.pTimer == 0)
 			this.particleSystem.stop();
-		if (this.ball.bounceParticles == 1) {
+		if (this.ball.pTimer == 1) {
 			this.popParticles(this.ball.mesh.position);
 		}
-		if (this.ball.bounceParticles > 0)
-			this.ball.bounceParticles++;
-		if (this.ball.bounceParticles == 30)
-			this.ball.bounceParticles = 0;
+		if (this.ball.pTimer > 0)
+			this.ball.pTimer++;
+		if (this.ball.pTimer == 30)
+			this.ball.pTimer = 0;
 	}
 
     update() {
-		if (this.gameover == true) {
-			//this.engine.stopRenderLoop();
-			//return; // #################### TROUVER UN MOYEN DE SORTIR DU JEU ######################
-		}
 		this.player1.update();
 		this.player2.update();
 		this.ball.update(this.p_left, this.p_right);
 		this.changeGroundTexture();
 		this.updateParticles();
+        if (this.gameover == true && this.ball.startDelay == 60) {
+            //getting out of the game
+            uiManager.setCurrentView("home");
+            animateContentBoxIn();
+			setContentView("views/home.html");
+            this.engine.stopRenderLoop();
+		}
 		if (this.ball.score1 == 5 || this.ball.score2 == 5)
 			this.gameover = true;
 	}
@@ -604,4 +646,3 @@ export function startQuickMatch( player1Config: PlayerConfig, player2Config: Pla
     const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
     const game = new Game(canvas, player1Config, player2Config);
 }
-

@@ -1,0 +1,53 @@
+<div class="p-6 space-y-8 text-white">
+
+  <!-- Paddle Size -->
+  <div>
+    <h2 class="text-xl font-semibold mb-2">Paddle Size <span id="paddle-size-value"></span></h2>
+    <input type="range" id="paddle-size" min="1" max="10" value="5"
+      class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+  </div>
+
+  <!-- Paddle Color Selection -->
+  <div>
+    <h2 class="text-xl font-semibold mb-2">Paddle Color</h2>
+    <div class="flex space-x-3">
+      <div class="w-10 h-10 rounded cursor-pointer bg-black border-2 border-transparent hover:ring-2 hover:ring-white" data-pdl-color="#ffffff"></div>
+      <div class="w-10 h-10 rounded cursor-pointer bg-gray-700 border-2 border-transparent hover:ring-2 hover:ring-white" data-pdl-color="#000000"></div>
+      <div class="w-10 h-10 rounded cursor-pointer bg-blue-500 border-2 border-transparent hover:ring-2 hover:ring-white" data-pdl-color="#3b82f6"></div>
+      <div class="w-10 h-10 rounded cursor-pointer bg-green-500 border-2 border-transparent hover:ring-2 hover:ring-white" data-pdl-color="#22c55e"></div>
+      <div class="w-10 h-10 rounded cursor-pointer bg-purple-600 border-2 border-transparent hover:ring-2 hover:ring-white" data-pdl-color="#9333ea"></div>
+    </div>
+  </div>
+
+  <!-- Ball Color Selection -->
+  <div>
+    <h2 class="text-xl font-semibold mb-2">Ball Color</h2>
+    <div class="flex space-x-3">
+      <div class="w-10 h-10 rounded-full cursor-pointer bg-white border-2 border-transparent hover:ring-2 hover:ring-cyan-500" data-ball-color="#ffffff"></div>
+      <div class="w-10 h-10 rounded-full cursor-pointer bg-red-500 border-2 border-transparent hover:ring-2 hover:ring-cyan-500" data-ball-color="#ef4444"></div>
+      <div class="w-10 h-10 rounded-full cursor-pointer bg-yellow-400 border-2 border-transparent hover:ring-2 hover:ring-cyan-500" data-ball-color="#facc15"></div>
+      <div class="w-10 h-10 rounded-full cursor-pointer bg-pink-500 border-2 border-transparent hover:ring-2 hover:ring-cyan-500" data-ball-color="#ec4899"></div>
+      <div class="w-10 h-10 rounded-full cursor-pointer bg-indigo-500 border-2 border-transparent hover:ring-2 hover:ring-cyan-500" data-ball-color="#6366f1"></div>
+    </div>
+  </div>
+
+  <!-- Ball Size -->
+  <div>
+    <h2 class="text-xl font-semibold mb-2">Ball Size <span id="ball-size-value"></span></h2>
+    <input type="range" id="ball-size" min="1" max="100" value="5"
+      class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+  </div>
+
+  <!-- Language Selection -->
+  <div>
+    <h2 class="text-xl font-semibold mb-2">Language</h2>
+    <div class="flex space-x-4">
+      <img src="https://flagcdn.com/w40/gb.png" alt="English" class="w-10 h-7 rounded-md cursor-pointer border-2 border-transparent hover:ring-2 hover:ring-white" data-lang="en">
+      <img src="https://flagcdn.com/w40/fr.png" alt="Français" class="w-10 h-7 rounded-md cursor-pointer border-2 border-transparent hover:ring-2 hover:ring-white" data-lang="fr">
+      <img src="https://flagcdn.com/w40/es.png" alt="Español" class="w-10 h-7 rounded-md cursor-pointer border-2 border-transparent hover:ring-2 hover:ring-white" data-lang="es">
+    </div>
+  </div>
+
+</div>
+
+<script src="./dist/settings.js"></script>
