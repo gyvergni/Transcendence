@@ -282,19 +282,20 @@ class AIPlayer implements PlayerType {
 
 	private frameCounter = 0;
 	update() {
+		console.log("update");
 		this.frameCounter++;
 		if (this.frameCounter >= this.reactionTime * 60) {
 			this.update_target();
 			this.frameCounter = 0;
 		}
 		//move to target
-		if (this.target_z > this.paddle_ref_z)
+		if (this.target_z > this.paddle_ref_z - 0.2)
 		{
 			this.movement_down = false;
 			this.movement_up = true;
 			this.paddle_ref_z += 0.1;
 		}
-		else if (this.target_z < this.paddle_ref_z)
+		else if (this.target_z < this.paddle_ref_z + 0.2)
 		{
 			this.movement_up = false;
 			this.movement_down = true;
@@ -316,22 +317,20 @@ class AIPlayer implements PlayerType {
 		if (!this.is_movingToAI()) 
 			return;
 		this.target_z = this.ball.mesh.position.z;
-		this.paddle_ref_z = this.paddle.z;
-		if (this.target_z > this.paddle.topZ)
-			this.paddle_ref_z = this.paddle.topZ;
-		else if (this.target_z < this.paddle.bottomZ)
-			this.paddle_ref_z = this.paddle.bottomZ;
+		this.paddle_ref_z = Math.random() * (padle_size) + this.paddle.bottomZ;
 	}
 
 	behaviour_medium() {
 		if (!this.is_movingToAI())
-			this.target_z = 0;
-		this.target_z = this.predictZ();
-		this.paddle_ref_z = this.paddle.z;
-		if (this.target_z > this.paddle.topZ - 0.5)
-			this.paddle_ref_z = this.paddle.topZ - 0.5;
-		else if (this.target_z < this.paddle.bottomZ)
-			this.paddle_ref_z = this.paddle.bottomZ + 0.5;
+			return ;
+		else
+			this.target_z = this.predictZ();
+		if (this.target_z >= this.paddle.bottomZ && this.target_z <= this.paddle.topZ)
+		{
+			this.target_z = this.paddle_ref_z;
+			return;
+		}
+		this.paddle_ref_z = Math.random() * (padle_size) + this.paddle.bottomZ;
 	}
 
 	behaviour_hard() {
@@ -373,8 +372,6 @@ class AIPlayer implements PlayerType {
 	else
 		this.paddle_ref_z = this.target_z;
 }
-
-
 
 	predictZ(): number {
 	let z = this.ball.mesh.position.z;
