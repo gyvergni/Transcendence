@@ -13,9 +13,6 @@ RUN pnpm install
 # Copy source code
 COPY . .
 
-# Clean dist
-RUN rm -rf dist
-
 # 1️⃣ Bundle TS
 RUN pnpm run build:bundler
 
