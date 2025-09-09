@@ -1,28 +1,11 @@
 import {UIManager} from "./ui-manager.js";
-import {animateContentBoxOut, animateContentBoxIn} from "./animations.js";
 import {setContentView} from "./views.js";
 import { checkTokenValidity } from "./features/auth.js";
 
 const uiManager = new UIManager();
 export default uiManager;
 
-console.log("version0.6");
-
-document.addEventListener("keydown", async (e) => {
-	if (e.key === "Escape" && uiManager.getIsAnimating() === false && await checkTokenValidity()) {
-		uiManager.setIsAnimating(true);
-		if (uiManager.getCurrentView().includes("home"))
-		{
-			uiManager.setCurrentView("game");
-			animateContentBoxOut();
-		}
-		else
-		{
-    		animateContentBoxIn();
-			setContentView("views/home.html");
-  		}
-	}
-});
+console.log("version 0.31");
 
 // Initial DOM setup
 document.addEventListener("DOMContentLoaded",  async () => {
@@ -33,3 +16,4 @@ document.addEventListener("DOMContentLoaded",  async () => {
 	// console.log("User is authenticated");
 	setContentView("views/home.html");
 });
+

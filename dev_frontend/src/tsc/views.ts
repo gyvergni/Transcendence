@@ -11,6 +11,7 @@ import { loginUser, submitLogin2FA } from "./features/login.js";
 import { logoutUser } from "./features/logout.js";
 import { signupUser } from "./features/signup.js";
 import { account2FAHandler, accountEditAvatar, editIgUsername, editPassword, setup2FA, loadAccountAvatar, loadAccountInfo, enable2FA, disable2FA } from "./features/account.js";
+import { getSettings } from "./settings";
 
 async function loadHTML(path: string): Promise<string> {
 	const res = await fetch(path);
@@ -38,7 +39,33 @@ export async function setContentView(viewPath: string) {
 	else if (viewPath.includes("quick-match")) setQuickMatchView();
 	else if (viewPath.includes("tournament")) setupTournament();
 	else if (viewPath.includes("account")) setupAccountEvents();
+  	else if (viewPath.includes("pause")) setupPause();
 }
+
+function setupPause()
+{
+	uiManager.setCurrentView("pause");
+	toggleBackButton(false);
+	uiManager.setIsAnimating(false);
+	document.querySelectorAll("[data-view]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const option = (btn as HTMLElement).dataset.view;
+      if (option === "resume") {
+		// if (uiManager.match != null && uiManager.match.game != null)
+		uiManager.match!.game!.pause = false;
+		setGameView();
+	  }
+      else if (option === "quit")
+	  {
+		uiManager.match!.game?.endGame();
+		uiManager.match!.game = null;
+		uiManager.match = null;
+		setContentView("views/home.html");
+	  }
+    });
+  })
+}
+
 
 //Transition to gameScreen
 
@@ -212,6 +239,8 @@ function setupSettingsEvents() {
 	{
 		setContentView("views/home.html");
 	})
+	const gameSettings = getSettings();
+	console.log(gameSettings.paddleSize);
 }
 
 function setupProfileEvents() {
@@ -253,10 +282,11 @@ function setQuickMatchView() {
   const startBtn = document.getElementById("start-btn");
   const player1Config = new PlayerConfig("human");
   const player2Config = new PlayerConfig("human");
-
-  const match = new MatchSetup();
-  const player1 = createPlayerSlot("player1-select", player1Config, match);
-  const player2 = createPlayerSlot("player2-select", player2Config, match);
+  
+  uiManager.match = new MatchSetup();
+  //uiManager.match = match;
+  const player1 = createPlayerSlot("player1-select", player1Config, uiManager.match);
+  const player2 = createPlayerSlot("player2-select", player2Config, uiManager.match);
   player1Config.position = 0; //left
   player2Config.position = 1; //right
   container.appendChild(player1);

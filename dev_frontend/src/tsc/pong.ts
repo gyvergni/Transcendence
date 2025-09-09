@@ -8,13 +8,20 @@ import {PlayerConfig, MatchSetup, TournamentManager, AIDifficulty} from "./model
 
 
 //################ customization variables ###########
-import { settings } from "./settings.js"
+import { getSettings } from "./settings.js"
 
-const padle_size = settings.paddleSize;
-let PaddleColor = settings.paddleColor;
-let BallSize = settings.ballSize;
-let BallColor = settings.ballColor;
+let paddle_size: number;
+let PaddleColor: string;
+let BallSize: number;
+let BallColor: string;
 
+function setUpSettings() {
+	const gameSettings = getSettings(); // fetch latest snapshot here
+	paddle_size = gameSettings.paddleSize;
+	PaddleColor = gameSettings.paddleColor;
+	BallSize = gameSettings.ballSize;
+	BallColor = gameSettings.ballColor;
+}
 
 
 const BallSpeedLimit = 30;
@@ -40,7 +47,7 @@ class Paddle {
 
     constructor(scene: BABYLON.Scene, x: number) {
         this.mesh = BABYLON.MeshBuilder.CreateBox("GameObject", 
-            {width: 0.5, height: 0.5, depth: padle_size}, scene);
+            {width: 0.5, height: 0.5, depth: paddle_size}, scene);
         this.mesh.position.set(x, 0.5, 0);
     }
 
@@ -52,11 +59,11 @@ class Paddle {
     }
 
 	get topZ() {
-    return this.mesh.position.z + padle_size / 2;
+    return this.mesh.position.z + paddle_size / 2;
 	}
 
 	get bottomZ() {
-	    return this.mesh.position.z - padle_size / 2;
+	    return this.mesh.position.z - paddle_size / 2;
 	}
 
 	get z() {
@@ -145,7 +152,7 @@ class Ball {
 
         const hit = (limitX < hitX) ? (bx <= hitX && bx >= limitX) : (bx >= hitX && bx <= limitX);
 
-        const within = (bz > (pz - padle_size/2)) && (bz < (pz + padle_size/2));
+        const within = (bz > (pz - paddle_size/2)) && (bz < (pz + paddle_size/2));
 
         if (hit && within && ((hitX < 0 && this.dirX < 0) || (hitX > 0 && this.dirX > 0))) {
             if (this.speed < BallSpeedLimit)
@@ -188,14 +195,14 @@ class Ball {
 
 	popScoreParticles(pos: BABYLON.Vector3) {
 	
-		//set direction left padle
+		//set direction left paddle
 		if (pos.x > 0) {
 			// color
 			this.particleSystem.color1 = new BABYLON.Color4(1.0, 1.0, 1.0, 1.0);
 			this.particleSystem.emitter = new BABYLON.Vector3(-11, 1, 0);
 			var BoxEmitterLeft = this.particleSystem.createBoxEmitter(new BABYLON.Vector3(6, 1, -2), new BABYLON.Vector3(6, -1, 2), new BABYLON.Vector3(-5, 0, 12), new BABYLON.Vector3(-5, 6, -12));
 		}
-		// for right padle
+		// for right paddle
 		else {
 			// color
 			this.particleSystem.color1 = new BABYLON.Color4(1.0, 1.0, 1.0, 1.0);
@@ -282,7 +289,6 @@ class AIPlayer implements PlayerType {
 
 	private frameCounter = 0;
 	update() {
-		console.log("update");
 		this.frameCounter++;
 		if (this.frameCounter >= this.reactionTime * 60) {
 			this.update_target();
@@ -409,7 +415,7 @@ class AIPlayer implements PlayerType {
 	}
 }
 
-class Game {
+export class Game {
 	engine: BABYLON.Engine;
     scene: BABYLON.Scene;
     canvas: HTMLCanvasElement;
@@ -421,6 +427,7 @@ class Game {
     player2!: PlayerType;
 	player2Config!: PlayerConfig;
 	gameover: boolean;
+	pause: boolean;
 	particleSystem: any;
     groundLeft: BABYLON.Mesh;
 	groundRight: BABYLON.Mesh;
@@ -432,6 +439,7 @@ class Game {
     constructor(canvas: HTMLCanvasElement, match_setup: MatchSetup)
 	{
 		this.gameover = false;
+		this.pause = false;
         this.canvas = canvas;
         this.engine = new BABYLON.Engine(canvas, true);
         this.scene = new BABYLON.Scene(this.engine);
@@ -455,7 +463,27 @@ class Game {
 	{
 		this.engine.runRenderLoop(() => this.scene.render());
         window.addEventListener("resize", () => this.engine.resize());
+    }
+
+	dispose() {
+		this.engine.stopRenderLoop();
+		this.scene = new BABYLON.Scene(this.engine);
+        // this.scene.dispose();
+		// this.engine.dispose();
+		// this.scene.dispose();
+    	// this.ball.mesh.dispose();
+    	// this.p_left.mesh.dispose();
+    	// this.p_right.mesh.dispose();
+		// this.particleSystem.dispose();
+    	// this.groundLeft.dispose();
+		// this.groundRight.dispose();
+
+		// for (let i = 0; i++; i <= 5) {
+    	// 	this.loadedTexturesL[i].dispose();
+    	// 	this.loadedTexturesR[i].dispose();
+		// }
 	}
+
     createCameraAndLight() {
         const camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 12, -15), this.scene);
         camera.setTarget(BABYLON.Vector3.Zero());
@@ -545,7 +573,7 @@ class Game {
 		this.player1.opponent = this.player2;
         this.player2.opponent = this.player1;
 
-		//si AI ajoutée, on crée l'IA en précisant son niveau de difficulté
+	
         this.p_left.mesh.material = pmaterial;
         this.p_right.mesh.material = pmaterial;
         this.ball.mesh.material = bmaterial;
@@ -584,12 +612,12 @@ class Game {
 
 	popParticles(pos: BABYLON.Vector3) {
 	
-		//set direction left padle
+		//set direction left paddle
 		if (pos.x < 0) {
 			this.particleSystem.emitter = new BABYLON.Vector3(this.ball.mesh.position.x, this.ball.mesh.position.y, this.ball.mesh.position.z);
 			var pointEmitterLeft = this.particleSystem.createPointEmitter(new BABYLON.Vector3(3, 0.5, -1), new BABYLON.Vector3(3, -0.5, 1));
 		}
-		// for right padle
+		// for right paddle
 		else {
 			this.particleSystem.emitter = new BABYLON.Vector3(this.ball.mesh.position.x, this.ball.mesh.position.y, this.ball.mesh.position.z);
 			var pointEmitterRight = this.particleSystem.createPointEmitter(new BABYLON.Vector3(-3, -0.5, 1), new BABYLON.Vector3(-3, 0.5, -1));
@@ -613,31 +641,39 @@ class Game {
 	}
 
     update() {
+		if (this.pause == true)
+			return;
 		this.player1.update();
 		this.player2.update();
 		this.ball.update(this.p_left, this.p_right);
 		this.changeGroundTexture();
 		this.updateParticles();
-        if (this.gameover == true && this.ball.startDelay == 60) {
-            //getting out of the game
-            uiManager.setCurrentView("home");
+        if (this.gameover == true && this.ball.startDelay == 60)
+            this.endGame();
+		if (this.ball.score1 == 5 || this.ball.score2 == 5)
+			this.gameover = true;
+
+	}
+
+	endGame() {
+		uiManager.setCurrentView("home");
 			if (this.ball.score1 > this.ball.score2)
 				this.match.winner = this.player1.config;
 			else
 				this.match.winner = this.player2.config;
-            animateContentBoxIn();
-			setContentView("views/home.html");
-            this.engine.stopRenderLoop();
-		}
-		if (this.ball.score1 == 5 || this.ball.score2 == 5)
-			this.gameover = true;
+        animateContentBoxIn();
+		setContentView("views/home.html");
+        this.engine.stopRenderLoop();
 	}
+
 }
 
 // ################### Run the Game ###################
 export async function startMatch( match_setup: MatchSetup ): Promise<void>
 {
     const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
+	setUpSettings();
+	console.log("Game settings loaded:", { paddle_size, PaddleColor, BallSize, BallColor });
     const game = new Game(canvas, match_setup);
 	await game.launch();
 }
@@ -658,4 +694,5 @@ export async function startTournament(tournament: TournamentManager): Promise<vo
     	tournament.currentRound = 2;
 		await startMatch(tournament.final);
     }
+	return game;
 }

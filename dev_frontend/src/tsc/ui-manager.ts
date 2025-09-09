@@ -1,9 +1,15 @@
+import {animateContentBoxOut, animateContentBoxIn} from "./animations.js";
+import {setContentView} from "./views.js";
+import {MatchSetup} from "./models.js";
+
+
 export class UIManager {
 	public doorLeft = document.getElementById("door-left")!;
 	public doorRight = document.getElementById("door-right")!;
 	public contentInner = document.getElementById("content-inner")!;
 	public canvas = document.getElementById("game-canvas") as HTMLCanvasElement;
 	public contentBox = document.getElementById("content-box")!;
+	match: MatchSetup | null = null;
 
 	public getCurrentView() {
 		return currentView;
@@ -19,6 +25,7 @@ export class UIManager {
 
 	public setIsAnimating(value: boolean) {
 		isAnimating = value;
+		console.log("Autre: %d", isAnimating);
 	}
 }
 
