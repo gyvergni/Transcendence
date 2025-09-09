@@ -1,7 +1,7 @@
 import uiManager from "./main.js";
 
 import {animateContentBoxOut, animateContentBoxIn, toggleBackButton} from "./animations.js";
-import { startQuickMatch } from "./pong.js";
+import { startMatch } from "./pong.js";
 import {createPlayerSlot} from "./player-selection.js";
 import { PlayerConfig, MatchSetup } from "./models.js";
 import {setupTournament} from "./tournament.js"
@@ -269,6 +269,6 @@ function setQuickMatchView() {
     }
 
     setGameView();
-    setTimeout(() => startQuickMatch(player1Config, player2Config), 100);
+    setTimeout(() => startMatch(match), 100);
   });
 }

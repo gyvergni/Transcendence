@@ -49,6 +49,8 @@ export interface GameTypeManager {
 
 export class MatchSetup implements GameTypeManager {
   players: PlayerConfig[] = [];
+  winner: PlayerConfig | null = null;
+  loser: PlayerConfig | null = null;
 
   addPlayer(config: PlayerConfig) {
     this.players.push(config);
@@ -65,7 +67,8 @@ export class MatchSetup implements GameTypeManager {
 
 export class TournamentManager implements GameTypeManager {
   players: PlayerConfig[] = [];
-  matches: MatchSetup[] = [];
+  firstRound: MatchSetup[] = [];
+  final: MatchSetup | null = null;
   currentRound = 0;
 
   addPlayer(player: PlayerConfig) {
@@ -74,17 +77,5 @@ export class TournamentManager implements GameTypeManager {
 
   getPlayers(): PlayerConfig[] {
     return this.players;
-  }
-
-  setupFirstRound() {
-    if (this.players.length !== 4) {
-      throw new Error("Need 4 players to start tournament");
-    }
-
-    this.matches = [new MatchSetup(), new MatchSetup()];
-
-    //ENTER MATCHMAKING LOGIC
-
-    this.currentRound = 1;
   }
 }

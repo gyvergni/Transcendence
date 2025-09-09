@@ -3,7 +3,7 @@
 	"scripts": {
 		"css": "npx @tailwindcss/cli -i ./src/css/input.css -o ./src/css/style.css --watch",
 		"tsc": "tsc --watch",
-		"dev": "concurrently \"pnpm:css\" \"pnpm:tsc\"",
+		"dev": "concurrently \"pnpm:build:bundler\" \"pnpm:css\" \"pnpm:tsc\"",
 		"build:bundler": "esbuild src/tsc/main.ts --bundle --outfile=dist/main.js --minify --sourcemap",
     	"build:css": "npx tailwindcss -i src/css/input.css -o ./dist/style.css",
     	"build:assets": "mkdir -p dist && cp ./src/index.html ./dist/ && cp -r ./public/* ./dist/ && mkdir -p dist/views && cp -r ./src/views/* ./dist/views/",

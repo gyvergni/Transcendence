@@ -3,7 +3,8 @@ import uiManager from "./main.js";
 import { toggleBackButton } from "./animations.js";
 import { createPlayerSlot } from "./player-selection.js";
 import { setContentView, setGameView } from "./views.js";
-import { PlayerConfig, TournamentManager } from "./models.js";
+import { PlayerConfig, MatchSetup, TournamentManager } from "./models.js";
+import { startTournament } from "./pong.js";
 
 export function setupTournament() {
   uiManager.setCurrentView("tournament");
@@ -21,25 +22,40 @@ export function setupTournament() {
 
   const tournament = new TournamentManager();
 
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < 4; i++)
+  {
     const config = new PlayerConfig("human");
-    tournament.addPlayer(config);
     const slotId = `player-select-${i}`;
     const playerSlot = createPlayerSlot(slotId, config, tournament);
     container.appendChild(playerSlot);
   }
-
+console.log("tournament length: ", tournament.players.length);
   const startBtn = document.getElementById("start-btn");
-  startBtn?.addEventListener("click", () => {
-    if (tournament.players.some((p) => !p.isReady())) {
-      alert("⚠️ All 4 players must be locked in before starting!");
+  startBtn?.addEventListener("click", () => 
+  {
+    if (tournament.players.some((p) => !p.isReady()))
+    {
+      alert("All 4 players must be locked in before starting!");
       return;
     }
+    if (tournament.players.length !== 4)
+      throw new Error("Need 4 players to start tournament");
 
-    tournament.setupFirstRound();
-    console.log("🏓 Tournament setup complete:", tournament.matches);
+    const shuffled = [...tournament.players].sort(() => Math.random() - 0.5);
+    tournament.firstRound = [new MatchSetup(), new MatchSetup()];
 
+    // First match: players 0 and 1
+    tournament.firstRound[0].addPlayer(shuffled[0]);
+    tournament.firstRound[0].addPlayer(shuffled[1]);
+
+    // Second match: players 2 and 3
+    tournament.firstRound[1].addPlayer(shuffled[2]);
+    tournament.firstRound[1].addPlayer(shuffled[3]);
+
+    console.log("Match 1:", tournament.firstRound[0].players.map(p => p.name));
+    console.log("Match 2:", tournament.firstRound[1].players.map(p => p.name));
+
+    startTournament(tournament);
     setGameView();
-    // TODO: start semi-final match
-  });
+  })
 }

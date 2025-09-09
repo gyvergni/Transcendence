@@ -1,10 +1,10 @@
 
 //################ imports ############
-import * as BABYLON from 'babylonjs';
+import * as BABYLON from "babylonjs";
 import uiManager from "./main.js";
 import {animateContentBoxIn} from "./animations.js";
 import {setContentView} from "./views.js";
-import {PlayerConfig, AIDifficulty} from "./models.js";
+import {PlayerConfig, MatchSetup, TournamentManager, AIDifficulty} from "./models.js";
 
 
 //################ customization variables ###########
@@ -151,7 +151,7 @@ class Ball {
             if (this.speed < BallSpeedLimit)
                 this.speed += 0.5;
 			console.log(`Ball speed: ${this.speed}`);
-            this.dirZ += bz - pz;
+            this.dirZ += (bz - pz) * padle_size;
             const diff = (this.speed * this.speed - this.dirZ * this.dirZ);
             this.dirX = hitX > 0 ? -Math.sqrt(Math.abs(diff)) : Math.sqrt(Math.abs(diff));
 			this.pTimer = 1;
@@ -257,8 +257,8 @@ class AIPlayer implements PlayerType {
 	side: "left" | "right";
 	difficulty: AIDifficulty;
 	reactionTime: number;
-	target_z: number;
-	paddle_ref_z: number = 0;
+	padTargetZ: number;
+	padRefZ: number = 0;
 	movement_up: boolean = false;
 	movement_down: boolean = false;
 	config: PlayerConfig;
@@ -272,7 +272,7 @@ class AIPlayer implements PlayerType {
 		this.side = side;
 		this.difficulty = config.difficulty;
 		this.reactionTime = 1;
-		this.target_z = 0;
+		this.padTargetZ = 0;
 		this.config = config;
 	}
 
@@ -289,19 +289,21 @@ class AIPlayer implements PlayerType {
 			this.frameCounter = 0;
 		}
 		//move to target
-		if (this.target_z > this.paddle_ref_z - 0.2)
+		if (this.padTargetZ > this.padRefZ - 0.1)
 		{
 			this.movement_down = false;
 			this.movement_up = true;
-			this.paddle_ref_z += 0.1;
+			this.padRefZ += 0.1;
 		}
-		else if (this.target_z < this.paddle_ref_z + 0.2)
+		else if (this.padTargetZ < this.padRefZ + 0.1)
 		{
 			this.movement_up = false;
 			this.movement_down = true;
-			this.paddle_ref_z -= 0.1;
+			this.padRefZ -= 0.1;
 		}
 		this.paddle.move(this.movement_up, this.movement_down);
+		this.movement_up = false;
+		this.movement_down = false;
 	}
 
 	update_target() {
@@ -316,83 +318,71 @@ class AIPlayer implements PlayerType {
 	behaviour_easy() {
 		if (!this.is_movingToAI()) 
 			return;
-		this.target_z = this.ball.mesh.position.z;
-		this.paddle_ref_z = Math.random() * (padle_size) + this.paddle.bottomZ;
+		this.padTargetZ = this.ball.mesh.position.z;
+		this.padRefZ = Math.random() * (padle_size) + this.paddle.bottomZ;
 	}
 
 	behaviour_medium() {
 		if (!this.is_movingToAI())
 			return ;
 		else
-			this.target_z = this.predictZ();
-		if (this.target_z >= this.paddle.bottomZ && this.target_z <= this.paddle.topZ)
+			this.padTargetZ = this.predictZ();
+		if (this.padTargetZ >= this.paddle.bottomZ && this.padTargetZ <= this.paddle.topZ)
 		{
-			this.target_z = this.paddle_ref_z;
+			this.padTargetZ = this.padRefZ;
 			return;
 		}
-		this.paddle_ref_z = Math.random() * (padle_size) + this.paddle.bottomZ;
+		this.padRefZ = Math.random() * (padle_size) + this.paddle.bottomZ;
 	}
 
 	behaviour_hard() {
-	if (!this.is_movingToAI()) {
-		this.target_z = 0; // go center when ball is not coming
-		return;
-	}
+    if (!this.is_movingToAI()) {
+        this.padTargetZ = 0; // return to center if ball not coming
+        return;
+    }
 
-	// Choose which corner to aim for (based on opponent paddle position)
-	const z_target = this.opponent && this.opponent.paddle.z > 0 ? -5 : 5;
-	const x_target = this.side === "left" ? 10 : -10;
+    // Step 1: predict where ball will hit this paddle
+    const interceptZ = this.predictZ();
 
-	// Ball info at paddle intersection
-	const bx = -x_target;
-	const bz = this.predictZ();
-	const dirX = this.ballDirXIntercept;
-	const dirZ = this.ballDirZIntercept;
+    // Step 2: decide corner to aim for
+    const z_target = this.opponent && this.opponent.paddle.z > 0 ? -5 : 5;
+    const x_target = this.side === "left" ? 10 : -10;
+    const myX = this.side === "left" ? -10 : 10;
 
-	// Slope needed to go from intercept to corner
-	const dx = x_target - (this.side === "left" ? -10 : 10); // paddle X position
-	const dz = z_target - bz;
-	const slope = dz / dx;
+    // Step 3: slope needed to reach the corner
+    const dx = x_target - myX;
+    const dz = z_target - interceptZ;
+    const slope = dz / dx;
 
-	// Desired outgoing dirZ based on slope
-	const dirX_out = dirX > 0 ? Math.sqrt(this.ball.speed ** 2 / (1 + slope ** 2))
-							  : -Math.sqrt(this.ball.speed ** 2 / (1 + slope ** 2));
-	const dirZ_out = slope * dirX_out;
+    // Step 4: compute desired outgoing direction
+    const dirX_out = this.side === "left"
+        ? Math.sqrt(this.ball.speed ** 2 / (1 + slope ** 2))
+        : -Math.sqrt(this.ball.speed ** 2 / (1 + slope ** 2));
+    const dirZ_out = slope * dirX_out;
 
-	// Figure out how much to offset paddle center to create that reflection
-	const requiredOffset = dirZ_out - dirZ;
+    // Step 5: figure out impact offset required
+    const dirZ_in = this.ballDirZIntercept;
+    const requiredImpactOffset = (dirZ_out - dirZ_in) / padle_size;
 
-	this.target_z = bz - requiredOffset;
+    // Step 6: target paddle Z so that ball hits at that offset
+    this.padTargetZ = interceptZ - requiredImpactOffset;
 
-	// Find which end of paddle to move
-	if (this.target_z > this.paddle.topZ - 0.5)
-		this.paddle_ref_z = this.paddle.topZ - 0.5;
-	else if (this.target_z < this.paddle.bottomZ + 0.5)
-		this.paddle_ref_z = this.paddle.bottomZ + 0.5;
-	else
-		this.paddle_ref_z = this.target_z;
+    this.padRefZ = this.paddle.z;
 }
+
 
 	predictZ(): number {
 	let z = this.ball.mesh.position.z;
 	let x = this.ball.mesh.position.x;
 	let dirX = this.ball.dirX;
 	let dirZ = this.ball.dirZ;
-	let distToWall;
-	let targetX: number;
-
-	if (this.side == "left")
-		targetX = -10
-	else
-		targetX = 10;
+	
+	const targetX = this.side === "left" ? -10 : 10;
+	
 	while ((dirX < 0 && x > targetX) || (dirX > 0 && x < targetX)) {
 		// distance until next wall hit
-		if (dirZ > 0)
-			distToWall = 5 - z
-		else if (dirZ < 0)
-			distToWall = z + 5;
-		else
-			distToWall = 1000;
+		
+    	let distToWall = dirZ > 0 ? (5 - z) : (z + 5);
 
 		let stepsToWall = distToWall / Math.abs(dirZ);
 
@@ -434,11 +424,12 @@ class Game {
 	particleSystem: any;
     groundLeft: BABYLON.Mesh;
 	groundRight: BABYLON.Mesh;
+	match: MatchSetup;
 
     loadedTexturesL: any[] = [];
     loadedTexturesR: any[] = [];
 
-    constructor(canvas: HTMLCanvasElement, player1Config: PlayerConfig, player2Config: PlayerConfig)
+    constructor(canvas: HTMLCanvasElement, match_setup: MatchSetup)
 	{
 		this.gameover = false;
         this.canvas = canvas;
@@ -446,8 +437,9 @@ class Game {
         this.scene = new BABYLON.Scene(this.engine);
 		this.particleSystem = new BABYLON.ParticleSystem("particles", 20, this.scene);
 
-		this.player1Config = player1Config;
-        this.player2Config = player2Config;
+		this.match = match_setup;
+		this.player1Config = match_setup.players[0];
+        this.player2Config = match_setup.players[1];
 
         this.groundLeft = BABYLON.MeshBuilder.CreateGround("ground", {width: 10, height: 11}, this.scene);
 		this.groundRight = BABYLON.MeshBuilder.CreateGround("ground", {width: 10, height: 11}, this.scene);
@@ -458,11 +450,12 @@ class Game {
         this.createObjects();
 		this.createParticles();
         this.scene.registerBeforeRender(() => this.update());
-
-        this.engine.runRenderLoop(() => this.scene.render());
-        window.addEventListener("resize", () => this.engine.resize());
     }
-
+	launch()
+	{
+		this.engine.runRenderLoop(() => this.scene.render());
+        window.addEventListener("resize", () => this.engine.resize());
+	}
     createCameraAndLight() {
         const camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 12, -15), this.scene);
         camera.setTarget(BABYLON.Vector3.Zero());
@@ -628,6 +621,10 @@ class Game {
         if (this.gameover == true && this.ball.startDelay == 60) {
             //getting out of the game
             uiManager.setCurrentView("home");
+			if (this.ball.score1 > this.ball.score2)
+				this.match.winner = this.player1.config;
+			else
+				this.match.winner = this.player2.config;
             animateContentBoxIn();
 			setContentView("views/home.html");
             this.engine.stopRenderLoop();
@@ -638,8 +635,27 @@ class Game {
 }
 
 // ################### Run the Game ###################
-export function startQuickMatch( player1Config: PlayerConfig, player2Config: PlayerConfig ): void
+export async function startMatch( match_setup: MatchSetup ): Promise<void>
 {
     const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
-    const game = new Game(canvas, player1Config, player2Config);
+    const game = new Game(canvas, match_setup);
+	await game.launch();
+}
+
+export async function startTournament(tournament: TournamentManager): Promise<void>
+{
+	console.log("started tournament with", tournament.firstRound[0].players[0].name);
+    await startMatch(tournament.firstRound[0]);
+	console.log(tournament.firstRound[0].winner!.name);
+	await startMatch(tournament.firstRound[1]);
+	console.log(tournament.firstRound[1].winner!.name);
+	tournament.currentRound = 1;
+    tournament.final = new MatchSetup;
+    if (tournament.firstRound[0].winner && tournament.firstRound[1].winner)
+    {
+    	tournament.final.addPlayer(tournament.firstRound[0].winner);
+    	tournament.final.addPlayer(tournament.firstRound[1].winner);
+    	tournament.currentRound = 2;
+		await startMatch(tournament.final);
+    }
 }
