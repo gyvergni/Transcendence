@@ -674,9 +674,9 @@ export async function startMatch( match_setup: MatchSetup ): Promise<void>
     const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
 	setUpSettings();
 	console.log("Game settings loaded:", { paddle_size, PaddleColor, BallSize, BallColor });
-    match_setup.escape();
 	const game = new Game(canvas, match_setup);
 	match_setup.game = game;
+	match_setup.escape();
 	await game.launch();
 }
 
