@@ -31,6 +31,7 @@ function closeDoors() {
 export function animateContentBoxIn() {
 	toggleIsAnimation(true);
   closeDoors();
+  console.log("avant");
   setTimeout(() =>
 	{
 		uiManager.contentBox.classList.remove("hidden");
@@ -38,10 +39,11 @@ export function animateContentBoxIn() {
 	  // Force reflow
 	  uiManager.contentBox.getBoundingClientRect();
 
-	  uiManager.contentBox.classList.remove("opacity-0", "scale-0");
-	  uiManager.contentBox.classList.add("opacity-100", "scale-100");
+		uiManager.contentBox.classList.remove("opacity-0", "scale-0");
+		uiManager.contentBox.classList.add("opacity-100", "scale-100");
+		toggleIsAnimation(false);
 	}, 1000)
-	toggleIsAnimation(false);
+	console.log("apres 1");
 }
 
 export function animateContentBoxOut() {
@@ -52,9 +54,10 @@ export function animateContentBoxOut() {
 	setTimeout(() => {
     uiManager.contentBox.classList.add("hidden");
 	openDoors();
-
-	}, 600); // Match transition duration
 	toggleIsAnimation(false);
+
+	}, 1000); // Match transition duration
+	
 }
 
 function toggleIsAnimation(show: boolean)
