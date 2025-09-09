@@ -1,8 +1,8 @@
 // models.ts
 
-import {startQuickMatch, Game} from "./pong.js"
+import {startMatch, Game} from "./pong.js"
 import {animateContentBoxOut, animateContentBoxIn} from "./animations.js";
-import {setContentView, setGameView} from "./views.js";
+import {setContentView, setGameView, setupPause} from "./views.js";
 import uiManager from "./main.js";
 
 export type PlayerType = "human" | "ai";
@@ -70,18 +70,11 @@ export class MatchSetup implements GameTypeManager {
 		return this.players[0].isReady() === true && this.players[1]?.isReady() === true;
 	}
 
-	startGame(): void 
-	{
-		setGameView();
-
-		setTimeout(() => 
-			this.game = startQuickMatch(this.players[0], this.players[1]), 100);
-		this.escape();
-	}
 	async escape()
 	{
 		console.log(uiManager.getIsAnimating());
-		document.addEventListener("keydown", (e) => {
+		document.addEventListener("keydown", (e) => 
+    {
 			console.log("1: %d", uiManager.getIsAnimating());
 			if (e.key === "Escape" && uiManager.getIsAnimating() === false) {
 				console.log("2: %d", uiManager.getIsAnimating());
@@ -99,7 +92,7 @@ export class MatchSetup implements GameTypeManager {
 						this.game.pause = true;
 					animateContentBoxIn();
 					console.log("apres 2");
-					setContentView("views/pause.html");
+					setupPause(this);
 					console.log("4: %d", uiManager.getIsAnimating());
 				};
 			}

@@ -158,7 +158,7 @@ class Ball {
             if (this.speed < BallSpeedLimit)
                 this.speed += 0.5;
 			console.log(`Ball speed: ${this.speed}`);
-            this.dirZ += (bz - pz) * padle_size;
+            this.dirZ += (bz - pz) * paddle_size;
             const diff = (this.speed * this.speed - this.dirZ * this.dirZ);
             this.dirX = hitX > 0 ? -Math.sqrt(Math.abs(diff)) : Math.sqrt(Math.abs(diff));
 			this.pTimer = 1;
@@ -325,7 +325,7 @@ class AIPlayer implements PlayerType {
 		if (!this.is_movingToAI()) 
 			return;
 		this.padTargetZ = this.ball.mesh.position.z;
-		this.padRefZ = Math.random() * (padle_size) + this.paddle.bottomZ;
+		this.padRefZ = Math.random() * (paddle_size) + this.paddle.bottomZ;
 	}
 
 	behaviour_medium() {
@@ -338,7 +338,7 @@ class AIPlayer implements PlayerType {
 			this.padTargetZ = this.padRefZ;
 			return;
 		}
-		this.padRefZ = Math.random() * (padle_size) + this.paddle.bottomZ;
+		this.padRefZ = Math.random() * (paddle_size) + this.paddle.bottomZ;
 	}
 
 	behaviour_hard() {
@@ -368,7 +368,7 @@ class AIPlayer implements PlayerType {
 
     // Step 5: figure out impact offset required
     const dirZ_in = this.ballDirZIntercept;
-    const requiredImpactOffset = (dirZ_out - dirZ_in) / padle_size;
+    const requiredImpactOffset = (dirZ_out - dirZ_in) / paddle_size;
 
     // Step 6: target paddle Z so that ball hits at that offset
     this.padTargetZ = interceptZ - requiredImpactOffset;
@@ -674,7 +674,9 @@ export async function startMatch( match_setup: MatchSetup ): Promise<void>
     const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
 	setUpSettings();
 	console.log("Game settings loaded:", { paddle_size, PaddleColor, BallSize, BallColor });
-    const game = new Game(canvas, match_setup);
+    match_setup.escape();
+	const game = new Game(canvas, match_setup);
+	match_setup.game = game;
 	await game.launch();
 }
 
@@ -694,5 +696,4 @@ export async function startTournament(tournament: TournamentManager): Promise<vo
     	tournament.currentRound = 2;
 		await startMatch(tournament.final);
     }
-	return game;
 }

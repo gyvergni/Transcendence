@@ -39,12 +39,17 @@ export async function setContentView(viewPath: string) {
 	else if (viewPath.includes("quick-match")) setQuickMatchView();
 	else if (viewPath.includes("tournament")) setupTournament();
 	else if (viewPath.includes("account")) setupAccountEvents();
-  	else if (viewPath.includes("pause")) setupPause();
 }
 
-function setupPause()
+export async function setupPause(match: MatchSetup)
 {
-	uiManager.setCurrentView("pause");
+	if (!uiManager.contentInner) {
+		console.error("Missing content-box in DOM");
+		return;
+	}
+	const html = await loadHTML("views/pause.html");
+	uiManager.contentInner.innerHTML = html;
+	uiManager.setCurrentView("views/pause.html");
 	toggleBackButton(false);
 	uiManager.setIsAnimating(false);
 	document.querySelectorAll("[data-view]").forEach((btn) => {
@@ -52,14 +57,13 @@ function setupPause()
       const option = (btn as HTMLElement).dataset.view;
       if (option === "resume") {
 		// if (uiManager.match != null && uiManager.match.game != null)
-		uiManager.match!.game!.pause = false;
+		match!.game!.pause = false;
 		setGameView();
 	  }
       else if (option === "quit")
 	  {
-		uiManager.match!.game?.endGame();
-		uiManager.match!.game = null;
-		uiManager.match = null;
+		match!.game?.endGame();
+		match!.game = null;
 		setContentView("views/home.html");
 	  }
     });
@@ -283,10 +287,11 @@ function setQuickMatchView() {
   const player1Config = new PlayerConfig("human");
   const player2Config = new PlayerConfig("human");
   
-  uiManager.match = new MatchSetup();
+  
+	let match = new MatchSetup();
   //uiManager.match = match;
-  const player1 = createPlayerSlot("player1-select", player1Config, uiManager.match);
-  const player2 = createPlayerSlot("player2-select", player2Config, uiManager.match);
+  const player1 = createPlayerSlot("player1-select", player1Config, match);
+  const player2 = createPlayerSlot("player2-select", player2Config, match);
   player1Config.position = 0; //left
   player2Config.position = 1; //right
   container.appendChild(player1);
