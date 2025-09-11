@@ -14,8 +14,10 @@ services:
       - ./dev_backend/prisma:/app/prisma
       - ./dev_backend/public:/app/public
       - /app/node_modules
-    ports: 
-      - "3000:3000"
+    expose:
+      - 3000
+    # ports: 
+    #   - "3000:3000"
     networks:
       - transcendence
     restart: always
@@ -52,8 +54,10 @@ services:
       - ./dev_frontend/public:/app/public
       - ./dev_frontend/dist:/app/dist
       - /app/node_modules
-    ports:
-      - "3005:3005"
+    expose:
+      - 3005
+    # ports:
+    #   - "3005:3005"
     networks:
       - transcendence
     depends_on:
