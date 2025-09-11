@@ -12,9 +12,10 @@ backendNodeModules = ./dev_backend/node_modules
 backendDb = ./dev_backend/prisma/db.sqlite*
 backendPrismaMigration = ./dev_backend/prisma/migrations
 backendPrismaGenerated = ./dev_backend/src/generated
+backendAvatars = ./dev_backend/public/avatars/avatar_*
 frontendNodeModules = ./dev_frontend/node_modules
 frontendDist = ./dev_frontend/dist
-	
+
 
 ### DEV ###
 
@@ -44,9 +45,9 @@ dev-fclean: dev-clean
 	rm -rdf $(backendDb)
 	rm -rdf $(backendPrismaMigration)
 	rm -rdf $(backendPrismaGenerated)
+	rm -f $(backendAvatars)
 	rm -rdf $(frontendNodeModules)
 	rm -rdf $(frontendDist)
-	rm -rdf ./dev_frontend/src/dist
 	docker volume prune --all --force
 
 dev-re: dev-fclean dev
