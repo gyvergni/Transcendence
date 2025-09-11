@@ -1,3 +1,5 @@
+import {Lang, setLang} from "./translation.js"
+
 interface GameSettings {
 	paddleSize: number;
 	paddleColor: string;
@@ -6,10 +8,8 @@ interface GameSettings {
 	language: string;
 }
 
-// LocalStorage key
 const STORAGE_KEY = "pong-settings";
 
-// Default settings
 const defaultSettings: GameSettings = {
 	paddleSize: 5,
 	paddleColor: "#ffffff",
@@ -20,92 +20,111 @@ const defaultSettings: GameSettings = {
 
 // Load from localStorage (or defaults if empty)
 function loadSettings(): GameSettings {
+	PaddleSizeSetting();
+	PaddleColorSetting();
+	BallColorSetting();
+	BallSizeSetting();
+	LanguageSetting();
 	const stored = localStorage.getItem(STORAGE_KEY);
 	return stored ? JSON.parse(stored) : { ...defaultSettings };
 }
 
-// Save settings to localStorage
 function saveSettings(settings: GameSettings) {
 	localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+}
+
+export function resetSettings() {
+	saveSettings(defaultSettings);
 }
 
 // Initialize current settings
 const settings: GameSettings = loadSettings();
 
 // ---------- Paddle Size ----------
-const paddleSizeInput = document.getElementById("paddle-size-value") as HTMLInputElement;
-if (paddleSizeInput) {
-	// set slider to saved value
-	paddleSizeInput.value = settings.paddleSize.toString();
+export function PaddleSizeSetting() {
+	const paddleSizeInput = document.getElementById("paddle-size-value") as HTMLInputElement;
+	if (paddleSizeInput) {
+		paddleSizeInput.value = settings.paddleSize.toString();
 
-	paddleSizeInput.addEventListener("input", () => {
-		settings.paddleSize = parseInt(paddleSizeInput.value, 10);
-		saveSettings(settings);
-		console.log("Paddle size saved:", settings.paddleSize);
-	});
+		paddleSizeInput.addEventListener("input", () => {
+			settings.paddleSize = parseInt(paddleSizeInput.value, 10);
+			saveSettings(settings);
+			console.log("Paddle size saved:", settings.paddleSize);
+		});
+	}
 }
 
 // ---------- Paddle Color ----------
-const paddleColorButtons = document.querySelectorAll<HTMLDivElement>("[data-pdl-color]");
-paddleColorButtons.forEach((btn) => {
-	btn.addEventListener("click", () => {
-		const color = btn.getAttribute("data-pdl-color");
-		if (color) {
-			settings.paddleColor = color;
-			saveSettings(settings);
-			console.log("Paddle color saved:", settings.paddleColor);
-		}
-	});
-});
-
-// ---------- Ball Color ----------
-const ballColorButtons = document.querySelectorAll<HTMLDivElement>("[data-ball-color]");
-ballColorButtons.forEach((btn) => {
-	btn.addEventListener("click", () => {
-		const color = btn.getAttribute("data-ball-color");
-		if (color) {
-			settings.ballColor = color;
-			saveSettings(settings);
-			console.log("Ball color saved:", settings.ballColor);
-		}
-	});
-});
-
-// ---------- Ball Size ----------
-const ballSizeInput = document.getElementById("ball-size") as HTMLInputElement;
-const ballSizeValue = document.getElementById("ball-size-value");
-
-if (ballSizeInput) {
-	// set slider to saved value
-	ballSizeInput.value = settings.ballSize.toString();
-	if (ballSizeValue) {
-		ballSizeValue.textContent = settings.ballSize.toString();
-	}
-
-	ballSizeInput.addEventListener("input", () => {
-		settings.ballSize = parseInt(ballSizeInput.value, 10);
-		saveSettings(settings);
-		if (ballSizeValue) {
-			ballSizeValue.textContent = settings.ballSize.toString();
-		}
-		console.log("Ball size saved:", settings.ballSize);
+export function PaddleColorSetting() {
+	const paddleColorButtons = document.querySelectorAll<HTMLDivElement>("[data-pdl-color]");
+	paddleColorButtons.forEach((btn) => {
+		btn.addEventListener("click", () => {
+			const color = btn.getAttribute("data-pdl-color");
+			if (color) {
+				settings.paddleColor = color;
+				saveSettings(settings);
+				console.log("Paddle color saved:", settings.paddleColor);
+			}
+		});
 	});
 }
 
-// ---------- Language Selection ----------
-const langButtons = document.querySelectorAll<HTMLImageElement>("[data-lang]");
-langButtons.forEach((flag) => {
-	flag.addEventListener("click", () => {
-		const lang = flag.getAttribute("data-lang");
-		if (lang) {
-			settings.language = lang;
-			saveSettings(settings);
-			console.log("Language saved:", settings.language);
-		}
+// ---------- Ball Color ----------
+export function BallColorSetting() {
+	const ballColorButtons = document.querySelectorAll<HTMLDivElement>("[data-ball-color]");
+	ballColorButtons.forEach((btn) => {
+		btn.addEventListener("click", () => {
+			const color = btn.getAttribute("data-ball-color");
+			if (color) {
+				settings.ballColor = color;
+				saveSettings(settings);
+				console.log("Ball color saved:", settings.ballColor);
+			}
+		});
 	});
-});
+}
 
-// Export settings loader for the game
+// ---------- Ball Size ----------
+export function BallSizeSetting() {
+	const ballSizeInput = document.getElementById("ball-size") as HTMLInputElement;
+	const ballSizeValue = document.getElementById("ball-size-value");
+
+	if (ballSizeInput) {
+		ballSizeInput.value = settings.ballSize.toString();
+		if (ballSizeValue) {
+			ballSizeValue.textContent = settings.ballSize.toString();
+		}
+
+		ballSizeInput.addEventListener("input", () => {
+			settings.ballSize = parseInt(ballSizeInput.value, 10);
+			saveSettings(settings);
+			if (ballSizeValue) {
+				ballSizeValue.textContent = settings.ballSize.toString();
+			}
+			console.log("Ball size saved:", settings.ballSize);
+		});
+	}
+}
+
+// ---------- Language Selection ----------
+export function LanguageSetting() {
+	const langButtons = document.querySelectorAll<HTMLImageElement>("[data-lang]");
+	langButtons.forEach((flag) => {
+		flag.addEventListener("click", () => {
+			const lang: Lang = flag.getAttribute("data-lang") as Lang;
+			if (lang) {
+				settings.language = lang;
+				saveSettings(settings);
+				console.log("Language saved:", settings.language);
+				setLang(lang);
+			}
+		});
+	});
+}
+
+
+
+// Export settings loader for the game to return saved version
 export function getSettings(): GameSettings {
-	return loadSettings(); // always returns saved version
+	return loadSettings();
 }

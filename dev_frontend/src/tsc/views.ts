@@ -12,6 +12,7 @@ import { logoutUser } from "./features/logout.js";
 import { signupUser } from "./features/signup.js";
 import { account2FAHandler, accountEditAvatar, editIgUsername, editPassword, setup2FA, loadAccountAvatar, loadAccountInfo, enable2FA, disable2FA } from "./features/account.js";
 import { getSettings } from "./settings.js";
+import { setLang, currentLang } from "./translation.js";
 
 async function loadHTML(path: string): Promise<string> {
 	const res = await fetch(path);
@@ -30,7 +31,7 @@ export async function setContentView(viewPath: string) {
 	const html = await loadHTML(viewPath);
 	uiManager.contentInner.innerHTML = html;
 	uiManager.setCurrentView(viewPath);
-
+	setLang(currentLang);
 	if (viewPath.includes("login")) setupLoginEvents();
 	else if (viewPath.includes("home")) setupHomeEvents();
 	else if (viewPath.includes("settings")) setupSettingsEvents();

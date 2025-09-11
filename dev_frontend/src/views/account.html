@@ -5,7 +5,7 @@
 </svg>
 
 <div class="-mb-2 -mt-1">
-	<h2 class="mb-4 text-2xl font-semibold text-center">Account Infos</h2>
+	<h2 class="mb-4 text-2xl font-semibold text-center" data-i18n="account.info"></h2>
 	<div id="account-avatar" class="flex items-center justify-center mb-3">
 		<div class="relative group w-20 h-20">
 			<img id="account-avatar-img" src="" alt="Avatar"
@@ -19,11 +19,11 @@
 		</div>
 	</div>
 	<div>
-		<span>Username : </span>
+		<span data-i18n="account.username.enter"></span>
 		<span id="account-displayed-username"></span>
 	</div>
 	<div class="mt-2">
-		<span>In-Game Username : </span>
+		<span data-i18n="account.igusername.title"></span>
 		<span id="account-displayed-igUsername" class=""></span>
 		<button id="account-edit-igUsername" type="button" class="px-2 align-bottom	">
 			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 hover:bg-gray-700/50 rounded-sm">
@@ -32,69 +32,65 @@
 		</button>
 		<div id="edit-igUsername-form-container" class="fixed inset-y-0 -inset-x-0.5 items-center justify-center bg-black/40 rounded-xl z-50 hidden">
 			<form id="edit-igUsername-form" class="w-[500px] p-6 h-auto bg-slate-900 rounded-xl shadow-xl gap-4 flex flex-col border border-cyan-300">
-				<h3 class="text-xl font-semibold text-center mt-2 text-white">Change In-Game Username</h3>
+				<h3 class="text-xl font-semibold text-center mt-2 text-white" data-i18n="account.change.igusername"></h3>
 				<div id="edit-igUsername-error" class="text-red-500 text-center text-[1.1rem] mb-2"></div>
 				<div class="mb-2">
-					<label for="account-new-igUsername" class="block text-white mb-1">New In-Game Username</label>
+					<label for="account-new-igUsername" class="block text-white mb-1" data-i18n="account.new.igusername"></label>
 					<input id="account-new-igUsername" name="new-igUsername" type="text" required
 					class="w-full px-4 py-2 rounded bg-slate-700 text-white border border-slate-600 focus:outline-none focus:ring-2 focus:ring-purple-500">
 				</div>
 				<div class="mb-2">
-					<label for="account-igUsername-password" class="block text-white mb-1">Current Password</label>
+					<label for="account-igUsername-password" class="block text-white mb-1" data-i18n="account.current.pass"></label>
 					<input id="account-igUsername-password" name="igUsername-password" type="password" required
 					class="w-full px-4 py-2 rounded bg-slate-700 text-white border border-slate-600 focus:outline-none focus:ring-2 focus:ring-purple-500">
 				</div>
 				<div class="flex justify-center gap-2 mb-2">
-					<button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition">Save</button>
-					<button type="button" id="edit-igUsername-cancel-btn" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition">Cancel</button>
+					<button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition" data-i18n="account.save"></button>
+					<button type="button" id="edit-igUsername-cancel-btn" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition" data-i18n="account.cancel"></button>
 				</div>
 			</form>
 		</div>
 	</div>
 	<div class="flex items-center justify-between mt-4 -mb-1 gap-1">
 		<div>
-			<button type="button" id="account-edit-password" class="w-32 px-4 py-1 rounded bg-amber-500 text-white hover:bg-amber-700 transition">
-				Password
-			</button>
+			<button type="button" id="account-edit-password" class="w-32 px-4 py-1 rounded bg-amber-500 text-white hover:bg-amber-700 transition" data-i18n="account.change.pw"> </button>
 			<div id="edit-password-form-container" class="fixed inset-y-0 -inset-x-0.5 items-center justify-center bg-black/40 rounded-xl z-50 hidden">
 				<form id="edit-password-form" class="w-[500px] p-6 h-auto bg-slate-900 rounded-xl shadow-xl gap-4 flex flex-col border border-cyan-300">
-					<h3 class="text-xl font-semibold text-center mt-2 text-white">Change In-Game Username</h3>
+					<h3 class="text-xl font-semibold text-center mt-2 text-white" data-i18n="account.change.pw"></h3>
 					<div id="edit-password-error" class="text-red-500 text-center text-[1.1rem] mb-2"></div>
 					<div class="mb-2">
-						<label for="account-old-password" class="block text-white mb-1">Old Password</label>
+						<label for="account-old-password" class="block text-white mb-1" data-i18n="account.oldpass"></label>
 						<input id="account-old-password" name="old-password" type="password" required
 						class="w-full px-4 py-2 rounded bg-slate-700 text-white border border-slate-600 focus:outline-none focus:ring-2 focus:ring-purple-500">
 					</div>
 					<div class="mb-2">
-						<label for="account-new-password" class="block text-white mb-1">New Password</label>
+						<label for="account-new-password" class="block text-white mb-1" data-i18n="account.newpass"></label>
 						<input id="account-new-password" name="new-password" type="password" required
 						class="w-full px-4 py-2 rounded bg-slate-700 text-white border border-slate-600 focus:outline-none focus:ring-2 focus:ring-purple-500">
 					</div>
 					<div class="mb-2">
-						<label for="account-confirm-password" class="block text-white mb-1">Confirm Password</label>
+						<label for="account-confirm-password" class="block text-white mb-1" data-i18n="account.conf.pass"></label>
 						<input id="account-confirm-password" name="confirm-password" type="password" required
 						class="w-full px-4 py-2 rounded bg-slate-700 text-white border border-slate-600 focus:outline-none focus:ring-2 focus:ring-purple-500">
 					</div>
 					<div class="flex justify-center gap-2 mb-2">
-						<button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition">Save</button>
-						<button type="button" id="edit-password-cancel-btn" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition">Cancel</button>
+						<button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition" data-i18n="account.save"></button>
+						<button type="button" id="edit-password-cancel-btn" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition" data-i18n="account.cancel"></button>
 					</div>
 				</form>
 			</div>
 		</div>
 		<div>
-			<button type="button" id="toggle-2fa" class="w-32 px-4 py-1 rounded text-white transition">
-				2FA
-			</button>
+			<button type="button" id="toggle-2fa" class="w-32 px-4 py-1 rounded text-white transition" data-i18n="account.butt.2FA"></button>
 			<div id="edit-2fa-setup-form-container" class="fixed inset-0 flex items-center justify-center bg-black/40 rounded-xl z-50 hidden">
 				<form id="edit-2fa-form" class="w-[100vw] max-w-none -mx-[10vw] p-6 bg-slate-900 rounded-xl shadow-xl flex flex-col gap-4 border border-green-400 items-center">
-					<h3 class="text-2xl font-bold text-center text-green-400 mb-2">Enable two-factor authentication</h3>
+					<h3 class="text-2xl font-bold text-center text-green-400 mb-2" data-i18n="account.enable"></h3>
 					<div id="div-qr-code" class="flex flex-col items-center gap-2">
 						<img id="qr-code-2fa" src="" alt="QR Code 2FA" class="w-40 h-40 rounded-lg border-2 border-green-400 shadow" style="display:none;">
-						<span class="text-xs text-gray-400 text-center">Scan this QR code with your authentication app (Google Authenticator, etc.).</span>
+						<span class="text-xs text-gray-400 text-center" data-i18n="account.qr.mess"></span>
 					</div>
 					<div class="w-full max-w-md">
-						<label for="input-2fa-token" class="block text-white mb-1">One-time code</label>
+						<label for="input-2fa-token" class="block text-white mb-1" data-i18n="account.otc"></label>
 						<input id="input-2fa-token" name="input-2fa-token" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6"
 							class="w-full px-4 py-2 rounded bg-slate-700 text-white border border-slate-600 focus:outline-none focus:ring-2 focus:ring-green-400"
 							placeholder="Enter the generated code" autocomplete="one-time-code" required>
@@ -102,25 +98,24 @@
 					<div id="div-2fa-error" class="text-red-500 text-center text-[1.1rem]"></div>
 					<div id="div-2fa-success" class="text-green-500 text-center text-[1.1rem]"></div>
 					<div class="flex justify-center gap-2 mt-2">
-						<button type="submit" id="edit-2fa-validate-btn" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700 transition">Validate</button>
-						<button type="button" id="edit-2fa-cancel-btn" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition">Cancel</button>
+						<button type="submit" id="edit-2fa-validate-btn" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700 transition" data-i18n="account.validate"></button>
+						<button type="button" id="edit-2fa-cancel-btn" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition" data-i18n="account.cancel"></button>
 					</div>
 				</form>
 			</div>
 			<div id="edit-2fa-disable-form-container" class="fixed inset-0 flex items-center justify-center bg-black/40 rounded-xl z-50 hidden">
 				 <form id="disable-2fa-form" class="w-[100vw] max-w-none -mx-[10vw] p-6 bg-slate-900 rounded-xl shadow-xl flex flex-col gap-4 border border-red-400 items-center">
-                    <h3 class="text-2xl font-bold text-center text-red-400 mb-2">Disable two-factor authentication</h3>
-                    <div class="text-sm text-gray-400 text-center mb-4">
-                        Enter your current password and a 2FA code to disable two-factor authentication.
+                    <h3 class="text-2xl font-bold text-center text-red-400 mb-2" data-i18n="account.2FA.title"></h3>
+                    <div class="text-sm text-gray-400 text-center mb-4" data-i18n="account.disable2FA.message">
                     </div>
                     <div class="w-full max-w-md">
-                        <label for="disable-2fa-password" class="block text-white mb-1">Current Password</label>
+                        <label for="disable-2fa-password" class="block text-white mb-1" data-i18n="account.current.pass"></label>
                         <input id="disable-2fa-password" name="disable-2fa-password" type="password" 
                             class="w-full px-4 py-2 rounded bg-slate-700 text-white border border-slate-600 focus:outline-none focus:ring-2 focus:ring-red-400"
                             placeholder="Enter your current password" required>
                     </div>
                     <div class="w-full max-w-md">
-                        <label for="disable-2fa-token" class="block text-white mb-1">One-time code</label>
+                        <label for="disable-2fa-token" class="block text-white mb-1" data-i18n="account.otc"></label>
                         <input id="disable-2fa-token" name="disable-2fa-token" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6"
                             class="w-full px-4 py-2 rounded bg-slate-700 text-white border border-slate-600 focus:outline-none focus:ring-2 focus:ring-red-400"
                             placeholder="Enter the generated code" autocomplete="one-time-code" required>
@@ -128,8 +123,8 @@
                     <div id="div-disable-2fa-error" class="text-red-500 text-center text-[1.1rem]"></div>
                     <div id="div-disable-2fa-success" class="text-green-500 text-center text-[1.1rem]"></div>
                     <div class="flex justify-center gap-2 mt-2">
-                        <button type="submit" id="disable-2fa-validate-btn" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 transition">Disable 2FA</button>
-                        <button type="button" id="disable-2fa-cancel-btn" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition">Cancel</button>
+                        <button type="submit" id="disable-2fa-validate-btn" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 transition" data-i18n="account.butt.d2fA"></button>
+                        <button type="button" id="disable-2fa-cancel-btn" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition" data-i18n="account.cancel"></button>
                     </div>
                 </form>
 			</div>

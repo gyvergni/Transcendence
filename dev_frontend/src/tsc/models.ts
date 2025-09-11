@@ -76,7 +76,7 @@ export class MatchSetup implements GameTypeManager {
 		document.addEventListener("keydown", (e) => 
     {
 			console.log("1: %d", uiManager.getIsAnimating());
-			if (e.key === "Escape" && uiManager.getIsAnimating() === false) {
+			if (e.key === "Escape" /*&& uiManager.getIsAnimating() === false*/) {
 				console.log("2: %d", uiManager.getIsAnimating());
 				uiManager.setIsAnimating(true);
 				if (uiManager.getCurrentView().includes("pause"))

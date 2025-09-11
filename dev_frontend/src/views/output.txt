@@ -1,0 +1,7 @@
+105:						<button type="submit" id="edit-2fa-validate-btn" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700 transition" data-i18n="account.validate"></button>
+106:						<button type="button" id="edit-2fa-cancel-btn" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition" data-i18n="account.cancel"></button>
+113:                    <div class="text-sm text-gray-400 text-center mb-4" data-i18n="account.disable2FA.message">
+117:                        <label for="disable-2fa-password" class="block text-white mb-1" data-i18n="account.disable2FA.password">Current Password</label>
+123:                        <label for="disable-2fa-token" class="block text-white mb-1" data-i18n="account.otc"></label>
+131:                        <button type="submit" id="disable-2fa-validate-btn" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 transition" data-i18n="account:d2fA">Disable 2FA</button>
+132:                        <button type="button" id="disable-2fa-cancel-btn" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700 transition" data-i18n="account:cancel">Cancel</button>
