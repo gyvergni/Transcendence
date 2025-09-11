@@ -358,7 +358,7 @@ export async function changeAvatarHandler(req: FastifyRequest, reply: FastifyRep
 			});
 		}
 	
-		const ext = path.extname(data.filename);
+		const ext : string = path.extname(data.filename).toLowerCase();
 		const fileName = 'avatar_' + currentUser.id + ext;
 		const filePath = path.join(__dirname, '../../../public/avatars', fileName);
 	
@@ -382,7 +382,7 @@ export async function getAvatarHandler(req: FastifyRequest, reply: FastifyReply)
 	try {
 		const user = await findUserByPseudo(currentUser.pseudo);
 		if (!user || !user.avatar) {
-			return httpError({
+			return httpError({          
 				reply,
 				message: "Avatar not found",
 				code: StatusCodes.NOT_FOUND,
