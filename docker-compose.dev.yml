@@ -1,0 +1,75 @@
+networks:
+  transcendence: 
+    driver:  bridge
+
+services:
+  api:
+    container_name: api
+    build:
+      context: ./dev_backend
+      dockerfile: Dockerfile.dev
+    image: image_api
+    volumes:
+      - ./dev_backend/src:/app/src
+      - ./dev_backend/prisma:/app/prisma
+      - ./dev_backend/public:/app/public
+      - /app/node_modules
+    ports: 
+      - "3000:3000"
+    networks:
+      - transcendence
+    restart: always
+
+  nginx:
+    container_name: nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.dev
+    image: image_nginx
+    volumes:
+      # - nginx:/etc/nginx/ssl/
+      - ./dev_frontend/src/index.html:/var/www/html/index.html
+      - ./dev_frontend/src/views:/var/www/html/views
+      - ./dev_frontend/public:/var/www/html/public
+      - ./dev_frontend/dist:/var/www/html/dist
+    ports:
+      - "8443:443"
+    depends_on:
+      - api
+      - frontend
+    networks:
+      - transcendence
+    restart: always
+
+  frontend:
+    container_name: frontend
+    build:
+      context: ./dev_frontend
+      dockerfile: Dockerfile.dev
+    image: image_frontend
+    volumes:
+      - ./dev_frontend/src:/app/src
+      - ./dev_frontend/public:/app/public
+      - ./dev_frontend/dist:/app/dist
+      - /app/node_modules
+    ports:
+      - "3005:3005"
+    networks:
+      - transcendence
+    depends_on:
+      - api
+    restart: always
+
+# volumes:
+#   api:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       device: ./app/api
+#       o: bind
+  # nginx:
+  #   driver: local
+  #   driver_opts:
+  #     type: none
+  #     device: ./app/nginx
+  #     o: bind

@@ -1,0 +1,29 @@
+FROM debian:bookworm
+
+RUN apt update && apt upgrade -y && apt install -y nginx openssl
+
+RUN mkdir -p /etc/nginx/ssl
+
+RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    -out /etc/nginx/ssl/transcendence.crt \
+    -keyout /etc/nginx/ssl/transcendence.key \
+    -subj "/C=FR/ST=ARA/L=Lyon/O=42/OU=42/CN=localhost"
+
+# Permissions correctes pour les certificats
+RUN chmod 644 /etc/nginx/ssl/transcendence.crt
+RUN chmod 600 /etc/nginx/ssl/transcendence.key
+RUN chown root:root /etc/nginx/ssl/*
+
+
+# COPY ./tools/index.html /var/www/html/index.html/
+
+RUN chmod 755 /var/www/html
+RUN chown -R www-data:www-data /var/www/html
+
+COPY ./conf/config.conf /etc/nginx/sites-available/default
+
+EXPOSE 443
+
+ENTRYPOINT ["nginx", "-g", "daemon off;"]
+
+# docker run -d --name transcendence-nginx -p 443:443 -v C:/Users/Eliott/Documents/Transcendence/dev_frontend/src:/var/www/html transcendence-nginx

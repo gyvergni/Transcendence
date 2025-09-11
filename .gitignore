@@ -15,6 +15,7 @@ dev_backend/build/
 
 dev_frontend/src/dist/
 dev_frontend/build/
+dev_frontend/dist/
 
 # Logs
 *.log
@@ -25,6 +26,11 @@ dev_backend/prisma/db.sqlite
 # Prisma
 dev_backend/src/generated/
 dev_backend/prisma/migrations/
+
+
+# Avatars
+dev_backend/public/avatars/*
+!dev_backend/public/avatars/default_avatar.png
 
 # Volumes docker
 app/

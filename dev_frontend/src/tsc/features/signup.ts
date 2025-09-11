@@ -1,7 +1,5 @@
-import { lookupService } from "dns";
 import { setContentView } from "../views.js";
 import { API_BASE_URL } from "./utils-api.js";
-import { errorMonitor } from "events";
 import { connectWebSocket, reconnectWebSocket } from "./auth.js";
 
 const temp = false;

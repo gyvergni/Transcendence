@@ -1,15 +1,15 @@
 {
 	"name": "tailwind-quick",
 	"scripts": {
-		"css": "npx @tailwindcss/cli -i ./src/css/input.css -o ./src/css/style.css --watch",
+		"css": "npx @tailwindcss/cli -i ./src/css/input.css -o ./dist/style.css --watch",
 		"tsc": "tsc --watch",
-		"dev": "concurrently \"pnpm:build:bundler\" \"pnpm:css\" \"pnpm:tsc\"",
+		"dev": "concurrently \"pnpm:css\" \"pnpm:tsc\" \"pnpm:watch\"",
 		"build:bundler": "esbuild src/tsc/main.ts --bundle --outfile=dist/main.js --minify --sourcemap",
-    	"build:css": "npx tailwindcss -i src/css/input.css -o ./dist/style.css",
-    	"build:assets": "mkdir -p dist && cp ./src/index.html ./dist/ && cp -r ./public/* ./dist/ && mkdir -p dist/views && cp -r ./src/views/* ./dist/views/",
-    	"build": "rm -rf dist && npm run build:bundler && npm run build:css && npm run build:assets",
-    	"watch": "esbuild src/tsc/main.ts --bundle --outfile=dist/main.js --watch --sourcemap"
-	},
+		"build:css": "npx tailwindcss -i src/css/input.css -o ./dist/style.css",
+		"build:assets": "mkdir -p dist && cp ./src/index.html ./dist/ && cp -r ./public/* ./dist/ && mkdir -p dist/views && cp -r ./src/views/* ./dist/views/",
+		"build": "rm -rf dist && npm run build:bundler && npm run build:css && npm run build:assets",
+		"watch": "esbuild src/tsc/main.ts --bundle --outfile=dist/main.js --watch --sourcemap"
+  },
 	"devDependencies": {
 		"@types/node": "^24.0.14",
 		"concurrently": "^9.2.0",
@@ -26,5 +26,6 @@
 	"main": "tailwind.config.js",
 	"author": "",
 	"license": "ISC",
-	"description": ""
+	"description": "",
+	"packageManager": "pnpm@10.12.1+sha512.f0dda8580f0ee9481c5c79a1d927b9164f2c478e90992ad268bbb2465a736984391d6333d2c327913578b2804af33474ca554ba29c04a8b13060a717675ae3ac"
 }

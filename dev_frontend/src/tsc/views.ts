@@ -11,7 +11,7 @@ import { loginUser, submitLogin2FA } from "./features/login.js";
 import { logoutUser } from "./features/logout.js";
 import { signupUser } from "./features/signup.js";
 import { account2FAHandler, accountEditAvatar, editIgUsername, editPassword, setup2FA, loadAccountAvatar, loadAccountInfo, enable2FA, disable2FA } from "./features/account.js";
-import { getSettings } from "./settings";
+import { getSettings } from "./settings.js";
 
 async function loadHTML(path: string): Promise<string> {
 	const res = await fetch(path);

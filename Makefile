@@ -1,37 +1,54 @@
-DockerComposeFile 	= ./docker-compose.yml
-apiVolume 		= ./app/api
-frontendVolume 	= ./app/frontend
-folderVolume = ./app
-API_DOCKER_VOLUME	= transcendence_api
-FRONTEND_DOCKER_VOLUME	= transcendence_nginx
+DockerComposeFile 	= ./docker-compose.dev.yml
 
-all: up
+### PROD ###
+# apiVolume 		= ./app/api
+# frontendVolume 	= ./app/frontend
+# folderVolume = ./app
+# API_DOCKER_VOLUME	= transcendence_api
+# FRONTEND_DOCKER_VOLUME	= transcendence_nginx
 
-up:
-	mkdir -p $(apiVolume)
-	mkdir -p $(frontendVolume)
+### DEV SYNC ###
+backendNodeModules = ./dev_backend/node_modules
+backendDb = ./dev_backend/prisma/db.sqlite*
+backendPrismaMigration = ./dev_backend/prisma/migrations
+backendPrismaGenerated = ./dev_backend/src/generated
+frontendNodeModules = ./dev_frontend/node_modules
+frontendDist = ./dev_frontend/dist
+	
+
+### DEV ###
+
+dev: dev-up
+
+dev-up:
+	cd dev_backend && pnpm install
+	cd dev_backend && npx prisma migrate dev --name init
+	cd dev_frontend && pnpm install
 	docker compose -f $(DockerComposeFile) up -d --build
 
-down: 
+dev-down:
 	docker compose -f $(DockerComposeFile) down
 
-stop: 
+dev-stop:
 	docker compose -f $(DockerComposeFile) stop
 
-start: 
+dev-start:
 	docker compose -f $(DockerComposeFile) start
 
-clean: down
+dev-clean: dev-down
 	docker container prune --force
 	docker image prune --all --force
 
-fclean: clean
-	docker volume rm $(API_DOCKER_VOLUME) $(FRONTEND_DOCKER_VOLUME)
-	rm -rdf $(apiVolume)
-	rm -rdf $(frontendVolume)
-	rm -rdf $(folderVolume)
-	docker volume prune --force
+dev-fclean: dev-clean
+	rm -rdf $(backendNodeModules)
+	rm -rdf $(backendDb)
+	rm -rdf $(backendPrismaMigration)
+	rm -rdf $(backendPrismaGenerated)
+	rm -rdf $(frontendNodeModules)
+	rm -rdf $(frontendDist)
+	rm -rdf ./dev_frontend/src/dist
+	docker volume prune --all --force
 
-re: fclean all
+dev-re: dev-fclean dev
 
-.PHONY: all up down stop start clean fclean re
+.PHONY: dev dev-up dev-down dev-stop dev-start dev-clean dev-fclean dev-re

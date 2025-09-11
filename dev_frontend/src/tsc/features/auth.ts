@@ -45,14 +45,14 @@ let websocket: WebSocket | null = null;
 		websocket.close();
 	}
 
-	websocket = new WebSocket("ws://127.0.0.1:3000/ws");
+	websocket = new WebSocket("wss://127.0.0.1:8443/ws");
 
 	websocket.onopen = () => {
 		// console.log("WebSocket connection established");
 		const token = localStorage.getItem("accessToken");
 		if (token) {
 			websocket?.send(JSON.stringify({ type: "auth", token }));
-		}
+		}	
 	};
 
 	websocket.onmessage = (event) => {
