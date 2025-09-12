@@ -3,7 +3,7 @@ import uiManager from "./main.js";
 import {animateContentBoxOut, animateContentBoxIn, toggleBackButton} from "./animations.js";
 import { startMatch } from "./pong.js";
 import {createPlayerSlot} from "./player-selection.js";
-import { PlayerConfig, MatchSetup } from "./models.js";
+import { PlayerConfig, MatchSetup, GuestsManager } from "./models.js";
 import {setupTournament} from "./tournament.js"
 import { API_BASE_URL } from "./features/utils-api.js";
 import { checkTokenValidity, connectWebSocket } from "./features/auth.js";
@@ -288,8 +288,8 @@ function setQuickMatchView() {
   const player1Config = new PlayerConfig("human");
   const player2Config = new PlayerConfig("human");
   
+  let match = new MatchSetup();
   
-	let match = new MatchSetup();
   //uiManager.match = match;
   const player1 = createPlayerSlot("player1-select", player1Config, match);
   const player2 = createPlayerSlot("player2-select", player2Config, match);
