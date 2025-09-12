@@ -1,7 +1,7 @@
 // models.ts
 
 import {startMatch, Game} from "./pong.js"
-import {animateContentBoxOut, animateContentBoxIn} from "./animations.js";
+import {animateContentBoxOut, animateContentBoxIn, toggleIsAnimation} from "./animations.js";
 import {setContentView, setGameView, setupPause} from "./views.js";
 import uiManager from "./main.js";
 
@@ -73,10 +73,11 @@ export class MatchSetup implements GameTypeManager {
 	async escape()
 	{
 		console.log(uiManager.getIsAnimating());
+		toggleIsAnimation(false);
 		document.addEventListener("keydown", (e) => 
-    {
+		{
 			console.log("1: %d", uiManager.getIsAnimating());
-			if (e.key === "Escape" /*&& uiManager.getIsAnimating() === false*/) {
+			if (e.key === "Escape" && uiManager.getIsAnimating() === false) {
 				console.log("2: %d", uiManager.getIsAnimating());
 				uiManager.setIsAnimating(true);
 				if (uiManager.getCurrentView().includes("pause"))

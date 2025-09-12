@@ -3,8 +3,11 @@ import {Lang, setLang} from "./translation.js"
 interface GameSettings {
 	paddleSize: number;
 	paddleColor: string;
+	paddleSpeed: number;
 	ballColor: string;
 	ballSize: number;
+	ballShape: string;
+	ballSpeed: number;
 	language: string;
 }
 
@@ -13,8 +16,11 @@ const STORAGE_KEY = "pong-settings";
 const defaultSettings: GameSettings = {
 	paddleSize: 5,
 	paddleColor: "#ffffff",
+	paddleSpeed: 10,
 	ballColor: "#ffffff",
 	ballSize: 5,
+	ballShape: "round",
+	ballSpeed: 10,
 	language: "en",
 };
 
@@ -22,8 +28,13 @@ const defaultSettings: GameSettings = {
 function loadSettings(): GameSettings {
 	PaddleSizeSetting();
 	PaddleColorSetting();
+	PaddleSpeedSetting();
+
 	BallColorSetting();
 	BallSizeSetting();
+	BallSpeedSetting();
+	BallShapeSetting();
+
 	LanguageSetting();
 	const stored = localStorage.getItem(STORAGE_KEY);
 	return stored ? JSON.parse(stored) : { ...defaultSettings };
@@ -69,6 +80,28 @@ export function PaddleColorSetting() {
 	});
 }
 
+// ---------- Paddle Speed ----------
+export function PaddleSpeedSetting() {
+	const PaddleSpeedInput = document.getElementById("paddle-speed") as HTMLInputElement;
+	const PaddleSpeedValue = document.getElementById("paddle-speed-value");
+
+	if (PaddleSpeedInput) {
+		PaddleSpeedInput.value = settings.paddleSpeed.toString();
+		if (PaddleSpeedValue) {
+			PaddleSpeedValue.textContent = settings.paddleSpeed.toString();
+		}
+
+		PaddleSpeedInput.addEventListener("input", () => {
+			settings.paddleSpeed = parseInt(PaddleSpeedInput.value, 10);
+			saveSettings(settings);
+			if (PaddleSpeedValue) {
+				PaddleSpeedValue.textContent = settings.paddleSpeed.toString();
+			}
+			console.log("Paddle speed saved:", settings.paddleSpeed);
+		});
+	}
+}
+
 // ---------- Ball Color ----------
 export function BallColorSetting() {
 	const ballColorButtons = document.querySelectorAll<HTMLDivElement>("[data-ball-color]");
@@ -105,6 +138,44 @@ export function BallSizeSetting() {
 		});
 	}
 }
+
+// ---------- Ball Speed ----------
+export function BallSpeedSetting() {
+	const ballSpeedInput = document.getElementById("ball-speed") as HTMLInputElement;
+	const ballSpeedValue = document.getElementById("ball-speed-value");
+
+	if (ballSpeedInput) {
+		ballSpeedInput.value = settings.ballSpeed.toString();
+		if (ballSpeedValue) {
+			ballSpeedValue.textContent = settings.ballSpeed.toString();
+		}
+
+		ballSpeedInput.addEventListener("input", () => {
+			settings.ballSpeed = parseInt(ballSpeedInput.value, 10);
+			saveSettings(settings);
+			if (ballSpeedValue) {
+				ballSpeedValue.textContent = settings.ballSpeed.toString();
+			}
+			console.log("Ball Speed saved:", settings.ballSpeed);
+		});
+	}
+}
+
+// ---------- Ball Shape ----------
+export function BallShapeSetting() {
+	const ballShapeButtons = document.querySelectorAll<HTMLDivElement>("[data-ball-shape]");
+	ballShapeButtons.forEach((btn) => {
+		btn.addEventListener("click", () => {
+			const Shape = btn.getAttribute("data-ball-Shape");
+			if (Shape) {
+				settings.ballShape = Shape;
+				saveSettings(settings);
+				console.log("Ball Shape saved:", settings.ballShape);
+			}
+		});
+	});
+}
+
 
 // ---------- Language Selection ----------
 export function LanguageSetting() {

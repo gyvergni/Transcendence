@@ -60,7 +60,7 @@ export function animateContentBoxOut() {
 	
 }
 
-function toggleIsAnimation(show: boolean)
+export function toggleIsAnimation(show: boolean)
 {
 	if (show === true)
 		uiManager.setIsAnimating(true);

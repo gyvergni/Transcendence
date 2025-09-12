@@ -8,24 +8,32 @@ import {PlayerConfig, MatchSetup, TournamentManager, AIDifficulty} from "./model
 
 
 //################ customization variables ###########
-import { getSettings } from "./settings.js"
+import { getSettings, resetSettings } from "./settings.js"
 
 let paddle_size: number;
 let PaddleColor: string;
+let PaddleSpeed: number;
+
 let BallSize: number;
 let BallColor: string;
+let BallSpeed: number;
+let BallShape: string;
+
 
 function setUpSettings() {
-	const gameSettings = getSettings(); // fetch latest snapshot here
+	const gameSettings = getSettings(); 
 	paddle_size = gameSettings.paddleSize;
 	PaddleColor = gameSettings.paddleColor;
+	PaddleSpeed = gameSettings.paddleSpeed;
+
 	BallSize = gameSettings.ballSize;
 	BallColor = gameSettings.ballColor;
+	BallSpeed = gameSettings.ballSpeed;
+	BallShape = gameSettings.ballShape;
 }
 
 
 const BallSpeedLimit = 30;
-let BallSpeed = 10;
 
 // ######### utility #########
 function getRandomInt(max: number) {
@@ -46,16 +54,16 @@ class Paddle {
 	mesh: BABYLON.Mesh;
 
     constructor(scene: BABYLON.Scene, x: number) {
-        this.mesh = BABYLON.MeshBuilder.CreateBox("GameObject", 
+        this.mesh = BABYLON.MeshBuilder.CreateBox("Paddle", 
             {width: 0.5, height: 0.5, depth: paddle_size}, scene);
         this.mesh.position.set(x, 0.5, 0);
     }
 
     move(up: boolean, down: boolean) {
         if (up && this.mesh.position.z < 5)
-            this.mesh.position.z += 0.1;
+            this.mesh.position.z += 0.1 * (PaddleSpeed/10);
         if (down && this.mesh.position.z > -5)
-            this.mesh.position.z -= 0.1;
+            this.mesh.position.z -= 0.1 * (PaddleSpeed/10);
     }
 
 	get topZ() {
@@ -88,7 +96,10 @@ class Ball {
 	particleSystem: any;
 
     constructor(scene: BABYLON.Scene) {
-        this.mesh = BABYLON.MeshBuilder.CreateSphere("GameObject", {diameter: BallSize * 0.1}, scene);
+		if (BallShape === "square")
+			this.mesh = BABYLON.MeshBuilder.CreateBox("Ball", {width: BallSize * 0.1, height: BallSize * 0.1, depth: BallSize * 0.1}, scene);
+		else
+        	this.mesh = BABYLON.MeshBuilder.CreateSphere("Ball", {diameter: BallSize * 0.1}, scene);
         this.mesh.position.set(0, 0.5, 0);
 		
 		this.score1 = 0;
@@ -581,7 +592,13 @@ export class Game {
         const glow = new BABYLON.GlowLayer("glow", this.scene);
         glow.intensity = 0.5;
         glow.customEmissiveColorSelector = (mesh, _, __, result) => {
-            result.set(mesh.name === "GameObject" ? 1 : 0, mesh.name === "GameObject" ? 1 : 0, mesh.name === "GameObject" ? 1 : 0, 1);
+            if (mesh.name === "Paddle") {
+    			result.set(Pcolor_r/255, Pcolor_g/255, Pcolor_b/255, 1);
+  			} else if (mesh.name === "Ball") {
+    			result.set(Bcolor_r/255, Bcolor_g/255, Bcolor_b/255, 1);
+  			} else {
+    			result.set(0, 0, 0, 1);
+			}
         };
     }
 
@@ -664,6 +681,7 @@ export class Game {
         animateContentBoxIn();
 		setContentView("views/home.html");
         this.engine.stopRenderLoop();
+		resetSettings();
 	}
 
 }
@@ -678,6 +696,7 @@ export async function startMatch( match_setup: MatchSetup ): Promise<void>
 	match_setup.game = game;
 	match_setup.escape();
 	await game.launch();
+	resetSettings();
 }
 
 export async function startTournament(tournament: TournamentManager): Promise<void>
