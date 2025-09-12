@@ -1,4 +1,3 @@
-
 //################ imports ############
 import * as BABYLON from "babylonjs";
 import uiManager from "./main.js";
@@ -151,17 +150,32 @@ class Ball {
         const bx = this.mesh.position.x;
 
         const hit = (limitX < hitX) ? (bx <= hitX && bx >= limitX) : (bx >= hitX && bx <= limitX);
-
         const within = (bz > (pz - paddle_size/2)) && (bz < (pz + paddle_size/2));
 
         if (hit && within && ((hitX < 0 && this.dirX < 0) || (hitX > 0 && this.dirX > 0))) {
+            // Always increment speed by 0.3, up to BallSpeedLimit
             if (this.speed < BallSpeedLimit)
-                this.speed += 0.5;
-			console.log(`Ball speed: ${this.speed}`);
-            this.dirZ += (bz - pz) * paddle_size;
-            const diff = (this.speed * this.speed - this.dirZ * this.dirZ);
-            this.dirX = hitX > 0 ? -Math.sqrt(Math.abs(diff)) : Math.sqrt(Math.abs(diff));
-			this.pTimer = 1;
+                this.speed = Math.min(this.speed + 0.3, BallSpeedLimit);
+            // Calculate impact: -1 (bottom) to 1 (top)
+            const impact = (bz - pz) / (paddle_size / 2);
+            // Clamp impact to [-1, 1]
+            const clampedImpact = Math.max(-1, Math.min(impact, 1));
+            // Max angle from X axis (70° from perpendicular = 20° from X axis)
+            const maxAngle = Math.PI / 2 - Math.PI / 9; // 70° from perpendicular
+            const angle = clampedImpact * maxAngle;
+            // Direction: sign of dirX
+            const signX = hitX > 0 ? -1 : 1;
+            // Calculate new dirZ, clamp to max angle
+            let newDirZ = this.speed * Math.sin(angle);
+            // Ensure dirZ sign matches impact (top hit = positive, bottom hit = negative)
+            if (clampedImpact === 0) newDirZ = 0;
+            // Calculate dirX to preserve total speed
+            let newDirX = signX * Math.sqrt(Math.max(this.speed * this.speed - newDirZ * newDirZ, 0));
+            this.dirX = newDirX;
+            this.dirZ = newDirZ;
+            this.pTimer = 1;
+            // Debug
+            console.log(`Ball speed: ${this.speed}, dirX: ${this.dirX}, dirZ: ${this.dirZ}, impact: ${impact}`);
         }
     }
 
@@ -342,77 +356,113 @@ class AIPlayer implements PlayerType {
 	}
 
 	behaviour_hard() {
-    if (!this.is_movingToAI()) {
-        this.padTargetZ = 0; // return to center if ball not coming
-        return;
+        if (!this.is_movingToAI()) {
+            this.padTargetZ = 0; // return to center if ball not coming
+            return;
+        }
+
+        // Try to hit opponent's corner with 0, 1, 2, ... bounces
+        const maxBounces = 3;
+        const corners = [5, -5]; // top and bottom corners
+        let found = false;
+        let bestTargetZ = 0;
+        let minBounces = maxBounces + 1;
+        let myX = this.side === "left" ? -10 : 10;
+        let x_target = this.side === "left" ? 10 : -10;
+        for (let cornerIdx = 0; cornerIdx < corners.length; cornerIdx++) {
+            let z_target = corners[cornerIdx];
+            for (let bounces = 0; bounces <= maxBounces; bounces++) {
+                // Simulate the ball's path with bounces
+                let intercept = this.simulateIntercept(myX, x_target, z_target, bounces);
+                if (intercept !== null) {
+                    // Found a valid shot
+                    found = true;
+                    if (bounces < minBounces) {
+                        minBounces = bounces;
+                        bestTargetZ = intercept;
+                    }
+                    break; // Prefer fewer bounces
+                }
+            }
+            if (found) break;
+        }
+        if (found) {
+            this.padTargetZ = bestTargetZ;
+        } else {
+            // fallback: just predict where the ball will hit
+            this.padTargetZ = this.predictZ();
+        }
+        this.padRefZ = this.paddle.z;
     }
 
-    // Step 1: predict where ball will hit this paddle
-    const interceptZ = this.predictZ();
+    // Simulate the ball's path to see if it can reach (x_target, z_target) with a given number of bounces
+    simulateIntercept(myX: number, x_target: number, z_target: number, bounces: number): number | null {
+        // Ball's current position and direction
+        let z = this.ball.mesh.position.z;
+        let x = this.ball.mesh.position.x;
+        let dirX = this.ball.dirX;
+        let dirZ = this.ball.dirZ;
+        let speed = this.ball.speed;
+        // Simulate until we reach the paddle's X
+        let wallHits = 0;
+        const wallTop = 5;
+        const wallBottom = -5;
+        while ((dirX < 0 && x > x_target) || (dirX > 0 && x < x_target)) {
+            let distToWall = dirZ > 0 ? (wallTop - z) : (z - wallBottom);
+            let stepsToWall = Math.abs(distToWall / dirZ);
+            let distToPaddle = Math.abs(x_target - x);
+            let stepsToPaddle = Math.abs(distToPaddle / dirX);
+            if (stepsToPaddle < stepsToWall) {
+                // Ball reaches paddle before hitting wall
+                let finalZ = z + dirZ * stepsToPaddle;
+                // Check if after the required number of bounces, the ball is close to the target corner
+                if (wallHits === bounces && Math.abs(finalZ - z_target) < 0.5) {
+                    return finalZ;
+                } else {
+                    return null;
+                }
+            } else {
+                // Ball hits wall first
+                z += dirZ * stepsToWall;
+                x += dirX * stepsToWall;
+                dirZ = -dirZ;
+                wallHits++;
+                if (wallHits > bounces) return null;
+            }
+        }
+        return null;
+    }
 
-    // Step 2: decide corner to aim for
-    const z_target = this.opponent && this.opponent.paddle.z > 0 ? -5 : 5;
-    const x_target = this.side === "left" ? 10 : -10;
-    const myX = this.side === "left" ? -10 : 10;
-
-    // Step 3: slope needed to reach the corner
-    const dx = x_target - myX;
-    const dz = z_target - interceptZ;
-    const slope = dz / dx;
-
-    // Step 4: compute desired outgoing direction
-    const dirX_out = this.side === "left"
-        ? Math.sqrt(this.ball.speed ** 2 / (1 + slope ** 2))
-        : -Math.sqrt(this.ball.speed ** 2 / (1 + slope ** 2));
-    const dirZ_out = slope * dirX_out;
-
-    // Step 5: figure out impact offset required
-    const dirZ_in = this.ballDirZIntercept;
-    const requiredImpactOffset = (dirZ_out - dirZ_in) / paddle_size;
-
-    // Step 6: target paddle Z so that ball hits at that offset
-    this.padTargetZ = interceptZ - requiredImpactOffset;
-
-    this.padRefZ = this.paddle.z;
-}
-
-
-	predictZ(): number {
-	let z = this.ball.mesh.position.z;
-	let x = this.ball.mesh.position.x;
-	let dirX = this.ball.dirX;
-	let dirZ = this.ball.dirZ;
-	
-	const targetX = this.side === "left" ? -10 : 10;
-	
-	while ((dirX < 0 && x > targetX) || (dirX > 0 && x < targetX)) {
-		// distance until next wall hit
-		
-    	let distToWall = dirZ > 0 ? (5 - z) : (z + 5);
-
-		let stepsToWall = distToWall / Math.abs(dirZ);
-
-		// distance until reaching paddle’s X
-		let distToPaddle = Math.abs(targetX - x);
-		let stepsToPaddle = distToPaddle / Math.abs(dirX);
-
-		if (stepsToPaddle < stepsToWall) {
-			// Ball reaches paddle before hitting top/bottom
-			z += dirZ * stepsToPaddle;
-			this.ballDirZIntercept = dirZ;
-			this.ballDirXIntercept = dirX;
-			return z;
-		} else {
-			// Ball hits wall first
-			z += dirZ * stepsToWall;
-			x += dirX * stepsToWall;
-			dirZ = -dirZ; // bounce
-		}
-	}
-	this.ballDirZIntercept = dirZ;
-	this.ballDirXIntercept = dirX;
-	return z;
-	}
+    predictZ(): number {
+        let z = this.ball.mesh.position.z;
+        let x = this.ball.mesh.position.x;
+        let dirX = this.ball.dirX;
+        let dirZ = this.ball.dirZ;
+        const targetX = this.side === "left" ? -10 : 10;
+        while ((dirX < 0 && x > targetX) || (dirX > 0 && x < targetX)) {
+            // distance until next wall hit
+            let distToWall = dirZ > 0 ? (5 - z) : (z + 5);
+            let stepsToWall = Math.abs(distToWall / dirZ);
+            // distance until reaching paddle’s X
+            let distToPaddle = Math.abs(targetX - x);
+            let stepsToPaddle = Math.abs(distToPaddle / dirX);
+            if (stepsToPaddle < stepsToWall) {
+                // Ball reaches paddle before hitting top/bottom
+                z += dirZ * stepsToPaddle;
+                this.ballDirZIntercept = dirZ;
+                this.ballDirXIntercept = dirX;
+                return z;
+            } else {
+                // Ball hits wall first
+                z += dirZ * stepsToWall;
+                x += dirX * stepsToWall;
+                dirZ = -dirZ; // bounce, flip sign
+            }
+        }
+        this.ballDirZIntercept = dirZ;
+        this.ballDirXIntercept = dirX;
+        return z;
+    }
 }
 
 export class Game {
