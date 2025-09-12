@@ -1,7 +1,8 @@
 // player-selection.ts
-import { PlayerConfig, MatchSetup, GameTypeManager } from "./models.js";
+import { API_BASE_URL } from "./features/utils-api.js";
+import { PlayerConfig, MatchSetup, GameTypeManager, Guest } from "./models.js";
 
-const registeredUsers: string[] = ["alice", "bob", "carol", "dave", "eve", "frank"];
+// const registeredUsers: string[] = ["alice", "bob", "carol", "dave", "eve", "frank"];
 
 function check_name(name: string, config: PlayerConfig)
 {
@@ -16,9 +17,15 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
   const temp = document.createElement("div");
   temp.innerHTML = html.trim();
 
+  const match = gameType as MatchSetup;
+  const guestsManager = match.getGuestsManager();
+  
+  await guestsManager.fetchGuests();
+
   const selectionBox = temp.querySelector(".player-select") as HTMLElement;
   if (!selectionBox) throw new Error("Could not find .player-select in template");
 
+  let registeredUsers: string[] = guestsManager.guests.map(guest => guest.pseudo);
   selectionBox.id = id;
 
   const input = selectionBox.querySelector<HTMLInputElement>(".player-search-input")!;
@@ -29,7 +36,9 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
   let dropdownVisible = false;
 
   const updateDropdown = (term = "") => {
+	console.log("updateDropdown called");
     dropdown.innerHTML = "";
+
     const matches = registeredUsers.filter(name => name.toLowerCase().includes(term.toLowerCase()));
     if (matches.length === 0) {
       dropdown.classList.add("hidden");
@@ -58,16 +67,29 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
     setTimeout(() => { dropdown.classList.add("hidden"); dropdownVisible = false; }, 150);
   });
 
-  addBtn.addEventListener("click", () => {
+  addBtn.addEventListener("click", async () => {
     const name = input.value.trim();
     if (!name) return;
-    if (registeredUsers.includes(name)) {
-      alert(`${name} is already registered.`);
-    } else {
-      registeredUsers.push(name);
-      alert(`Added ${name} to the list.`);
-      updateDropdown("");
-    }
+
+	if (guestsManager.pseudoExists(name)) {
+		alert(`${name} is already registered.`);
+	} else {
+		const result = await guestsManager.addGuest(name);
+		if (result.succes == true) {
+			registeredUsers = guestsManager.guests.map(guest => guest.pseudo);
+			updateDropdown("");
+		} else {
+			alert(`Failed to add guest: ${result.message}`);
+		}
+	}
+    // if (registeredUsers.includes(name)) {
+    //   alert(`${name} is already registered.`);
+    // } else {
+
+    // //   registeredUsers.push(name);
+    // //   alert(`Added ${name} to the list.`);
+    //   updateDropdown("");
+    // }
   });
 
   lockInBtn.addEventListener("click", () => {

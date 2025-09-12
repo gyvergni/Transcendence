@@ -4,6 +4,7 @@ import {startMatch, Game} from "./pong.js"
 import {animateContentBoxOut, animateContentBoxIn} from "./animations.js";
 import {setContentView, setGameView, setupPause} from "./views.js";
 import uiManager from "./main.js";
+import { API_BASE_URL } from "./features/utils-api.js";
 
 export type PlayerType = "human" | "ai";
 export type AIDifficulty = "easy" | "medium" | "hard" | null;
@@ -57,6 +58,11 @@ export class MatchSetup implements GameTypeManager {
 	game: Game | null = null;
   winner: PlayerConfig | null = null;
   loser: PlayerConfig | null = null;
+  guestsManager: GuestsManager;
+	
+	constructor() {
+		this.guestsManager = new GuestsManager();
+	}
 
 	addPlayer(config: PlayerConfig) {
 		this.players.push(config);
@@ -99,6 +105,10 @@ export class MatchSetup implements GameTypeManager {
 		});
 		
 	}
+
+	getGuestsManager(): GuestsManager {
+		return this.guestsManager;
+	}
 }
 
 
@@ -115,4 +125,71 @@ export class TournamentManager implements GameTypeManager {
   getPlayers(): PlayerConfig[] {
     return this.players;
   }
+}
+
+export interface Guest {
+	id: number;
+	pseudo: string;
+}
+
+export class GuestsManager {
+	numberOfGuests: number = 0;
+	guests: Guest[] = [];
+
+	async fetchGuests() {
+		guests: null;
+		try {
+			const response = await fetch(API_BASE_URL + "/guests", {
+				method: "GET",
+				headers: {
+					'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+				}
+			})
+			if (!response.ok)
+				return (console.error("Failed to fetch guests"));
+			const data = await response.json();
+			if (data && data.guests && Array.isArray(data.guests)) {
+				this.numberOfGuests = data.numberOfGuests;
+				this.guests = data.guests.map((guests: Guest) => ({
+					id: guests.id,
+					pseudo: guests.pseudo
+				}));
+		} 
+	} catch (error) {
+			console.error("Error fetching guests:", error);
+		}
+	}
+
+	pseudoExists(pseudo: string): boolean {
+		return this.guests.some(guest => guest.pseudo === pseudo);
+	}
+
+	async addGuest(pseudo: string) {
+		try {
+			const response = await fetch(API_BASE_URL + "/guests/create", {
+				method: "POST",
+				headers: {
+					'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ pseudo: pseudo })
+			});
+			const data = await response.json();
+			if (response.status === 400) {
+				console.error("Failed to add guest, ", data.message);
+				return { succes: false, message: data.message };
+			} else if (response.status === 409) {
+				console.error("Failed to add guest, ", data.message);
+				return { succes: false, message: data.message };
+			} else if (!response.ok) {
+				console.error("Failed to add guest, server error.");
+				return { succes: false, message: data.message };
+			}
+			await this.fetchGuests();
+			return { succes: true, message: "Guest added successfully" };
+		} catch (error) {
+			console.error("Error adding guest:", error);
+			return { succes: false, message: "Network error occured" };
+		}
+	}
 }
