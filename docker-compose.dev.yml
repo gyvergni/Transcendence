@@ -13,6 +13,7 @@ services:
       - ./dev_backend/src:/app/src
       - ./dev_backend/prisma:/app/prisma
       - ./dev_backend/public:/app/public
+      - ./dev_backend/.env:/app/.env #A ENLEVER EN PROD
       - /app/node_modules
     expose:
       - 3000
@@ -54,6 +55,7 @@ services:
       - ./dev_frontend/public:/app/public
       - ./dev_frontend/dist:/app/dist
       - /app/node_modules
+      - ./dev_frontend/tailwind.config.js:/app/tailwind.config.js
     expose:
       - 3005
     # ports:
@@ -62,6 +64,10 @@ services:
       - transcendence
     depends_on:
       - api
+    environment:
+      - SHELL=/bin/sh
+      - CHOKIDAR_USEPOLLING=true
+      - CHOKIDAR_INTERVAL=300
     restart: always
 
 # volumes:

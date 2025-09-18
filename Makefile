@@ -19,12 +19,13 @@ frontendDist = ./dev_frontend/dist
 
 ### DEV ###
 
-dev: dev-up
-
-dev-up:
+dev: 
 	cd dev_backend && pnpm install
 	cd dev_backend && npx prisma migrate dev --name init
 	cd dev_frontend && pnpm install
+	make dev-up
+
+dev-up:
 	docker compose -f $(DockerComposeFile) up -d --build
 
 dev-down:
