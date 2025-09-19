@@ -30,7 +30,7 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
 
   const input = selectionBox.querySelector<HTMLInputElement>(".player-search-input")!;
   const dropdown = selectionBox.querySelector<HTMLUListElement>(".autocomplete-list")!;
-  const addBtn = selectionBox.querySelector<HTMLButtonElement>(".add-player-btn")!;
+  const addBtn = selectionBox.querySelector<HTMLButtonElement>(".add-guest-btn")!;
   const lockInBtn = selectionBox.querySelector<HTMLButtonElement>(".lock-btn")!;
 
   let dropdownVisible = false;

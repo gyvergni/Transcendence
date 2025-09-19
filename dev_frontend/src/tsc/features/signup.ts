@@ -1,6 +1,6 @@
 import { setContentView } from "../views.js";
 import { API_BASE_URL } from "./utils-api.js";
-import { connectWebSocket, reconnectWebSocket } from "./auth.js";
+import { loginWithWebSocket, reconnectWebSocket } from "./auth.js";
 
 const temp = false;
 
@@ -74,8 +74,16 @@ export async function signupUser(e: Event, form: HTMLFormElement) {
 		localStorage.setItem("accessToken", data.accessToken);
 		const contentBox = document.querySelector("#content-box")! as HTMLElement;
 		contentBox.classList.remove("w-[430px]");
-		setContentView("views/home.html");
-		reconnectWebSocket();
+
+		const success = await loginWithWebSocket(data.accessToken);
+		if (!success) {
+			errorDiv!.textContent = "Connection failed. WebSocket required for login. Try to login.";
+			setTimeout(() => { setContentView("views/login.html"); }, 3000);
+			return ;
+		} else {
+			errorDiv!.textContent = "";
+			setContentView("views/home.html");
+		}
 
 	} catch (error) {
 		console.error("Signup failed:", error);
