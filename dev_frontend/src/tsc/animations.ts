@@ -31,7 +31,6 @@ function closeDoors() {
 export function animateContentBoxIn() {
 	toggleIsAnimation(true);
   closeDoors();
-  console.log("avant");
   setTimeout(() =>
 	{
 		uiManager.contentBox.classList.remove("hidden");
@@ -43,7 +42,6 @@ export function animateContentBoxIn() {
 		uiManager.contentBox.classList.add("opacity-100", "scale-100");
 		toggleIsAnimation(false);
 	}, 1000)
-	console.log("apres 1");
 }
 
 export function animateContentBoxOut() {
