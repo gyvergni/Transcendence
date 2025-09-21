@@ -13,7 +13,7 @@ function check_name(name: string, config: PlayerConfig)
 
 // Human player selector
 async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: GameTypeManager): Promise<HTMLElement> {
-  const html = await fetch("../views/player-selection.html").then(res => res.text());
+  const html = await fetch("views/player-selection.html").then(res => res.text());
   const temp = document.createElement("div");
   temp.innerHTML = html.trim();
 

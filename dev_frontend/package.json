@@ -11,18 +11,20 @@
 		"css:watch": "chokidar \"src/index.html\" \"src/views/**/*.html\" \"src/tsc/**/*.ts\" \"src/css/**/*.css\" -i \"dist/**\" -c \"pnpm run css:build\" --initial --polling --await-write-finish=250 --verbose",
 		"css:build": "npx @tailwindcss/cli -i ./src/css/input.css -o ./dist/style.css",
 		"watch": "esbuild src/tsc/main.ts --bundle --outfile=dist/main.js --watch --sourcemap"
-  },
+	},
 	"devDependencies": {
+		"@types/chart.js": "^4.0.1",
 		"@types/node": "^24.0.14",
 		"concurrently": "^9.2.0",
+		"esbuild": "^0.25.9",
 		"tailwindcss": "^4.1.10",
-		"typescript": "^5.8.3",
-		"esbuild": "^0.25.9"
+		"typescript": "^5.8.3"
 	},
 	"dependencies": {
 		"@tailwindcss/aspect-ratio": "^0.4.2",
 		"@tailwindcss/cli": "^4.1.10",
-		"babylonjs": "^8.25.0"
+		"babylonjs": "^8.25.0",
+		"chart.js": "^4.5.0"
 	},
 	"version": "1.0.0",
 	"main": "tailwind.config.js",

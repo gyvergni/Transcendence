@@ -11,6 +11,7 @@ import { loginUser, submitLogin2FA } from "./features/login.js";
 import { logoutUser } from "./features/logout.js";
 import { signupUser } from "./features/signup.js";
 import { account2FAHandler, accountEditAvatar, editIgUsername, editPassword, setup2FA, loadAccountAvatar, loadAccountInfo, enable2FA, disable2FA } from "./features/account.js";
+import { attachStatsIfViewPresent } from "./features/stats.js";
 import { getSettings } from "./settings.js";
 import { setLang, currentLang } from "./translation.js";
 
@@ -40,6 +41,9 @@ export async function setContentView(viewPath: string) {
 	else if (viewPath.includes("quick-match")) setQuickMatchView();
 	else if (viewPath.includes("tournament")) setupTournament();
 	else if (viewPath.includes("account")) setupAccountEvents();
+
+	// allow views to attach feature-specific logic (e.g. stats scripts)
+	try { attachStatsIfViewPresent(); } catch (e) { /* ignore if not present */ }
 }
 
 export async function setupPause(match: MatchSetup)
@@ -260,7 +264,38 @@ function setupProfileEvents() {
 	});
 	statsBtn.addEventListener("click", () => {
 		console.log("Show stats view");
-		setContentView("views/stats.html"); // TODO Stats
+		// Expand the content box to act as a near-fullscreen dashboard
+		uiManager.contentBox.classList.remove("max-w-md", "rounded-xl");
+		uiManager.contentBox.classList.add("max-w-7xl", "w-full", "h-[95vh]", "p-6", "rounded-none");
+		// Set back button to revert layout back to profile when closing stats
+		toggleBackButton(true, () => {
+			uiManager.contentBox.classList.remove("max-w-7xl", "w-full", "h-[95vh]", "p-6", "rounded-none");
+			uiManager.contentBox.classList.add("max-w-md", "p-10", "rounded-xl");
+			setContentView("views/profile.html");
+		});
+		// animate the content box into view (it was expanded above)
+		animateContentBoxIn();
+		setContentView("views/stats-dashboard.html");
+	});
+
+	// Note: `setContentView` already calls `attachStatsIfViewPresent()` after injecting HTML.
+	// A MutationObserver here caused duplicate attachments and broke the back-button / dropdown
+	// behavior (it could re-run stats logic while navigating). Removed the observer to
+	// avoid re-attaching listeners unexpectedly.
+
+	// Listen for match open events dispatched by the stats view
+	window.addEventListener('open-match', (ev: any) => {
+		const mid = ev.detail?.matchId as string | undefined;
+		if (!mid) return;
+		// store temporarily so the match feature can read it
+		(window as any).__openMatchId = mid;
+		setContentView('views/match-detail.html').then(() => {
+			// inject a module script to initialize the match view to avoid TS dynamic import lint
+			const s = document.createElement('script');
+			s.type = 'module';
+			s.textContent = `import('./features/match.js').then(m=>m.initMatchView && m.initMatchView()).catch(e=>console.error('init match', e));`;
+			document.body.appendChild(s);
+		});
 	});
 
 	accountBtn.addEventListener("click", () => {

@@ -1,0 +1,76 @@
+<div class="fixed inset-0 overflow-auto p-6 bg-neutral-900/80 text-white">
+  <!-- center and make the panel take most of the viewport -->
+  <div class="w-full max-w-7xl mx-auto h-[90vh]">
+    <h2 class="text-3xl mb-4 font-bold text-center text-purple-300">Statistics</h2>
+
+  <!-- Summary boxes -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4 mb-6 h-28">
+    <div class="summary-box flex flex-col justify-center p-4 bg-indigo-800/60 rounded-lg text-center">Total games<br><span id="stat-total" class="text-2xl md:text-3xl font-bold">—</span></div>
+    <div class="summary-box flex flex-col justify-center p-4 bg-green-800/60 rounded-lg text-center">Wins<br><span id="stat-wins" class="text-2xl md:text-3xl font-bold">—</span></div>
+    <div class="summary-box flex flex-col justify-center p-4 bg-red-800/60 rounded-lg text-center">Losses<br><span id="stat-losses" class="text-2xl md:text-3xl font-bold">—</span></div>
+    <div class="summary-box flex flex-col justify-center p-4 bg-purple-800/60 rounded-lg text-center">Win %<br><span id="stat-winrate" class="text-2xl md:text-3xl font-bold">—</span></div>
+    <div class="summary-box flex flex-col justify-center p-4 bg-slate-800/60 rounded-lg text-center">Avg wall bounces<br><span id="stat-bounces" class="text-2xl md:text-3xl font-bold">—</span></div>
+    <div class="summary-box flex flex-col justify-center p-4 bg-yellow-800/60 rounded-lg text-center">Avg % time top<br><span id="stat-toptime" class="text-2xl md:text-3xl font-bold">—</span></div>
+  </div>
+
+  <div class="flex flex-col md:flex-row gap-6 h-[calc(90vh-220px)]">
+    <!-- Match history -->
+    <div class="w-full md:w-1/2 bg-black/30 rounded-lg p-4 h-full flex flex-col">
+      <h3 class="font-semibold mb-2">Last matches</h3>
+      <ul id="match-history" class="space-y-2 overflow-auto flex-1">
+        <!-- JS injects li elements here -->
+      </ul>
+    </div>
+
+    <!-- Right column: friend stats and heatmap -->
+    <div class="w-full md:w-1/2 space-y-4 h-full flex flex-col">
+      <div class="bg-black/30 rounded-lg p-3">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="font-semibold">Friends — Wins / Losses</h3>
+          <select id="friend-select" class="bg-transparent border border-white/10 rounded px-2 py-1 text-sm">
+            <option value="all">All friends</option>
+          </select>
+        </div>
+        <canvas id="friends-bar" class="w-full" height="220"></canvas>
+      </div>
+
+      <div class="bg-black/30 rounded-lg p-3">
+        <h3 class="font-semibold mb-2">Win/Loss vs AI</h3>
+        <canvas id="ai-difficulty" class="w-full" height="200"></canvas>
+        <div class="text-xs text-gray-300 mt-2">Wins (green) vs Losses (red) across AI difficulty</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Match detail modal area (hidden) -->
+  <!-- Match detail modal (overlay) -->
+  <div id="match-detail" class="fixed inset-0 z-50 flex items-start md:items-center justify-center p-6" style="display:none">
+    <div class="w-full max-w-4xl bg-black/60 rounded-lg p-4">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="font-semibold">Match detail</h3>
+      <button id="close-match-detail" class="px-2 py-1 bg-red-700 rounded">Close</button>
+    </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div>
+          <h4 class="text-sm font-medium mb-2">Wall bounces</h4>
+          <canvas id="match-wall" height="140"></canvas>
+        </div>
+        <div>
+          <h4 class="text-sm font-medium mb-2">Time top / bottom</h4>
+          <canvas id="match-time" height="140"></canvas>
+        </div>
+      </div>
+
+      <div id="match-players" class="mt-4 overflow-auto">
+        <!-- players table injected here -->
+      </div>
+    </div>
+  </div>
+  </div>
+</div>
+
+<style>
+  .summary-box { backdrop-filter: blur(6px); }
+  .match-item { padding:8px; border-bottom:1px solid rgba(255,255,255,0.04); cursor:pointer; }
+  .match-item:hover { background: rgba(255,255,255,0.02); }
+</style>

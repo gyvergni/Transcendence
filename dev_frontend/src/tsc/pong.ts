@@ -33,6 +33,10 @@ function setUpSettings() {
 
 
 const BallSpeedLimit = 30;
+// How much speed increases on each paddle hit (additive)
+const BallSpeedIncrement = 0.5;
+// Chance (0..1) that the hard AI will NOT aim for the corner (to surprise)
+const AICornerSurpriseChance = 0.12;
 
 // ######### utility #########
 function getRandomInt(max: number) {
@@ -164,9 +168,9 @@ class Ball {
         const within = (bz > (pz - paddle_size/2)) && (bz < (pz + paddle_size/2));
 
         if (hit && within && ((hitX < 0 && this.dirX < 0) || (hitX > 0 && this.dirX > 0))) {
-            // Always increment speed by 0.3, up to BallSpeedLimit
-            if (this.speed < BallSpeedLimit)
-                this.speed = Math.min(this.speed + 0.3, BallSpeedLimit);
+			// Increment speed on paddle hit (steady growth), up to BallSpeedLimit
+			if (this.speed < BallSpeedLimit)
+				this.speed = Math.min(this.speed + BallSpeedIncrement, BallSpeedLimit);
             // Calculate impact: -1 (bottom) to 1 (top)
             const impact = (bz - pz) / (paddle_size / 2);
             // Clamp impact to [-1, 1]
@@ -319,22 +323,23 @@ class AIPlayer implements PlayerType {
 			this.update_target();
 			this.frameCounter = 0;
 		}
-		//move to target
-		if (this.padTargetZ > this.padRefZ - 0.1)
-		{
-			this.movement_down = false;
+		// Smooth movement: compare target to actual paddle z and move accordingly
+		const currentZ = this.paddle.z;
+		const diff = this.padTargetZ - currentZ;
+		const eps = 0.15; // deadzone to avoid flicker
+		if (diff > eps) {
 			this.movement_up = true;
-			this.padRefZ += 0.1;
-		}
-		else if (this.padTargetZ < this.padRefZ + 0.1)
-		{
+			this.movement_down = false;
+			this.paddle.move(true, false);
+		} else if (diff < -eps) {
 			this.movement_up = false;
 			this.movement_down = true;
-			this.padRefZ -= 0.1;
+			this.paddle.move(false, true);
+		} else {
+			// close enough
+			this.movement_up = false;
+			this.movement_down = false;
 		}
-		this.paddle.move(this.movement_up, this.movement_down);
-		this.movement_up = false;
-		this.movement_down = false;
 	}
 
 	update_target() {
@@ -347,132 +352,142 @@ class AIPlayer implements PlayerType {
 	}
 
 	behaviour_easy() {
-		if (!this.is_movingToAI()) 
+		if (!this.is_movingToAI()) {
+			this.padTargetZ = 0;
 			return;
-		this.padTargetZ = this.ball.mesh.position.z;
-		this.padRefZ = Math.random() * (paddle_size) + this.paddle.bottomZ;
+		}
+		// simple follow with some noise
+		this.padTargetZ = this.ball.mesh.position.z + (Math.random() - 0.5) * (paddle_size * 0.3);
 	}
 
 	behaviour_medium() {
-		if (!this.is_movingToAI())
-			return ;
-		else
-			this.padTargetZ = this.predictZ();
-		if (this.padTargetZ >= this.paddle.bottomZ && this.padTargetZ <= this.paddle.topZ)
-		{
-			this.padTargetZ = this.padRefZ;
+		if (!this.is_movingToAI()) {
+			this.padTargetZ = 0;
 			return;
 		}
-		this.padRefZ = Math.random() * (paddle_size) + this.paddle.bottomZ;
+		// Predict where ball will intercept this paddle, with some randomness
+		this.padTargetZ = this.predictZ() + (Math.random() - 0.5) * 1.0;
 	}
 
 	behaviour_hard() {
-        if (!this.is_movingToAI()) {
-            this.padTargetZ = 0; // return to center if ball not coming
-            return;
-        }
+		if (!this.is_movingToAI()) {
+			this.padTargetZ = 0;
+			return;
+		}
 
-        // Try to hit opponent's corner with 0, 1, 2, ... bounces
-        const maxBounces = 3;
-        const corners = [5, -5]; // top and bottom corners
-        let found = false;
-        let bestTargetZ = 0;
-        let minBounces = maxBounces + 1;
-        let myX = this.side === "left" ? -10 : 10;
-        let x_target = this.side === "left" ? 10 : -10;
-        for (let cornerIdx = 0; cornerIdx < corners.length; cornerIdx++) {
-            let z_target = corners[cornerIdx];
-            for (let bounces = 0; bounces <= maxBounces; bounces++) {
-                // Simulate the ball's path with bounces
-                let intercept = this.simulateIntercept(myX, x_target, z_target, bounces);
-                if (intercept !== null) {
-                    // Found a valid shot
-                    found = true;
-                    if (bounces < minBounces) {
-                        minBounces = bounces;
-                        bestTargetZ = intercept;
-                    }
-                    break; // Prefer fewer bounces
-                }
-            }
-            if (found) break;
-        }
-        if (found) {
-            this.padTargetZ = bestTargetZ;
-        } else {
-            // fallback: just predict where the ball will hit
-            this.padTargetZ = this.predictZ();
-        }
-        this.padRefZ = this.paddle.z;
-    }
+		const maxBounces = 3;
+		// pick the corner opposite to where the opponent currently is (if available)
+		const otherCorner = 4.9;
+		const invertedCorner = -4.9;
+		let preferredCorner = 4.9;
+		try {
+			const oppZ = this.opponent?.paddle?.z ?? 0;
+			preferredCorner = oppZ >= 0 ? invertedCorner : otherCorner;
+		} catch (e) {
+			preferredCorner = 4.9;
+		}
+		// Order corners so preferredCorner is tried first
+		const corners = [preferredCorner, preferredCorner === otherCorner ? invertedCorner : otherCorner];
 
-    // Simulate the ball's path to see if it can reach (x_target, z_target) with a given number of bounces
-    simulateIntercept(myX: number, x_target: number, z_target: number, bounces: number): number | null {
-        // Ball's current position and direction
-        let z = this.ball.mesh.position.z;
-        let x = this.ball.mesh.position.x;
-        let dirX = this.ball.dirX;
-        let dirZ = this.ball.dirZ;
-        let speed = this.ball.speed;
-        // Simulate until we reach the paddle's X
-        let wallHits = 0;
-        const wallTop = 5;
-        const wallBottom = -5;
-        while ((dirX < 0 && x > x_target) || (dirX > 0 && x < x_target)) {
-            let distToWall = dirZ > 0 ? (wallTop - z) : (z - wallBottom);
-            let stepsToWall = Math.abs(distToWall / dirZ);
-            let distToPaddle = Math.abs(x_target - x);
-            let stepsToPaddle = Math.abs(distToPaddle / dirX);
-            if (stepsToPaddle < stepsToWall) {
-                // Ball reaches paddle before hitting wall
-                let finalZ = z + dirZ * stepsToPaddle;
-                // Check if after the required number of bounces, the ball is close to the target corner
-                if (wallHits === bounces && Math.abs(finalZ - z_target) < 0.5) {
-                    return finalZ;
-                } else {
-                    return null;
-                }
-            } else {
-                // Ball hits wall first
-                z += dirZ * stepsToWall;
-                x += dirX * stepsToWall;
-                dirZ = -dirZ;
-                wallHits++;
-                if (wallHits > bounces) return null;
-            }
-        }
-        return null;
-    }
+		// Surprise chance: occasionally don't attempt a corner shot so AI is less predictable
+		if (Math.random() < AICornerSurpriseChance) {
+			// fall back to interception behavior sometimes
+			this.padTargetZ = this.predictZ();
+			return;
+		}
+		const myX = this.side === 'left' ? -10 : 10;
+		const x_target = this.side === 'left' ? 10 : -10;
+		const speed = this.ball.speed;
+		const signOut = this.side === 'left' ? 1 : -1; // outgoing dirX sign after hitting this paddle
+
+		// time until ball reaches our paddle
+		const tToMy = (myX - this.ball.mesh.position.x) / this.ball.dirX;
+		if (tToMy <= 0) {
+			this.padTargetZ = this.predictZ();
+			return;
+		}
+		// ball z at collision time (including wall reflections)
+		const bz = this.computeZAfterTime(this.ball.mesh.position.z, this.ball.dirZ, tToMy).pos;
+
+		let found = false;
+		let bestPaddleZ = this.predictZ();
+		// search for desired outgoing dirZ that lands in corner with <= maxBounces
+		for (let corner of corners) {
+			for (let allowedBounces = 0; allowedBounces <= maxBounces; allowedBounces++) {
+				// sample candidate dirZ values
+				const maxDz = speed * 0.95;
+				const samples = 61;
+				for (let i = 0; i < samples; i++) {
+					const dz = -maxDz + (2 * maxDz) * (i / (samples - 1));
+					// ensure dirX will be valid
+					const abs = Math.abs(dz);
+					if (abs >= speed) continue;
+					const outDirX = signOut * Math.sqrt(Math.max(speed * speed - dz * dz, 0));
+					// simulate from our paddle (myX, bz) with outgoing (outDirX, dz)
+					const sim = this.simulateFrom(myX, bz, outDirX, dz, x_target);
+					if (!sim) continue;
+					if (sim.bounces === allowedBounces && Math.abs(sim.finalZ - corner) < 0.8) {
+						// compute required paddle center so that impact creates the desired dz
+						const maxAngle = Math.PI / 2 - Math.PI / 9;
+						let impact = Math.asin(Math.max(-1, Math.min(1, dz / speed))) / maxAngle;
+						impact = Math.max(-1, Math.min(1, impact));
+						const requiredPaddleCenter = bz - impact * (paddle_size / 2);
+						bestPaddleZ = requiredPaddleCenter;
+						found = true;
+						break;
+					}
+				}
+				if (found) break;
+			}
+			if (found) break;
+		}
+
+		if (found) this.padTargetZ = bestPaddleZ;
+		else this.padTargetZ = this.predictZ();
+	}
+
+	// Simulate from (sx, sz) with direction (dirX, dirZ) until reaching x_target. Returns finalZ and number of wall bounces.
+	simulateFrom(sx: number, sz: number, dirX: number, dirZ: number, x_target: number): { finalZ: number; bounces: number } | null {
+		if (dirX === 0) return null;
+		const dirXSign = dirX > 0 ? 1 : -1;
+		const t = (x_target - sx) / dirX;
+		if (t <= 0) return null;
+		const totalDz = dirZ * t;
+		const res = this.computeZAfterTime(sz, dirZ, t);
+		return { finalZ: res.pos, bounces: res.bounces };
+	}
+
+	// Compute final z after time t, accounting for reflections between -5 and 5. Returns pos and number of bounces.
+	computeZAfterTime(z0: number, dirZ: number, t: number): { pos: number; bounces: number } {
+		const min = -5, max = 5;
+		let pos = z0 + dirZ * t;
+		let bounces = 0;
+		// fold into [min,max]
+		while (pos > max || pos < min) {
+			if (pos > max) {
+				pos = max - (pos - max);
+				bounces++;
+			} else if (pos < min) {
+				pos = min + (min - pos);
+				bounces++;
+			}
+		}
+		return { pos, bounces };
+	}
 
     predictZ(): number {
-        let z = this.ball.mesh.position.z;
-        let x = this.ball.mesh.position.x;
-        let dirX = this.ball.dirX;
-        let dirZ = this.ball.dirZ;
-        const targetX = this.side === "left" ? -10 : 10;
-        while ((dirX < 0 && x > targetX) || (dirX > 0 && x < targetX)) {
-            // distance until next wall hit
-            let distToWall = dirZ > 0 ? (5 - z) : (z + 5);
-            let stepsToWall = Math.abs(distToWall / dirZ);
-            // distance until reaching paddle’s X
-            let distToPaddle = Math.abs(targetX - x);
-            let stepsToPaddle = Math.abs(distToPaddle / dirX);
-            if (stepsToPaddle < stepsToWall) {
-                // Ball reaches paddle before hitting top/bottom
-                z += dirZ * stepsToPaddle;
-                this.ballDirZIntercept = dirZ;
-                this.ballDirXIntercept = dirX;
-                return z;
-            } else {
-                // Ball hits wall first
-                z += dirZ * stepsToWall;
-                x += dirX * stepsToWall;
-                dirZ = -dirZ; // bounce, flip sign
-            }
-        }
-        this.ballDirZIntercept = dirZ;
-        this.ballDirXIntercept = dirX;
-        return z;
+		// Predict where the ball will intersect this paddle's X coordinate
+		const targetX = this.side === 'left' ? -10 : 10;
+		const sx = this.ball.mesh.position.x;
+		const sz = this.ball.mesh.position.z;
+		const dirX = this.ball.dirX;
+		const dirZ = this.ball.dirZ;
+		const t = (targetX - sx) / dirX;
+		if (t <= 0) return 0;
+		const res = this.computeZAfterTime(sz, dirZ, t);
+		this.ballDirZIntercept = dirZ;
+		this.ballDirXIntercept = dirX;
+		return res.pos;
     }
 }
 
