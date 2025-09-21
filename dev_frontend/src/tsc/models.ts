@@ -193,4 +193,30 @@ export class GuestsManager {
 			return { succes: false, message: "Network error occured" };
 		}
 	}
+
+	async deleteGuest(pseudo: string) {
+		try {
+			const response = await fetch(API_BASE_URL + "/guests/delete", {
+				method: "DELETE",
+				headers: {
+					'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ guestPseudo: pseudo })
+			});
+			const data = await response.json();
+			if (response.status === 404) {
+				console.error("Failed to delete guest, ", data.message);
+				return { succes: false, message: data.message };
+			} else if (!response.ok) {
+				console.error("Failed to delete guest, server error.");
+				return { succes: false, message: data.message };
+			}
+			await this.fetchGuests();
+			return { succes: true, message: "Guest deleted successfully" };
+		} catch (error) {
+			console.error("Error deleting guest:", error);
+			return { succes: false, message: "Network error occured" };
+		}
+	}
 }
