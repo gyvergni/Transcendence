@@ -6,7 +6,7 @@ import {createPlayerSlot} from "./player-selection.js";
 import { PlayerConfig, MatchSetup, GuestsManager } from "./models.js";
 import {setupTournament} from "./tournament.js"
 import { API_BASE_URL } from "./features/utils-api.js";
-import { checkTokenValidity, connectWebSocket } from "./features/auth.js";
+import { checkTokenValidity } from "./features/auth.js";
 import { loginUser, submitLogin2FA } from "./features/login.js";
 import { logoutUser } from "./features/logout.js";
 import { signupUser } from "./features/signup.js";
@@ -195,6 +195,7 @@ function setupAccountEvents() {
 		toggleBackButton(true, () => {
 			setContentView("views/profile.html");
 		});
+		setContentView("views/account.html");
 		document.querySelector("#edit-2fa-form-container")?.classList.add("hidden");
 	});
 	const form2FA = document.querySelector("#edit-2fa-form") as HTMLFormElement;
@@ -249,7 +250,7 @@ function setupSettingsEvents() {
 		setContentView("views/home.html");
 	})
 	const gameSettings = getSettings();
-	console.log(gameSettings.paddleSize);
+	// console.log(gameSettings.paddleSize);
 }
 
 function setupProfileEvents() {

@@ -14,7 +14,6 @@ document.addEventListener("DOMContentLoaded",  async () => {
 		return ;
 	}
 	setLang("en");
-	// console.log("User is authenticated");
+	// console.log("User is authenticated");//
 	setContentView("views/home.html");
 });
-

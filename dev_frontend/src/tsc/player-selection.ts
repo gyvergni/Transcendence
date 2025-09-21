@@ -30,7 +30,8 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
 
   const input = selectionBox.querySelector<HTMLInputElement>(".player-search-input")!;
   const dropdown = selectionBox.querySelector<HTMLUListElement>(".autocomplete-list")!;
-  const addBtn = selectionBox.querySelector<HTMLButtonElement>(".add-player-btn")!;
+  const addBtn = selectionBox.querySelector<HTMLButtonElement>(".add-guest-btn")!;
+  const deleteBtn = selectionBox.querySelector<HTMLButtonElement>(".delete-guest-btn")!;
   const lockInBtn = selectionBox.querySelector<HTMLButtonElement>(".lock-btn")!;
 
   let dropdownVisible = false;
@@ -71,17 +72,17 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
     const name = input.value.trim();
     if (!name) return;
 
-	if (guestsManager.pseudoExists(name)) {
-		alert(`${name} is already registered.`);
-	} else {
-		const result = await guestsManager.addGuest(name);
-		if (result.succes == true) {
-			registeredUsers = guestsManager.guests.map(guest => guest.pseudo);
-			updateDropdown("");
-		} else {
-			alert(`Failed to add guest: ${result.message}`);
-		}
-	}
+    if (guestsManager.pseudoExists(name)) {
+      alert(`${name} is already registered.`);
+    } else {
+      const result = await guestsManager.addGuest(name);
+      if (result.succes == true) {
+        registeredUsers = guestsManager.guests.map(guest => guest.pseudo);
+        updateDropdown("");
+      } else {
+        alert(`Failed to add guest: ${result.message}`);
+      }
+    }
     // if (registeredUsers.includes(name)) {
     //   alert(`${name} is already registered.`);
     // } else {
@@ -91,6 +92,24 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
     //   updateDropdown("");
     // }
   });
+
+  deleteBtn.addEventListener("click", async () => {
+    const name = input.value.trim();
+    if (!name) return;
+    if (!guestsManager.pseudoExists(name)) {
+      alert(`${name} is not registered.`);
+      return;
+    } else {
+      const result = await guestsManager.deleteGuest(name);
+      if (result.succes == true) {
+        registeredUsers = guestsManager.guests.map(guest => guest.pseudo);
+        input.value = "";
+        updateDropdown("");
+      } else {
+        alert(`Failed to delete guest: ${result.message}`);
+      }
+    }
+  })
 
   lockInBtn.addEventListener("click", () => {
     const name = input.value.trim();

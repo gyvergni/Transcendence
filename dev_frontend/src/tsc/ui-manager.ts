@@ -25,7 +25,6 @@ export class UIManager {
 
 	public setIsAnimating(value: boolean) {
 		isAnimating = value;
-		console.log("Autre: %d", isAnimating);
 	}
 }
 

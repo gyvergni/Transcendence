@@ -1,5 +1,5 @@
 import { setContentView } from "../views.js";
-import { reconnectWebSocket } from "./auth.js";
+import { disconnectWebSocket } from "./auth.js";
 import { API_BASE_URL } from "./utils-api.js";
 
 export async function logoutUser() {
@@ -16,7 +16,7 @@ export async function logoutUser() {
 		}
 		localStorage.removeItem("accessToken");
 		setContentView("views/login.html");
-		reconnectWebSocket();
+		disconnectWebSocket();
 	} catch (error) {
 		console.error("Logout failed:", error);
 	}

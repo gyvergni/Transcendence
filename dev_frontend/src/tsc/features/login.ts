@@ -1,5 +1,5 @@
 import { setContentView } from "../views.js";
-import { a2fStatus, connectWebSocket, reconnectWebSocket } from "./auth.js";
+import { a2fStatus, loginWithWebSocket, reconnectWebSocket } from "./auth.js";
 import { API_BASE_URL } from "./utils-api.js";
 
 let pendingSessionId: string | null = null;
@@ -34,13 +34,18 @@ export async function loginUser(e: Event, form: HTMLFormElement) {
 		}
 
 		const data = await loginResponse.json();
-		console.log("Login successful:", data);
+		// console.log("Login successful:", data);
 		if (await a2fStatus(data) === false) {
-			localStorage.setItem("accessToken", data.accessToken);
-			const contentBox = document.querySelector("#content-box")! as HTMLElement;
-			contentBox.classList.remove("w-[430px]");
-			setContentView("views/home.html");
-			reconnectWebSocket();
+			const success = await loginWithWebSocket(data.accessToken);
+			if (!success) {
+				errorDiv!.textContent = "Connection failed. WebSocket required for login.";
+				return ;
+			} else {
+				errorDiv!.textContent = "";
+				const contentBox = document.querySelector("#content-box")! as HTMLElement;
+				contentBox.classList.remove("w-[430px]");
+				setContentView("views/home.html");
+			}
 		} else {
 			pendingSessionId = data.loginSessionId;
 			showLogin2FADiv();
@@ -102,16 +107,20 @@ export async function submitLogin2FA(e: Event, form: HTMLFormElement) {
 		}
 
 		pendingSessionId = null;
-		localStorage.setItem("accessToken", data.accessToken);
+		const success = await loginWithWebSocket(data.accessToken);
 
-		const div2FA = document.querySelector("#login-2fa-div")! as HTMLDivElement;
-		div2FA.classList.add("hidden");
+		if (success) {
+			const div2FA = document.querySelector("#login-2fa-div")! as HTMLDivElement;
+			div2FA.classList.add("hidden");
 
-		const contentBox = document.querySelector("#content-box")! as HTMLElement;
-		contentBox.classList.remove("w-[430px]");
-
-		connectWebSocket();
-		setContentView("views/home.html");
+			const contentBox = document.querySelector("#content-box")! as HTMLElement;
+			contentBox.classList.remove("w-[430px]");
+			setContentView("views/home.html");
+		} else {
+			const errorDiv = document.querySelector("#login-2fa-error") as HTMLDivElement;
+			errorDiv.textContent = "Connection failed. WebSocket required for login. Please try again.";
+			return;
+		}
 
 	} catch (error) {
 		console.error("2FA login failed:", error);
