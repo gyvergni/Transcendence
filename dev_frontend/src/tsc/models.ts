@@ -48,10 +48,13 @@ export class PlayerConfig {
 	}
 }
 
+//Gametype manager interface
 export interface GameTypeManager {
 	getPlayers(): PlayerConfig[];
 	addPlayer(config: PlayerConfig): void;
 }
+
+//Match Setup class
 
 export class MatchSetup implements GameTypeManager {
 	players: PlayerConfig[] = [];
@@ -75,6 +78,14 @@ export class MatchSetup implements GameTypeManager {
 	isReady(): boolean {
 		return this.players[0].isReady() === true && this.players[1]?.isReady() === true;
 	}
+
+/* 	end(): PlayerConfig
+	{
+		
+		uiManager.setCurrentView("home");
+        animateContentBoxIn();
+		setContentView("views/home.html");
+	} */
 
 	async escape()
 	{
@@ -112,12 +123,18 @@ export class MatchSetup implements GameTypeManager {
 	}
 }
 
+//Tournament Manager class
 
 export class TournamentManager implements GameTypeManager {
   players: PlayerConfig[] = [];
   firstRound: MatchSetup[] = [];
   final: MatchSetup | null = null;
   currentRound = 0;
+  guestsManager: GuestsManager;
+
+  constructor() {
+    this.guestsManager = new GuestsManager();
+  }
 
   addPlayer(player: PlayerConfig) {
     this.players.push(player);
@@ -126,13 +143,21 @@ export class TournamentManager implements GameTypeManager {
   getPlayers(): PlayerConfig[] {
     return this.players;
   }
+
+  getGuestsManager(): GuestsManager {
+    return this.guestsManager;
+  }
 }
 
+//Guest Management
+
+//Interface
 export interface Guest {
 	id: number;
 	pseudo: string;
 }
 
+//Manager
 export class GuestsManager {
 	numberOfGuests: number = 0;
 	guests: Guest[] = [];
@@ -219,4 +244,6 @@ export class GuestsManager {
 			return { succes: false, message: "Network error occured" };
 		}
 	}
+
+	
 }

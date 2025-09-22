@@ -17,15 +17,15 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
   const temp = document.createElement("div");
   temp.innerHTML = html.trim();
 
-  const match = gameType as MatchSetup;
-  const guestsManager = match.getGuestsManager();
-  
+  // Use getGuestsManager for both MatchSetup and TournamentManager
+  const guestsManager = (gameType as any).getGuestsManager();
+  if (!guestsManager) throw new Error("No guestsManager found on gameType");
   await guestsManager.fetchGuests();
 
   const selectionBox = temp.querySelector(".player-select") as HTMLElement;
   if (!selectionBox) throw new Error("Could not find .player-select in template");
 
-  let registeredUsers: string[] = guestsManager.guests.map(guest => guest.pseudo);
+  let registeredUsers: string[] = guestsManager.guests.map((guest: Guest) => guest.pseudo);
   selectionBox.id = id;
 
   const input = selectionBox.querySelector<HTMLInputElement>(".player-search-input")!;
@@ -77,7 +77,7 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
     } else {
       const result = await guestsManager.addGuest(name);
       if (result.succes == true) {
-        registeredUsers = guestsManager.guests.map(guest => guest.pseudo);
+        registeredUsers = guestsManager.guests.map((guest: Guest) => guest.pseudo);
         updateDropdown("");
       } else {
         alert(`Failed to add guest: ${result.message}`);
@@ -102,7 +102,7 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
     } else {
       const result = await guestsManager.deleteGuest(name);
       if (result.succes == true) {
-        registeredUsers = guestsManager.guests.map(guest => guest.pseudo);
+        registeredUsers = guestsManager.guests.map((guest: Guest) => guest.pseudo);
         input.value = "";
         updateDropdown("");
       } else {

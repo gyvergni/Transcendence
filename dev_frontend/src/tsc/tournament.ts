@@ -16,11 +16,10 @@ export function setupTournament() {
 
   const container = document.getElementById("player-select-container");
   if (!container) return;
-
-  container.className = "grid grid-cols-2 grid-rows-2 gap-4 w-full max-w-4xl mx-auto mt-8";
   container.innerHTML = "";
+  container.className = "grid grid-cols-2 grid-rows-2 gap-4 w-full max-w-4xl mx-auto mt-8";
 
-  const tournament = new TournamentManager();
+  let tournament = new TournamentManager();
 
   for (let i = 0; i < 4; i++)
   {
