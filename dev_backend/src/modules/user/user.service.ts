@@ -1,3 +1,4 @@
+import { id } from "zod/v4/locales";
 import prisma from "../../utils/prisma";
 import { CreateUserBody } from "./user.schema";
 import bcrypt from "bcrypt";
@@ -59,6 +60,31 @@ export async function findUsers() {
         // }
     });
 };
+
+export async function findFriends(userId: number) {
+	const friends = await prisma.friends.findMany({
+		where: { user_id: userId },
+		select: {
+			users_friends_friend_idTousers: {
+				select: {
+					id: true,
+					pseudo: true,
+					game_username: true,
+					status: true,
+					avatar: true,
+				}
+			}
+		}
+	});
+
+	return friends.map(f => ({
+		id	: f.users_friends_friend_idTousers.id,
+		pseudo: f.users_friends_friend_idTousers.pseudo,
+		game_username: f.users_friends_friend_idTousers.game_username,
+		status: f.users_friends_friend_idTousers.status,
+		avatar: f.users_friends_friend_idTousers.avatar,
+	}));
+}
 
 export async function addFriend(userId: number, friendId: number) {
     await prisma.friends.create({

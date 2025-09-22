@@ -4,7 +4,7 @@ import { httpError } from "../utils/http";
 import { StatusCodes } from "http-status-codes";
 import { PrismaClient, Prisma } from "../../generated/prisma";
 import bcrypt from "bcrypt";
-import { createUser, findUserByPseudo, loginUser, findUsers, addFriend, updatePassword, logoutUser, deleteFriend, updateUsername, updateAvatar, twoFactorAuthStatus } from "./user.service";
+import { createUser, findUserByPseudo, loginUser, findUsers, addFriend, updatePassword, logoutUser, deleteFriend, updateUsername, updateAvatar, twoFactorAuthStatus, findFriends } from "./user.service";
 import { CreateUserBody, LoginUserInput, AddFriendInput, ChangePasswordInput, ChangeUsernameInput } from "./user.schema";
 import { getGuestList } from "../guest/guest.service";
 import { path } from "../../index"
@@ -141,6 +141,35 @@ export async function getMeHandler(req: FastifyRequest, reply: FastifyReply) {
 	}
 }
 
+export async function getFriendsHandler(req: FastifyRequest, reply: FastifyReply) {
+	try {
+		const user = req.user;
+		if (!user) {
+			return httpError({
+				reply,
+				message: "User not found",
+				code: StatusCodes.NOT_FOUND,
+			});
+		}
+
+		const friends = await findFriends(user.id);
+		if (!friends) {
+			return httpError({
+				reply,
+				message: "No friends found",
+				code: StatusCodes.NOT_FOUND,
+			});
+		}
+		return reply.code(StatusCodes.OK).send(friends);
+	} catch (e) {
+		return httpError({
+			reply,
+			message: "Failed to fetch friends",
+			code: StatusCodes.INTERNAL_SERVER_ERROR,
+		});
+	}
+}
+
 export async function addFriendHandler(req: FastifyRequest<{Body: AddFriendInput}>, reply: FastifyReply) {
     const body = req.body;
 
@@ -202,7 +231,6 @@ export async function deleteFriendHandler(req: FastifyRequest<{Body: AddFriendIn
         const currentUser = req.user;
 
         const count = await deleteFriend(currentUser.id, friend.id);
-        console.log("Count of deleted friends:", count);
         if (count === 0) {
             return httpError({
                 reply,

@@ -14,6 +14,7 @@ import { account2FAHandler, accountEditAvatar, editIgUsername, editPassword, set
 import { attachStatsIfViewPresent } from "./features/stats.js";
 import { getSettings } from "./settings.js";
 import { setLang, currentLang } from "./translation.js";
+import { addFriend, deleteFriend, friendsCache, loadFriends, renderFriends } from "./features/friends.js";
 
 async function loadHTML(path: string): Promise<string> {
 	const res = await fetch(path);
@@ -41,6 +42,7 @@ export async function setContentView(viewPath: string) {
 	else if (viewPath.includes("quick-match")) setQuickMatchView();
 	else if (viewPath.includes("tournament")) setupTournament();
 	else if (viewPath.includes("account")) setupAccountEvents();
+	else if (viewPath.includes("friends")) setupFriendsEvents();
 
 	// allow views to attach feature-specific logic (e.g. stats scripts)
 	try { attachStatsIfViewPresent(); } catch (e) { /* ignore if not present */ }
@@ -257,6 +259,7 @@ function setupProfileEvents() {
 	const statsBtn = document.querySelector("#stats-btn")!;
 	const accountBtn = document.querySelector("#account-btn")!;
 	const logoutBtn = document.querySelector("#logout-btn")!;
+	const friendsBtn = document.querySelector("#friends-btn")!;
 	
 	uiManager.setCurrentView("profile");
 	toggleBackButton(true, () =>
@@ -304,6 +307,11 @@ function setupProfileEvents() {
 		setContentView("views/account.html");
 	})
 
+	friendsBtn.addEventListener("click", () => {
+		console.log("Show friends");
+		setContentView("views/friends.html");
+	});
+
 	logoutBtn?.addEventListener("click", () => logoutUser());
 }
 
@@ -343,4 +351,52 @@ function setQuickMatchView() {
     setGameView();
     setTimeout(() => startMatch(match), 100);
   });
+}
+
+function setupFriendsEvents() {
+	checkTokenValidity();
+	uiManager.setCurrentView("friends");
+	animateContentBoxIn();
+	toggleBackButton(true, () => {
+		setContentView("views/profile.html");
+	});
+
+	const root = document.querySelector("#friends-list")! as HTMLElement;
+	const search = document.querySelector("#friends-search")! as HTMLInputElement;
+	const addBtn = document.querySelector("#add-friend-btn")! as HTMLButtonElement;
+	const reloadBtn = document.querySelector("#reload-friends-status")! as HTMLButtonElement;
+	const tpl = document.querySelector("#friend-item-template")! as HTMLTemplateElement;
+
+	if (!root || !search || !addBtn || !tpl) return;
+
+	renderFriends(root, tpl, search.value);
+
+	search.addEventListener("input", () => renderFriends(root, tpl, search.value, true));
+
+	root.addEventListener("click", async (e) => {
+		await deleteFriend(e, root, tpl, search);
+	});
+
+	addBtn?.addEventListener("click", () => {
+		console.log("Show add friend form");
+		toggleBackButton(false);
+		document.querySelector("#add-friend-form-container")?.classList.replace("hidden", "flex");
+	});
+
+	document.querySelector("#add-friend-cancel-btn")?.addEventListener("click", () => {
+		toggleBackButton(true, () => {
+			setContentView("views/profile.html");
+		});
+		document.querySelector("#add-friend-form-container")?.classList.replace("flex", "hidden");
+	});
+
+	const addFriendForm = document.querySelector("#add-friend-form") as HTMLFormElement;
+	addFriendForm.addEventListener("submit", async (e) => {
+		await addFriend(e, addFriendForm);
+		await renderFriends(root, tpl, search.value);
+	});
+
+	reloadBtn?.addEventListener("click", async () => {
+		await renderFriends(root, tpl, search.value);
+	});
 }
