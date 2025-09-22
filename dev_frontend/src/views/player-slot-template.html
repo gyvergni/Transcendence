@@ -1,0 +1,12 @@
+<template id="player-slot-template">
+	<div class="player-slot w-48 h-56 bg-slate-800/50 border border-cyan-300 rounded-xl overflow-hidden cursor-pointer transition hover:shadow-lg">
+    	<!-- Player half -->
+    	<div class="w-full h-1/2 flex items-center justify-center border-b border-cyan-300 hover:bg-slate-700 transition" data-choice="player">
+    		<span class="text-xl text-cyan-300 pointer-events-none" data-i18n="player-slot.player"></span>
+    	</div>
+    	<!-- AI half -->
+    	<div class="w-full h-1/2 flex items-center justify-center hover:bg-slate-700 transition" data-choice="ai">
+    		<span class="text-xl text-cyan-300 pointer-events-none" data-i18n="player-slot.ai"></span>
+    	</div>
+	</div>
+</template>

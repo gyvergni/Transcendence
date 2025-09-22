@@ -315,7 +315,7 @@ function setupProfileEvents() {
 	logoutBtn?.addEventListener("click", () => logoutUser());
 }
 
-function setQuickMatchView() {
+async function setQuickMatchView() {
   const container = document.getElementById("player-select-container")!;
   container.innerHTML = "";
 
@@ -335,12 +335,14 @@ function setQuickMatchView() {
   let match = new MatchSetup();
   
   //uiManager.match = match;
-  const player1 = createPlayerSlot("player1-select", player1Config, match);
-  const player2 = createPlayerSlot("player2-select", player2Config, match);
+  const player1 = await createPlayerSlot("player1-select", player1Config, match);
+  const player2 = await createPlayerSlot("player2-select", player2Config, match);
   player1Config.position = 0; //left
   player2Config.position = 1; //right
   container.appendChild(player1);
   container.appendChild(player2);
+  
+  setLang(currentLang);
 
   startBtn?.addEventListener("click", () => {
     if (!match.isReady()) {

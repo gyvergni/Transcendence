@@ -64,6 +64,10 @@ const translations: Record<Lang, Record<string, string>> =
 		"player.add-guest-btn": "Add Guest",
 		"player.del-guest-btn": "Delete Guest",
 
+		//player-slot-template.html
+		"player-slot.player": "Player",
+		"player-slot.ai": "AI",
+
 		//profile.html
 		"profile.friends": "Friends",
 		"profile.stats": "Stats",
@@ -159,6 +163,10 @@ const translations: Record<Lang, Record<string, string>> =
 		"player.login": "Verrouiller",
 		"player.add-guest-btn": "Ajouter un invité",
 		"player.del-guest-btn": "Supprimer l'invité",
+
+		//player-slot-template.html
+		"player-slot.player": "Joueur",
+		"player-slot.ai": "IA",
 		
 		//profile.html
 		"profile.friends": "Amis",
@@ -254,6 +262,10 @@ const translations: Record<Lang, Record<string, string>> =
 		"player.login": "Bloquear",
 		"player.add-guest-btn": "Agregar invitado",
 		"player.del-guest-btn": "Eliminar invitado",
+
+		//player-slot-template.html
+		"player-slot.player": "Jugador",
+		"player-slot.ai": "IA",
 		
 		//profile.html
 		"profile.friends": "Amigos",
@@ -293,14 +305,20 @@ const translations: Record<Lang, Record<string, string>> =
 
 export let currentLang: Lang = "fr";
 
-export function setLang(lang: Lang)
-{
+export function setLang(lang: Lang) {
 	currentLang = lang;
-	document.querySelectorAll<HTMLElement>("[data-i18n]").forEach(el =>
-	{
+
+	// Handle text content
+	document.querySelectorAll<HTMLElement>("[data-i18n]").forEach(el => {
 		const key = el.dataset.i18n!;
 		const text = translations[currentLang][key];
-		if (text)
-			el.innerText = text;
+		if (text) el.innerText = text;
+	});
+
+	// Handle title attributes
+	document.querySelectorAll<HTMLElement>("[data-i18n-title]").forEach(el => {
+		const key = el.dataset.i18nTitle!;
+		const text = translations[currentLang][key];
+		if (text) el.setAttribute("title", text);
 	});
 }

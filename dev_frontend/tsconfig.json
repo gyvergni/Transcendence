@@ -14,4 +14,3 @@
   "include": ["src/tsc/**/*"],
   "exclude": ["node_modules", "dist"]
 }
-  

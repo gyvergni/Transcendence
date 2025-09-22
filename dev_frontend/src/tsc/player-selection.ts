@@ -1,6 +1,7 @@
 // player-selection.ts
 import { API_BASE_URL } from "./features/utils-api.js";
 import { PlayerConfig, MatchSetup, GameTypeManager, Guest } from "./models.js";
+import { currentLang, setLang } from "./translation.js";
 
 // const registeredUsers: string[] = ["alice", "bob", "carol", "dave", "eve", "frank"];
 
@@ -17,15 +18,15 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
   const temp = document.createElement("div");
   temp.innerHTML = html.trim();
 
-  // Use getGuestsManager for both MatchSetup and TournamentManager
-  const guestsManager = (gameType as any).getGuestsManager();
-  if (!guestsManager) throw new Error("No guestsManager found on gameType");
+  const match = gameType as MatchSetup;
+  const guestsManager = match.getGuestsManager();
+
   await guestsManager.fetchGuests();
 
   const selectionBox = temp.querySelector(".player-select") as HTMLElement;
   if (!selectionBox) throw new Error("Could not find .player-select in template");
 
-  let registeredUsers: string[] = guestsManager.guests.map((guest: Guest) => guest.pseudo);
+  let registeredUsers: string[] = guestsManager.guests.map(guest => guest.pseudo);
   selectionBox.id = id;
 
   const input = selectionBox.querySelector<HTMLInputElement>(".player-search-input")!;
@@ -77,7 +78,7 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
     } else {
       const result = await guestsManager.addGuest(name);
       if (result.succes == true) {
-        registeredUsers = guestsManager.guests.map((guest: Guest) => guest.pseudo);
+        registeredUsers = guestsManager.guests.map(guest => guest.pseudo);
         updateDropdown("");
       } else {
         alert(`Failed to add guest: ${result.message}`);
@@ -102,7 +103,7 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
     } else {
       const result = await guestsManager.deleteGuest(name);
       if (result.succes == true) {
-        registeredUsers = guestsManager.guests.map((guest: Guest) => guest.pseudo);
+        registeredUsers = guestsManager.guests.map(guest => guest.pseudo);
         input.value = "";
         updateDropdown("");
       } else {
@@ -177,13 +178,25 @@ async function loadAISelect(id: string, config: PlayerConfig): Promise<HTMLEleme
   return selector;
 }
 
+async function loadTemplate(path: string, templateId: string): Promise<HTMLTemplateElement> {
+  const res = await fetch(path);
+  const html = await res.text();
+
+  // Parser en DocumentFragment
+  const temp = document.createElement("div");
+  temp.innerHTML = html.trim();
+  const template = temp.querySelector(`#${templateId}`) as HTMLTemplateElement | null;
+  if (!template) throw new Error(`Template with id "${templateId}" not found in ${path}`);
+  return template;
+}
+
+
 // Create slot
-export function createPlayerSlot(id: string, config: PlayerConfig, gameType: GameTypeManager): HTMLElement {
-  const template = document.getElementById("player-slot-template") as HTMLTemplateElement;
+export async function createPlayerSlot(id: string, config: PlayerConfig, gameType: GameTypeManager): Promise<HTMLElement> {
+  const template = await loadTemplate("views/player-slot-template.html", "player-slot-template") as HTMLTemplateElement;
   const clone = template.content.querySelector(".player-slot")?.cloneNode(true) as HTMLElement;
   if (!clone) throw new Error(".player-slot not found in template");
   clone.id = id;
-
   clone.addEventListener("click", async (event) => {
     const target = event.target as HTMLElement;
     const roleElement = target.closest("[data-choice]") as HTMLElement | null;
@@ -202,6 +215,7 @@ export function createPlayerSlot(id: string, config: PlayerConfig, gameType: Gam
     } else return;
 
     container.replaceChild(selector, clone);
+    setLang(currentLang);
   });
 
   return clone;

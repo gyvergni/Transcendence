@@ -8,20 +8,7 @@
   </head>
   <body class="flex flex-col min-h-screen m-0 overflow-hidden">
     <main id="main" class="flex-grow flex items-center justify-center p-4 relative overflow-hidden">
-
-	  <!-- Player selection template-->
-		<template id="player-slot-template">
-			<div class="player-slot w-48 h-56 bg-slate-800/50 border border-cyan-300 rounded-xl overflow-hidden cursor-pointer transition hover:shadow-lg">
-			  	<!-- Player half -->
-			  	<div class="w-full h-1/2 flex items-center justify-center border-b border-cyan-300 hover:bg-slate-700 transition" data-choice="player">
-			  	  <span class="text-xl text-cyan-300 pointer-events-none">Player</span>
-			  	</div>
-			  	<!-- AI half -->
-			  	<div class="w-full h-1/2 flex items-center justify-center hover:bg-slate-700 transition" data-choice="ai">
-			  	  <span class="text-xl text-cyan-300 pointer-events-none">AI</span>
-			  	</div>
-			</div>
-		</template>
+      
       <!-- Doors -->
       <img id="door-left" src="assets/door_left.png"
            class="select-none absolute w-1/2 h-full left-0 top-0 z-30 object-fill transition-transform duration-1000"
