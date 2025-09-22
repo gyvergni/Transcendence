@@ -1,5 +1,5 @@
 import { setContentView } from "../views.js";
-import { a2fStatus, loginWithWebSocket, reconnectWebSocket } from "./auth.js";
+import { a2fStatus, loginWithWebSocket } from "./auth.js";
 import { API_BASE_URL } from "./utils-api.js";
 
 let pendingSessionId: string | null = null;

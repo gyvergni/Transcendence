@@ -1,6 +1,6 @@
 import { setContentView } from "../views.js";
 import { API_BASE_URL } from "./utils-api.js";
-import { loginWithWebSocket, reconnectWebSocket } from "./auth.js";
+import { loginWithWebSocket } from "./auth.js";
 
 const temp = false;
 

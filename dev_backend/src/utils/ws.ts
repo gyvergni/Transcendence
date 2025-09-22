@@ -10,6 +10,12 @@ export async function wsRoute(server: FastifyInstance) {
 			// console.log("Received message:", msg.toString());
 			try {
 				const data = JSON.parse(msg.toString());
+
+				if (data.type === "ping") {
+					// console.log("Received ping from client");
+					conn.send(JSON.stringify({ type: "pong", online: true }));
+					return;
+				}
 				if (data.type === "auth" && data.token) {
 					const user = await server.jwt.verify<{ id: number }>(data.token);
 					if (!onlineUsers.has(user.id)) {

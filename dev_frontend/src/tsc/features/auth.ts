@@ -67,6 +67,8 @@ export async function loginWithWebSocket(accessToken: string): Promise<boolean> 
 let websocket: WebSocket | null = null;
 let authTimeout: NodeJS.Timeout | null = null;
 let isAuthResponseReceived = false;
+let pingInterval: NodeJS.Timeout | null = null;
+
 
 function connectWebSocket(): Promise<boolean> {
     return new Promise((resolve, reject) => {
@@ -90,6 +92,12 @@ function connectWebSocket(): Promise<boolean> {
                 console.log("📤 Sending auth message...");
                 websocket?.send(JSON.stringify({ type: "auth", token }));
                 
+				pingInterval = setInterval(() => {
+					if (websocket && websocket.readyState === WebSocket.OPEN) {
+						websocket.send(JSON.stringify({ type: "ping" }));
+					}
+				}, 30000);
+
                 authTimeout = setTimeout(() => {
                     if (!isAuthResponseReceived) {
                         console.error("❌ WebSocket auth timeout - Server did not respond");
@@ -118,7 +126,9 @@ function connectWebSocket(): Promise<boolean> {
                 if (data.type === 'status' && data.online) {
                     console.log("✅ WebSocket authentication successful");
                     resolve(true);
-                } else if (data.type === 'error') {
+                } else if (data.type === 'pong' && data.online) {
+					resolve(true);
+				} else if (data.type === 'error') {
                     console.error("❌ WebSocket auth error:", data.message);
                     disconnectWebSocket();
                     reject(new Error(`WebSocket auth error: ${data.message}`));
@@ -134,6 +144,10 @@ function connectWebSocket(): Promise<boolean> {
 
         websocket.onclose = (event) => {
             console.log("🔌 WebSocket connection closed");
+			if (pingInterval) {
+				clearInterval(pingInterval);
+				pingInterval = null;
+			}
             if (authTimeout) {
                 clearTimeout(authTimeout);
                 authTimeout = null;
@@ -157,21 +171,26 @@ function connectWebSocket(): Promise<boolean> {
     });
 }
 
-export async function reconnectWebSocket(): Promise<boolean> {
-    try {
-        if (websocket) {
-            websocket.close();
-            websocket = null;
-        }
-        await connectWebSocket();
-        return true;
-    } catch (error) {
-        console.error("❌ Failed to reconnect WebSocket:", error);
-        return false;
-    }
-}
+// export async function reconnectWebSocket(): Promise<boolean> {
+//     try {
+//         if (websocket) {
+//             websocket.close();
+//             websocket = null;
+//         }
+//         await connectWebSocket();
+//         return true;
+//     } catch (error) {
+//         console.error("❌ Failed to reconnect WebSocket:", error);
+//         return false;
+//     }
+// }
 
 export function disconnectWebSocket() {
+	if (pingInterval) {
+		clearInterval(pingInterval);
+		pingInterval = null;
+	}
+
     if (authTimeout) {
         clearTimeout(authTimeout);
         authTimeout = null;
@@ -183,6 +202,7 @@ export function disconnectWebSocket() {
     }
     
     isAuthResponseReceived = false;
+	setContentView("views/login.html");
 }
 
 export async function a2fStatus(data: any) {
