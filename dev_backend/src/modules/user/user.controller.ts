@@ -113,6 +113,7 @@ export async function getUsersHandler(req: FastifyRequest<{ Params: {username: s
 }
 
 export async function getMeHandler(req: FastifyRequest, reply: FastifyReply) {
+    console.log(req.headers);
 	try {
 		const user = req.user;
 		if (!user) {

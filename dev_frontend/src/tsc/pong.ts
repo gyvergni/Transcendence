@@ -722,7 +722,8 @@ export class Game {
 			this.ball.pTimer = 0;
 	}
 
-    update() {
+    update()
+	{
 		if (this.pause == true)
 			return;
 		this.player1.update();
@@ -731,20 +732,18 @@ export class Game {
 		this.changeGroundTexture();
 		this.updateParticles();
         if (this.gameover == true && this.ball.startDelay == 60)
-            this.endGame();
+			this.endGame();
 		if (this.ball.score1 == 5 || this.ball.score2 == 5)
 			this.gameover = true;
 
 	}
 
-	endGame() {
-		uiManager.setCurrentView("home");
-			if (this.ball.score1 > this.ball.score2)
-				this.match.winner = this.player1.config;
-			else
-				this.match.winner = this.player2.config;
-        animateContentBoxIn();
-		setContentView("views/home.html");
+	endGame()
+	{
+		if (this.ball.score1 > this.ball.score2)
+			this.match.winner = this.player1.config;
+		else
+			this.match.winner = this.player2.config;
         this.engine.stopRenderLoop();
 		resetSettings();
 	}
