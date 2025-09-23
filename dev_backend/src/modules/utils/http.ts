@@ -1,3 +1,4 @@
+import { error } from "console";
 import { FastifyReply } from "fastify";
 import { StatusCodes } from "http-status-codes";
 import { z } from "zod";
@@ -20,8 +21,10 @@ export function httpError({
 }
 
 export const httpErrorSchema = z.object({
-    message: z.string(),
+    message: z.string().optional(),
     cause: z.string().optional(),
+	error: z.string().optional(),
+	code: z.number().optional(),
 });
 
 export const errorResponses = {
