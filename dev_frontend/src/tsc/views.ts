@@ -386,6 +386,9 @@ function setupFriendsEvents() {
 	});
 
 	document.querySelector("#add-friend-cancel-btn")?.addEventListener("click", () => {
+		document.querySelector("#add-friend-error")!.textContent = "";
+		const form = document.querySelector("#add-friend-form")! as HTMLFormElement;
+		form.reset();
 		toggleBackButton(true, () => {
 			setContentView("views/profile.html");
 		});
