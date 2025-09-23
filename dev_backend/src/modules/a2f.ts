@@ -4,6 +4,7 @@ import prisma from "../utils/prisma";
 import bcrypt from "bcrypt";
 
 import { FastifyRequest, FastifyReply } from "fastify";
+import { TwoFactorAuthDisableInput, TwoFactorAuthEnableInput, TwoFactorAuthLoginVerifyInput, TwoFactorAuthVerifyInput } from "./user/user.schema";
 
 export class TwoFactorAuthService {
 	static async generateTempSecret(userId: number) {
@@ -112,7 +113,7 @@ export async function generateTwoFactorAuthHandler(req: FastifyRequest, reply: F
 	}
 }
 
-export async function enableTwoFactorAuthHandler(req: FastifyRequest, reply: FastifyReply) {
+export async function enableTwoFactorAuthHandler(req: FastifyRequest<{Body: TwoFactorAuthEnableInput}>, reply: FastifyReply) {
 	try {
 		const { sessionId, token } = req.body as { sessionId: string, token: string };
 		const userId = req.user.id;
@@ -133,7 +134,7 @@ export async function enableTwoFactorAuthHandler(req: FastifyRequest, reply: Fas
 	}
 }
 
-export async function disableTwoFactorAuthHandler(req: FastifyRequest, reply: FastifyReply) {
+export async function disableTwoFactorAuthHandler(req: FastifyRequest<{Body: TwoFactorAuthDisableInput}>, reply: FastifyReply) {
 	console.log("Disabling 2FA...");
 	try {
 		const userId = req.user.id;
@@ -168,7 +169,7 @@ export async function disableTwoFactorAuthHandler(req: FastifyRequest, reply: Fa
 	}
 }
 
-export async function verifyTwoFactorAuthHandler(req: FastifyRequest, reply: FastifyReply) {
+export async function verifyTwoFactorAuthHandler(req: FastifyRequest<{Body: TwoFactorAuthVerifyInput}>, reply: FastifyReply) {
 	try {
 		const { userId, token } = req.body as { userId: number, token: string };
 		const isValid = await TwoFactorAuthService.verifyTwoFactorAuth(userId, token);
@@ -193,7 +194,7 @@ export async function createPendingLoginSession(userId: number): Promise<string>
     return sessionId;
 }
 
-export async function verifyAndCompleteLogin(req: FastifyRequest, reply: FastifyReply) {
+export async function verifyAndCompleteLogin(req: FastifyRequest<{Body: TwoFactorAuthLoginVerifyInput}>, reply: FastifyReply) {
     try {
         const { loginSessionId, token } = req.body as { loginSessionId: string, token: string };
         const session = pendingLoginSessions.get(loginSessionId);

@@ -6,6 +6,7 @@ export const getGuestListSchema = {
     response: {
         200: z.object({
             message: z.string().describe("Guest list retrieved successfully").optional(),
+			user: z.string().describe("Pseudo of the user who is the host"),
             numberOfGuests: z.number().describe("Number of guests in the list").optional(),
             guests: z.array(z.object({
                 id: z.number().describe("ID of the guest"),

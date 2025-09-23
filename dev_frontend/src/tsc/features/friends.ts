@@ -37,7 +37,15 @@ export async function fetchFriends() {
 			f.avatar = API_BASE_URL + '/public/avatars/' + f.avatar + '?t=' + Date.now();
 		});
 
-		friendsCache = friendsCache.sort((a, b) => a.pseudo.localeCompare(b.pseudo));
+		// friendsCache = friendsCache.sort((a, b) => a.pseudo.localeCompare(b.pseudo));
+
+		friendsCache = friendsCache.sort((a, b) => {
+			if (a.status !== b.status) {
+				return b.status ? 1 : -1;
+			}
+			return a.pseudo.localeCompare(b.pseudo);
+		})
+
 		return ;
 	} catch (error) {
 		console.error("Error fetching friends:", error);
@@ -128,6 +136,7 @@ export async function addFriend(e: Event, form: HTMLFormElement) {
 		document.querySelector("#add-friend-error")!.textContent = "";
 		document.querySelector("#add-friend-form-container")?.classList.replace("flex", "hidden");
 		formData.delete('friend-pseudo');
+		form.reset();
 		return;
 	} catch (error) {
 		console.error("Error adding friend:", error);
@@ -136,7 +145,10 @@ export async function addFriend(e: Event, form: HTMLFormElement) {
 
 export async function deleteFriend(e:Event, root: HTMLElement, tpl: HTMLTemplateElement, search: HTMLInputElement) {
 	const removeBtn = (e.target as HTMLElement).closest(".remove-friend-btn") as HTMLButtonElement;
-	if (!removeBtn) return;
+	if (!removeBtn) {
+		console.error("Remove button not found.");
+		return;
+	} 
 
 	const friendPseudo = removeBtn.getAttribute("data-pseudo");
 	if (!friendPseudo) return ;

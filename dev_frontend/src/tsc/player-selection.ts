@@ -5,12 +5,12 @@ import { currentLang, setLang } from "./translation.js";
 
 // const registeredUsers: string[] = ["alice", "bob", "carol", "dave", "eve", "frank"];
 
-function check_name(name: string, config: PlayerConfig)
-{
-  if (config != null && config.name == name)
-    return 1;
-  return 0;
-}
+// function check_name(name: string, config: PlayerConfig)
+// {
+//   if (config != null && config.name == name)
+//     return 1;
+//   return 0;
+// }
 
 // Human player selector
 async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: GameTypeManager): Promise<HTMLElement> {
@@ -26,7 +26,6 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
   const selectionBox = temp.querySelector(".player-select") as HTMLElement;
   if (!selectionBox) throw new Error("Could not find .player-select in template");
 
-  let registeredUsers: string[] = guestsManager.guests.map(guest => guest.pseudo);
   selectionBox.id = id;
 
   const input = selectionBox.querySelector<HTMLInputElement>(".player-search-input")!;
@@ -41,6 +40,8 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
 	console.log("updateDropdown called");
     dropdown.innerHTML = "";
 
+	let registeredUsers: string[] = guestsManager.guests.map(guest => guest.pseudo);
+	registeredUsers.push(guestsManager.host);
     const matches = registeredUsers.filter(name => name.toLowerCase().includes(term.toLowerCase()));
     if (matches.length === 0) {
       dropdown.classList.add("hidden");
@@ -70,6 +71,7 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
   });
 
   addBtn.addEventListener("click", async () => {
+	let registeredUsers: string[] = guestsManager.guests.map(guest => guest.pseudo);
     const name = input.value.trim();
     if (!name) return;
 
@@ -95,12 +97,20 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
   });
 
   deleteBtn.addEventListener("click", async () => {
+	let registeredUsers: string[] = guestsManager.guests.map(guest => guest.pseudo);
+	registeredUsers.push(guestsManager.host);
     const name = input.value.trim();
     if (!name) return;
-    if (!guestsManager.pseudoExists(name)) {
+	if (name === guestsManager.host) {
+		alert("You cannot delete the host player.");
+		return;
+	} else if (!guestsManager.pseudoExists(name)) {
       alert(`${name} is not registered.`);
       return;
-    } else {
+	} else if (gameType.getPlayers().some(p => p && p.name === name)) {
+		alert("You cannot delete a player who is already locked in.");
+		return;
+	} else {
       const result = await guestsManager.deleteGuest(name);
       if (result.succes == true) {
         registeredUsers = guestsManager.guests.map(guest => guest.pseudo);
@@ -113,6 +123,8 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
   })
 
   lockInBtn.addEventListener("click", () => {
+	let registeredUsers: string[] = guestsManager.guests.map(guest => guest.pseudo);
+	registeredUsers.push(guestsManager.host);
     const name = input.value.trim();
     if (!registeredUsers.includes(name)) {
       alert("Please select a valid registered player.");

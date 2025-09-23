@@ -200,6 +200,14 @@ function setupAccountEvents() {
 		setContentView("views/account.html");
 		document.querySelector("#edit-2fa-form-container")?.classList.add("hidden");
 	});
+
+	document.querySelector("#disable-2fa-cancel-btn")?.addEventListener("click", () => {
+		toggleBackButton(true, () => {
+			setContentView("views/profile.html");
+		});
+		setContentView("views/account.html");
+		document.querySelector("#disable-2fa-form-container")?.classList.add("hidden");
+	});
 	const form2FA = document.querySelector("#edit-2fa-form") as HTMLFormElement;
 	form2FA?.addEventListener("submit", (e) => enable2FA(e, form2FA));
  
@@ -388,6 +396,9 @@ function setupFriendsEvents() {
 	});
 
 	document.querySelector("#add-friend-cancel-btn")?.addEventListener("click", () => {
+		document.querySelector("#add-friend-error")!.textContent = "";
+		const form = document.querySelector("#add-friend-form")! as HTMLFormElement;
+		form.reset();
 		toggleBackButton(true, () => {
 			setContentView("views/profile.html");
 		});

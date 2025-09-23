@@ -53,18 +53,26 @@ export async function getGuestListByPseudoHandler(req: FastifyRequest<{Params: {
                     });
                 }
                 const guestFoundArray = [guestFound];
-                return reply.status(StatusCodes.OK).send({guests: guestFoundArray, message: "Guest found successfully", numberOfGuests: guestFoundArray.length});
+                return reply.status(StatusCodes.OK).send({guests: guestFoundArray, message: "Guest found successfully", user: username, numberOfGuests: guestFoundArray.length});
             }
             else {
                 //console.log("No guestname provided, returning full guest list");
-                return reply.status(StatusCodes.OK).send({message: "Guest list retrieved successfully", guests: guestList, numberOfGuests: guestList.length});
+                return reply.status(StatusCodes.OK).send({message: "Guest list retrieved successfully", guests: guestList, user: username, numberOfGuests: guestList.length});
             }
         }
         else {
             const currentUser = req.user;
             //console.log("TAG: ", currentUser);
             const guestList = await getGuestList(currentUser.id);
-            return reply.status(StatusCodes.OK).send({message: "Guest list retrieved successfully", guests: guestList, numberOfGuests: guestList.length});
+			const user = await findUserByPseudo(currentUser.pseudo);
+			if (!user) {
+				return httpError({
+					reply,
+					message: "Failed to fetch guests",
+					code: StatusCodes.INTERNAL_SERVER_ERROR,
+				});
+			}
+            return reply.status(StatusCodes.OK).send({message: "Guest list retrieved successfully", user: user.game_username, guests: guestList, numberOfGuests: guestList.length});
         }
     } 
     catch (e) {
@@ -88,6 +96,21 @@ export async function createGuestHandler(req: FastifyRequest<{Body: CreateGuestB
     }
     try {
         const currentUser = req.user;
+
+		const user = await findUserByPseudo(currentUser.pseudo);
+		if (!user) {
+			return httpError({
+				reply,
+				message: "Failed to create guest",
+				code: StatusCodes.INTERNAL_SERVER_ERROR,
+			});
+		} else if (body.pseudo === user.game_username) {
+			return httpError({
+				reply,
+				code: StatusCodes.BAD_REQUEST,
+				message: "Guest pseudo cannot be the same as your user in-game username",
+			});
+		}
 
         const guestList = await getGuestList(currentUser.id);
         const guestListLength = guestList.length;

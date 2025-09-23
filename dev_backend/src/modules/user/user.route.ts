@@ -1,7 +1,7 @@
 import fastify, { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 
-import { createUserSchema, loginUserSchema, getUsersSchema, addFriendSchema, changePasswordSchema, logoutUserSchema, changeUsernameSchema, changeAvatarSchema, getMeSchema } from "./user.schema";
+import { createUserSchema, loginUserSchema, getUsersSchema, changePasswordSchema, logoutUserSchema, changeUsernameSchema, changeAvatarSchema, getMeSchema, editFriendSchema, twoFactorAuthStatusSchema, twoFactorAuthSetupSchema, twoFactorAuthEnableSchema, twoFactorAuthDisableSchema, twoFactorAuthVerifySchema, validateJwtTokenSchema, twoFactorAuthLoginVerifySchema, getFriendsSchema, getAvatarSchema } from "./user.schema";
 import { createUserHandler, loginUserHandler, getUsersHandler, addFriendHandler, changePasswordHandler, logoutUserHandler, deleteFriendHandler, changeUsernameHandler, changeAvatarHandler, getAvatarHandler, getMeHandler, getFriendsHandler } from "./user.controller";
 import { loginUser, twoFactorAuthStatus } from "./user.service";
 import { disableTwoFactorAuthHandler, enableTwoFactorAuthHandler, generateTwoFactorAuthHandler, verifyAndCompleteLogin, verifyTwoFactorAuthHandler } from "../a2f";
@@ -29,19 +29,20 @@ export async function userRoutes(server: FastifyInstance) {
         handler: getMeHandler,
     });
 
-	server.get("/friend", {
+	server.withTypeProvider<ZodTypeProvider>().get("/friend", {
+		schema: getFriendsSchema,
 		preHandler: [server.auth],
 		handler: getFriendsHandler,
 	});
 
     server.withTypeProvider<ZodTypeProvider>().post("/friend", {
-        schema: addFriendSchema,
+        schema: editFriendSchema,
         preHandler: [server.auth],
         handler: addFriendHandler,
     });
 
     server.withTypeProvider<ZodTypeProvider>().delete("/friend", {
-        schema: addFriendSchema,
+        schema: editFriendSchema,
         preHandler: [server.auth],
         handler: deleteFriendHandler,
     });
@@ -64,18 +65,20 @@ export async function userRoutes(server: FastifyInstance) {
         handler: changeUsernameHandler,
     });
 
-    server.post("/avatar", {
+    server.withTypeProvider<ZodTypeProvider>().post("/avatar", {
         schema: changeAvatarSchema,
         preHandler: [server.auth],
         handler: changeAvatarHandler,
     });
 
-	server.get("/avatar", {
+	server.withTypeProvider<ZodTypeProvider>().get("/avatar", {
+		schema: getAvatarSchema,
 		preHandler: [server.auth],
 		handler: getAvatarHandler,
 	});
 
-	server.get("/auth/validate-jwt-token", {
+	server.withTypeProvider<ZodTypeProvider>().get("/auth/validate-jwt-token", {
+		schema: validateJwtTokenSchema,
 		preHandler: [server.auth],
 		handler: async (request, reply) => {
 			try {
@@ -88,7 +91,8 @@ export async function userRoutes(server: FastifyInstance) {
 		},
 	});
 
-	server.get("/auth/two-factor-auth/status", {
+	server.withTypeProvider<ZodTypeProvider>().get("/auth/two-factor-auth/status", {
+		schema: twoFactorAuthStatusSchema,
 		preHandler: [server.auth],
 		handler: async (request, reply) => {
 			try {
@@ -101,26 +105,33 @@ export async function userRoutes(server: FastifyInstance) {
 		},
 	});
 
-	server.get("/auth/two-factor-auth/setup", {
+	server.withTypeProvider<ZodTypeProvider>().get("/auth/two-factor-auth/setup", {
+		schema: twoFactorAuthSetupSchema,
 		preHandler: [server.auth],
 		handler: generateTwoFactorAuthHandler,
 	});
 
-	server.post("/auth/two-factor-auth/enable", {
+	server.withTypeProvider<ZodTypeProvider>().post("/auth/two-factor-auth/enable", {
+		schema: twoFactorAuthEnableSchema,
 		preHandler: [server.auth],
 		handler: enableTwoFactorAuthHandler
 	});
 
-	server.delete("/auth/two-factor-auth/disable", {
+	server.withTypeProvider<ZodTypeProvider>().delete("/auth/two-factor-auth/disable", {
+		schema: twoFactorAuthDisableSchema,
 		preHandler: [server.auth],
 		handler: disableTwoFactorAuthHandler
 	});
 
-	server.post("/auth/two-factor-auth/verify", {
+	server.withTypeProvider<ZodTypeProvider>().post("/auth/two-factor-auth/verify", {
+		schema: twoFactorAuthVerifySchema,
 		preHandler: [server.auth],
 		handler: verifyTwoFactorAuthHandler
 	});
 
-    server.post("/auth/login/2fa-verify", verifyAndCompleteLogin);
+    server.withTypeProvider<ZodTypeProvider>().post("/auth/login/2fa-verify", {
+		schema: twoFactorAuthLoginVerifySchema,
+		handler: verifyAndCompleteLogin
+	});
 
 }

@@ -152,6 +152,7 @@ export interface Guest {
 //Manager
 export class GuestsManager {
 	numberOfGuests: number = 0;
+	host: string = "";
 	guests: Guest[] = [];
 
 	async fetchGuests() {
@@ -172,7 +173,8 @@ export class GuestsManager {
 					id: guests.id,
 					pseudo: guests.pseudo
 				}));
-		} 
+			}
+			this.host = data.user;
 	} catch (error) {
 			console.error("Error fetching guests:", error);
 		}
