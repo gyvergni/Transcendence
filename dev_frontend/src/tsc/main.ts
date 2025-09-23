@@ -5,7 +5,7 @@ import {setLang} from "./translation.js"
 const uiManager = new UIManager();
 export default uiManager;
 
-console.log("version 0.40");
+console.log("version 0.41");
 
 // Initial DOM setup
 document.addEventListener("DOMContentLoaded",  async () => {
@@ -17,3 +17,4 @@ document.addEventListener("DOMContentLoaded",  async () => {
 	// console.log("User is authenticated");//
 	setContentView("views/home.html");
 });
+//0969396999

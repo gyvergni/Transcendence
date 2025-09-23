@@ -15,7 +15,7 @@ export class UIManager {
 		return currentView;
 	}
 
-	public setCurrentView(view: string) {
+	async setCurrentView(view: string): Promise<void> {
 		currentView = view;
 	}
 

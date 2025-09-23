@@ -99,7 +99,18 @@ const translations: Record<Lang, Record<string, string>> =
 		//tournament.html
 		"tournament.title": "Tournament",
 		"tournament.instructions": "Select 4 players or AI",
-		"tournament.start-btn": "Start Tournament"
+		"tournament.start-btn": "Start Tournament",
+
+		//t-waitingscreen.html
+		"t-waiting.waitingTitle": "Tournament waiting room",
+		"t-waiting.prevWinnerLabel": "Previous Winner:",
+		"t-waiting.ready": "Ready",
+		"leftplayer": "Left Player",
+		"rightplayer": "Right Player",
+
+		//tournament-end.html
+		"tournament.endTitle": "🏆 Tournament Champion 🏆",
+		"tournament.home-btn": "Return Home"
 	},
 
 	fr: {
@@ -108,7 +119,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"home.qmatch": "Partie Rapide",
 		"home.tournament": "Tournoi",
 		"home.settings": "Parametres",
-		"home.profile": "Profile",
+		"home.profile": "Profil",
 		
 		//account.html
 		"account.info": "Informations du compte",
@@ -200,6 +211,17 @@ const translations: Record<Lang, Record<string, string>> =
 		"tournament.title": "Tournoi",
 		"tournament.instructions": "Selectionnez 4 joueurs ou IA",
 		"tournament.start-btn": "Lancer le tournoi",
+
+		//t-waitingscreen.html
+		"t-waiting.waitingTitle": "Salle d'attente du tournoi",
+		"t-waiting.prevWinnerLabel": "Vainqueur precedent:",
+		"t-waiting.ready": "Pret",
+		"leftplayer": "Joueur de gauche",
+		"rightplayer": "Joueur de droite",
+
+		//tournament-end.html
+		"tournament.endTitle": "🏆 Champion du tournoi 🏆",
+		"tournament.home-btn": "Retour a l'accueil"
 	},
 	es: {
 		//home.html
@@ -298,8 +320,18 @@ const translations: Record<Lang, Record<string, string>> =
 		//tournament.html
 		"tournament.title": "Torneo",
 		"tournament.instructions": "Seleccione 4 jugadores o IA",
-		"tournament.start-btn": "Iniciar torneo"
-		
+		"tournament.start-btn": "Iniciar torneo",
+
+		//t-waitingscreen.html
+		"t-waiting.waitingTitle": "Espera del torneo",
+		"t-waiting.prevWinnerLabel": "Ganador anterior:",
+		"t-waiting.ready": "Listo",
+		"leftplayer": "Jugador izquierdo",
+		"rightplayer": "Jugador derecho",
+
+		//tournament-end.html
+		"tournament.endTitle": "🏆 Campeon del torneo 🏆",
+		"tournament.home-btn": "Volver al inicio"
 	}
 };
 

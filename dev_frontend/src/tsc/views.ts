@@ -15,6 +15,7 @@ import { attachStatsIfViewPresent } from "./features/stats.js";
 import { getSettings } from "./settings.js";
 import { setLang, currentLang } from "./translation.js";
 import { addFriend, deleteFriend, friendsCache, loadFriends, renderFriends } from "./features/friends.js";
+import { setupTournamentWaitingRoom } from "./t-waitingscreen.js";
 
 async function loadHTML(path: string): Promise<string> {
 	const res = await fetch(path);
@@ -24,7 +25,7 @@ async function loadHTML(path: string): Promise<string> {
 }
 
 // Inject content into the content box and initialize events
-export async function setContentView(viewPath: string) {
+export async function setContentView(viewPath: string): Promise<void> {
 	if (!uiManager.contentInner) {
 		console.error("Missing content-box in DOM");
 		return;
@@ -43,7 +44,6 @@ export async function setContentView(viewPath: string) {
 	else if (viewPath.includes("tournament")) setupTournament();
 	else if (viewPath.includes("account")) setupAccountEvents();
 	else if (viewPath.includes("friends")) setupFriendsEvents();
-
 	// allow views to attach feature-specific logic (e.g. stats scripts)
 	try { attachStatsIfViewPresent(); } catch (e) { /* ignore if not present */ }
 }
@@ -344,14 +344,16 @@ async function setQuickMatchView() {
   
   setLang(currentLang);
 
-  startBtn?.addEventListener("click", () => {
+  startBtn?.addEventListener("click", async () => {
     if (!match.isReady()) {
       alert("Both players must be locked in before starting!");
       return;
     }
 
     setGameView();
-    setTimeout(() => startMatch(match), 100);
+    await startMatch(match);
+	animateContentBoxIn();
+	setContentView("views/home.html");
   });
 }
 

@@ -4,7 +4,7 @@ import uiManager from "./main.js";
 import {animateContentBoxIn} from "./animations.js";
 import {setContentView} from "./views.js";
 import {PlayerConfig, MatchSetup, TournamentManager, AIDifficulty} from "./models.js";
-
+import {setupTournamentEndScreen, setupTournamentWaitingRoom} from "./t-waitingscreen.js";
 
 //################ customization variables ###########
 import { getSettings, resetSettings } from "./settings.js"
@@ -183,7 +183,8 @@ class Ball {
             // Calculate new dirZ, clamp to max angle
             let newDirZ = this.speed * Math.sin(angle);
             // Ensure dirZ sign matches impact (top hit = positive, bottom hit = negative)
-            if (clampedImpact === 0) newDirZ = 0;
+            if (clampedImpact === 0)
+				newDirZ = 0;
             // Calculate dirX to preserve total speed
             let newDirX = signX * Math.sqrt(Math.max(this.speed * this.speed - newDirZ * newDirZ, 0));
             this.dirX = newDirX;
@@ -315,7 +316,6 @@ class AIPlayer implements PlayerType {
 	is_movingToAI(): boolean {
 		return (this.side === "left" && this.ball.dirX < 0) || (this.side === "right" && this.ball.dirX > 0);
 	}
-
 	private frameCounter = 0;
 	update() {
 		this.frameCounter++;
@@ -512,6 +512,9 @@ export class Game {
     loadedTexturesL: any[] = [];
     loadedTexturesR: any[] = [];
 
+	private resolveEnd!: (match: MatchSetup) => void;
+	private promiseEnd: Promise<MatchSetup>;
+
     constructor(canvas: HTMLCanvasElement, match_setup: MatchSetup)
 	{
 		this.gameover = false;
@@ -534,6 +537,10 @@ export class Game {
         this.createObjects();
 		this.createParticles();
         this.scene.registerBeforeRender(() => this.update());
+
+		this.promiseEnd = new Promise<MatchSetup>(resolve => {
+			this.resolveEnd = resolve;
+		});
     }
 	launch()
 	{
@@ -733,9 +740,12 @@ export class Game {
 		this.updateParticles();
         if (this.gameover == true && this.ball.startDelay == 60)
 			this.endGame();
-		if (this.ball.score1 == 5 || this.ball.score2 == 5)
+		if (this.ball.score1 == 1 || this.ball.score2 == 1)
 			this.gameover = true;
+	}
 
+	whenEnded(): Promise<MatchSetup> {
+		return this.promiseEnd;
 	}
 
 	endGame()
@@ -746,28 +756,30 @@ export class Game {
 			this.match.winner = this.player2.config;
         this.engine.stopRenderLoop();
 		resetSettings();
+		this.resolveEnd(this.match);
 	}
-
 }
 
 // ################### Run the Game ###################
-export async function startMatch( match_setup: MatchSetup ): Promise<void>
-{
+export function startMatch(match_setup: MatchSetup): Promise<MatchSetup> {
     const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
-	setUpSettings();
-	console.log("Game settings loaded:", { paddle_size, PaddleColor, BallSize, BallColor });
-	const game = new Game(canvas, match_setup);
-	match_setup.game = game;
-	match_setup.escape();
-	await game.launch();
-	resetSettings();
+    setUpSettings();
+    console.log("Game settings loaded:", { paddle_size, PaddleColor, BallSize, BallColor });
+    const game = new Game(canvas, match_setup);
+    match_setup.game = game;
+    match_setup.escape();
+    game.launch();
+    resetSettings();
+	return game.whenEnded();
 }
+
 
 export async function startTournament(tournament: TournamentManager): Promise<void>
 {
 	console.log("started tournament with", tournament.firstRound[0].players[0].name);
     await startMatch(tournament.firstRound[0]);
 	console.log(tournament.firstRound[0].winner!.name);
+	await setupTournamentWaitingRoom(tournament);
 	await startMatch(tournament.firstRound[1]);
 	console.log(tournament.firstRound[1].winner!.name);
 	tournament.currentRound = 1;
@@ -776,7 +788,10 @@ export async function startTournament(tournament: TournamentManager): Promise<vo
     {
     	tournament.final.addPlayer(tournament.firstRound[0].winner);
     	tournament.final.addPlayer(tournament.firstRound[1].winner);
+		await setupTournamentWaitingRoom(tournament);
     	tournament.currentRound = 2;
 		await startMatch(tournament.final);
+		console.log("Tournament winner:", tournament.final.winner!.name);
+		await setupTournamentEndScreen(tournament);
     }
 }

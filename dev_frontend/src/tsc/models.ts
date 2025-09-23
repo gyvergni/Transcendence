@@ -79,14 +79,6 @@ export class MatchSetup implements GameTypeManager {
 		return this.players[0].isReady() === true && this.players[1]?.isReady() === true;
 	}
 
-/* 	end(): PlayerConfig
-	{
-		
-		uiManager.setCurrentView("home");
-        animateContentBoxIn();
-		setContentView("views/home.html");
-	} */
-
 	async escape()
 	{
 		console.log(uiManager.getIsAnimating());

@@ -5,8 +5,10 @@ import { createPlayerSlot } from "./player-selection.js";
 import { setContentView, setGameView } from "./views.js";
 import { PlayerConfig, MatchSetup, TournamentManager } from "./models.js";
 import { startTournament } from "./pong.js";
+import {currentLang, setLang} from "./translation.js";
 
-export function setupTournament() {
+
+export async function setupTournament() {
   uiManager.setCurrentView("tournament");
 
   uiManager.contentBox.classList.remove("max-w-md", "flexbox");
@@ -25,9 +27,10 @@ export function setupTournament() {
   {
     const config = new PlayerConfig("human");
     const slotId = `player-select-${i}`;
-    const playerSlot = createPlayerSlot(slotId, config, tournament);
+    const playerSlot = await createPlayerSlot(slotId, config, tournament);
     container.appendChild(playerSlot);
   }
+  setLang(currentLang);
 console.log("tournament length: ", tournament.players.length);
   const startBtn = document.getElementById("start-btn");
   startBtn?.addEventListener("click", () => 
