@@ -1,6 +1,6 @@
 //################ imports ############
 import * as BABYLON from "babylonjs";
-import * as earcut from 'earcut';
+import * as earcut from "earcut";
 (window as any).earcut = earcut;
 
 import uiManager from "./main.js";
@@ -59,10 +59,6 @@ interface PlayerType {
 class Paddle {
 	mesh: BABYLON.Mesh;
 
-	//stat track
-	pSpeed: number = PaddleSpeed;
-	pSize: number = paddle_size;
-
     constructor(scene: BABYLON.Scene, x: number) {
         this.mesh = BABYLON.MeshBuilder.CreateBox("Paddle", 
             {width: 0.5, height: 0.5, depth: paddle_size}, scene);
@@ -94,6 +90,48 @@ class Paddle {
 
 }
 
+class Clock {
+	gameTime: number = 0; //total game time in seconds
+	gameTimerStart: number = 0; //timestamp when game started or resumed
+	
+	pointMaxTime: number = 0; //total point time in seconds
+	pointCurrentTime: number = 0;
+	pointTimerStart: number = 0; //timestamp when point started
+
+	ballDelayStart: number = 0; //timestamp when ball delay started
+
+	start() 
+	{
+		this.gameTimerStart = new Date().getTime();
+		this.pointTimerStart = new Date().getTime();
+	}
+	updateGameTimer()
+	{
+		this.gameTime += new Date().getTime() - this.gameTimerStart;
+		this.gameTimerStart = new Date().getTime();
+	}
+	updatePointTimer()
+	{
+		const newTime = new Date().getTime() - this.pointTimerStart;
+		this.pointCurrentTime += newTime;
+		if (this.pointCurrentTime > this.pointMaxTime)
+			this.pointMaxTime = this.pointCurrentTime;
+		this.pointTimerStart = new Date().getTime();
+	}
+
+	pauseTimer()
+	{
+		this.updateGameTimer();
+		this.updatePointTimer();
+	}
+
+	resumeTimer()
+	{
+		this.gameTimerStart = new Date().getTime();
+		this.pointTimerStart = new Date().getTime();
+	}
+}
+
 class Ball {
 	mesh: BABYLON.Mesh
 	speed: number;
@@ -104,19 +142,16 @@ class Ball {
 	score2: number = 0;
 	pTimer: number = 0;
 	particleSystem: any;
+	clock: Clock;
 
-	//stat track
-	rebound: number = 0;
-	initialSpeed: number = BallSpeed;
-	pointOrder:string = "";
-	
+	bool_startGameTimer: boolean = true; //to control match game Timer
 
-    constructor(scene: BABYLON.Scene) {
-		if (BallShape === "square") 
+    constructor(scene: BABYLON.Scene, clock: Clock) {
+		if (BallShape === "square")
 			this.mesh = BABYLON.MeshBuilder.CreateBox("Ball", {width: BallSize * 0.1, height: BallSize * 0.1, depth: BallSize * 0.1}, scene);
 		else
         	this.mesh = BABYLON.MeshBuilder.CreateSphere("Ball", {diameter: BallSize * 0.1}, scene);
-        this.mesh.position.set(0, BallSize * 0.1, 0);
+        this.mesh.position.set(0, 0.5, 0);
 		
 		this.score1 = 0;
 		this.score2 = 0;
@@ -125,9 +160,16 @@ class Ball {
         this.speed = BallSpeed;
 		this.createScoreParticles(scene);
         this.resetDirection();
-        this.startDelay = 0;
+        //this.startDelay = 0;
 		this.pTimer = 0;
+		this.clock = clock;
     }
+
+	delayBallStart()
+	{
+		setTimeout(() => {
+		}, 3000);
+	}
 
     resetDirection() {
         let randdir = getRandomInt(7);
@@ -140,7 +182,13 @@ class Ball {
     }
 
     update(p_left : Paddle, p_right : Paddle) {
-        // Bounce on walls
+        
+		if (this.bool_startGameTimer)
+		{
+			this.delayBallStart();
+			this.bool_startGameTimer = false;
+		}
+		// Bounce on walls
         if (this.mesh.position.z >= 5 || this.mesh.position.z <= -5)
             this.dirZ = -this.dirZ;
 
@@ -150,28 +198,37 @@ class Ball {
 
         // Score and reset
         if (this.mesh.position.x <= -11) {
-			this.pointOrder += "2";
 			this.score2 += 1;
 			this.popScoreParticles(this.mesh.position);
 			this.reset();
 		}
 		else if (this.mesh.position.x >= 11) {
-			this.pointOrder += "1";
 			this.score1 += 1;
 			this.popScoreParticles(this.mesh.position);
             this.reset();
 		}
 
-        // Delay start
-        if (this.startDelay < 120) {
+		if (new Date().getTime() - this.clock.ballDelayStart == 500) 
+			this.particleSystem.stop();
+
+		if (new Date().getTime() - this.clock.ballDelayStart >= 3000)
+		{
+			this.mesh.position.x += this.dirX / 100;
+            this.mesh.position.z += this.dirZ / 100;
+		}
+
+        // Delay start version frames
+        /* if (this.startDelay < 120) {
 			this.startDelay++;
+			if (this.startDelay == 120)
+				this.clock.
 		}
 		if (this.startDelay == 30)
 			this.particleSystem.stop();
         if (this.startDelay === 120) {
             this.mesh.position.x += this.dirX / 100;
             this.mesh.position.z += this.dirZ / 100;
-        }
+        } */
     }
 
     checkPaddleCollision(paddle: Paddle, hitX: number, limitX: number) {
@@ -205,17 +262,20 @@ class Ball {
             this.dirX = newDirX;
             this.dirZ = newDirZ;
             this.pTimer = 1;
-			this.rebound++;
             // Debug
             console.log(`Ball speed: ${this.speed}, dirX: ${this.dirX}, dirZ: ${this.dirZ}, impact: ${impact}`);
         }
     }
 
     reset() {
+		this.clock.updateGameTimer();
+		this.clock.updatePointTimer();
+		this.clock.pointCurrentTime = 0;
         this.mesh.position.set(0, 0.5, 0);
         this.speed = BallSpeed;
         this.resetDirection();
-        this.startDelay = 0;
+        this.clock.ballDelayStart = new Date().getTime();
+		this.delayBallStart();
     }
 
 	createScoreParticles(scene: BABYLON.Scene) {
@@ -525,9 +585,7 @@ export class Game {
 	groundRight: BABYLON.Mesh;
 	match: MatchSetup;
 
-	gameTime: number = 0; //total game time in seconds
-	gameTimerStart: number = 0; //timestamp when game started or resumed
-	pointTimerStart: number = 0;
+	clock: Clock;
 
     loadedTexturesL: any[] = [];
     loadedTexturesR: any[] = [];
@@ -550,7 +608,7 @@ export class Game {
 
         this.groundLeft = BABYLON.MeshBuilder.CreateGround("ground", {width: 10, height: 11}, this.scene);
 		this.groundRight = BABYLON.MeshBuilder.CreateGround("ground", {width: 10, height: 11}, this.scene);
-
+		this.clock = new Clock();
         this.createCameraAndLight();
         this.createGround();
 		this.createSkybox();
@@ -559,6 +617,8 @@ export class Game {
 
 		//GUI Test
 		this.createNames();
+
+		this.clock.start();
 
         this.scene.registerBeforeRender(() => this.update());
 
@@ -576,8 +636,8 @@ export class Game {
 	async createNames() {
 		var fontData = await (await fetch("../../public/fonts/MaximumImpact_Regular.json")).json();
 
-		var name1 = BABYLON.MeshBuilder.CreateText("myText", this.match.players[0].name!, fontData, { size: 1, resolution: 64, depth: 0.1 }, this.scene, (window as any).earcut.default);
-		var name2 = BABYLON.MeshBuilder.CreateText("myText", this.match.players[1].name!, fontData, { size: 1, resolution: 64, depth: 0.1 }, this.scene, (window as any).earcut.default);
+		var name1 = BABYLON.MeshBuilder.CreateText("myText", "in", fontData, { size: 1, resolution: 64, depth: 0.1 }, this.scene, (window as any).earcut.default);
+		var name2 = BABYLON.MeshBuilder.CreateText("myText", "nn", fontData, { size: 1, resolution: 64, depth: 0.1 }, this.scene, (window as any).earcut.default);
 
 		name1!.position.y = 5;
 		name1!.position.x = -5;
@@ -677,10 +737,9 @@ export class Game {
         bmaterial.diffuseColor = new BABYLON.Color3(Bcolor_r/255, Bcolor_g/255, Bcolor_b/255);
 
         // Color3(r, g, b);
-
         this.p_left = new Paddle(this.scene, -10);
         this.p_right = new Paddle(this.scene, 10);
-        this.ball = new Ball(this.scene);
+        this.ball = new Ball(this.scene, this.clock);
 
 		// new player creation
 		if (this.player1Config.type == "human")
@@ -771,14 +830,18 @@ export class Game {
 	{
 		if (this.pause == true)
 			return;
+
+		this.clock.updateGameTimer();
+		//console.log("Actual: ", this.clock.gameTime);
+
 		this.player1.update();
 		this.player2.update();
 		this.ball.update(this.p_left, this.p_right);
 		this.changeGroundTexture();
 		this.updateParticles();
-        if (this.gameover == true && this.ball.startDelay == 60)
+        if (this.gameover == true)
 			this.endGame();
-		if (this.ball.score1 == 1 || this.ball.score2 == 1)
+		if (this.ball.score1 == 2 || this.ball.score2 == 2)
 			this.gameover = true;
 	}
 
@@ -795,6 +858,8 @@ export class Game {
 		this.match.rm = true;
         this.engine.stopRenderLoop();
 		resetSettings();
+		console.log("max time: ", this.clock.pointMaxTime/1000);
+		console.log("Total game time: ", this.clock.gameTime/1000);
 		this.resolveEnd(this.match);
 	}
 }

@@ -65,6 +65,7 @@ export async function setupPause(match: MatchSetup)
       const option = (btn as HTMLElement).dataset.view;
       if (option === "resume") {
 		// if (uiManager.match != null && uiManager.match.game != null)
+		match.game!.clock.resumeTimer();
 		match!.game!.pause = false;
 		setGameView();
 	  }
