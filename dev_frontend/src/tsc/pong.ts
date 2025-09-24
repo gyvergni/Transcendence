@@ -109,6 +109,8 @@ class Ball {
 	rebound: number = 0;
 	initialSpeed: number = BallSpeed;
 	pointOrder:string = "";
+	rallyBounce: number = 0;
+	maxRallyBounce: number = 0;
 	
 
     constructor(scene: BABYLON.Scene) {
@@ -150,12 +152,20 @@ class Ball {
 
         // Score and reset
         if (this.mesh.position.x <= -11) {
+			if (this.rallyBounce > this.maxRallyBounce)
+				this.maxRallyBounce = this.rallyBounce;
+			this.rallyBounce = 0;
+
 			this.pointOrder += "2";
 			this.score2 += 1;
 			this.popScoreParticles(this.mesh.position);
 			this.reset();
 		}
 		else if (this.mesh.position.x >= 11) {
+			if (this.rallyBounce > this.maxRallyBounce)
+				this.maxRallyBounce = this.rallyBounce;
+			this.rallyBounce = 0;
+
 			this.pointOrder += "1";
 			this.score1 += 1;
 			this.popScoreParticles(this.mesh.position);
@@ -206,6 +216,7 @@ class Ball {
             this.dirZ = newDirZ;
             this.pTimer = 1;
 			this.rebound++;
+			this.rallyBounce++;
             // Debug
             console.log(`Ball speed: ${this.speed}, dirX: ${this.dirX}, dirZ: ${this.dirZ}, impact: ${impact}`);
         }
@@ -531,8 +542,16 @@ export class Game {
 	private resolveEnd!: (match: MatchSetup) => void;
 	private promiseEnd: Promise<MatchSetup>;
 
-    constructor(canvas: HTMLCanvasElement, match_setup: MatchSetup)
+	//stat track
+	type: string;
+
+    constructor(canvas: HTMLCanvasElement, match_setup: MatchSetup, type: number)
 	{
+		this.type = "Quickmatch";
+		if (type === 1)
+			this.type = "Tournament semi";
+		else if (type === 2)
+			this.type = "Tournament finale";
 		this.gameover = false;
 		this.pause = false;
         this.canvas = canvas;
@@ -792,15 +811,16 @@ export class Game {
         this.engine.stopRenderLoop();
 		resetSettings();
 		this.resolveEnd(this.match);
+		console.log("longuest rally = ", this.ball.maxRallyBounce);
 	}
 }
 
 // ################### Run the Game ###################
-export function startMatch(match_setup: MatchSetup): Promise<MatchSetup> {
+export function startMatch(match_setup: MatchSetup, type: number): Promise<MatchSetup> {
     const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
     setUpSettings();
     console.log("Game settings loaded:", { paddle_size, PaddleColor, BallSize, BallColor });
-    const game = new Game(canvas, match_setup);
+    const game = new Game(canvas, match_setup, type);
     match_setup.game = game;
     match_setup.escape();
     game.launch();
@@ -812,10 +832,10 @@ export function startMatch(match_setup: MatchSetup): Promise<MatchSetup> {
 export async function startTournament(tournament: TournamentManager): Promise<void>
 {
 	console.log("started tournament with", tournament.firstRound[0].players[0].name);
-    await startMatch(tournament.firstRound[0]);
+    await startMatch(tournament.firstRound[0], 1);
 	console.log(tournament.firstRound[0].winner!.name);
 	await setupTournamentWaitingRoom(tournament);
-	await startMatch(tournament.firstRound[1]);
+	await startMatch(tournament.firstRound[1], 1);
 	console.log(tournament.firstRound[1].winner!.name);
 	tournament.currentRound = 1;
     tournament.final = new MatchSetup;
@@ -825,7 +845,7 @@ export async function startTournament(tournament: TournamentManager): Promise<vo
     	tournament.final.addPlayer(tournament.firstRound[1].winner);
 		await setupTournamentWaitingRoom(tournament);
     	tournament.currentRound = 2;
-		await startMatch(tournament.final);
+		await startMatch(tournament.final, 2);
 		console.log("Tournament winner:", tournament.final.winner!.name);
 		await setupTournamentEndScreen(tournament);
     }
