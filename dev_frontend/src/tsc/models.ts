@@ -114,6 +114,9 @@ function pause(match: MatchSetup, e: KeyboardEvent) {
 		{
 			if (match.game != null && match.game.pause == true)
 				match.game.pause = false;
+			match.game.clock.resumeTimer();
+			animateContentBoxOut();
+			console.log("apres 1");
 			setGameView();
 			console.log("3: %d", uiManager.getIsAnimating());
 		}
@@ -122,6 +125,7 @@ function pause(match: MatchSetup, e: KeyboardEvent) {
 			if (match.game != null && match.game.pause == false) {
 				match.game.pause = true;
 			}
+			match.game.clock.pauseTimer();
 			animateContentBoxIn();
 			console.log("apres 2");
 			setupPause(match);
