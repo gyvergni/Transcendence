@@ -575,10 +575,10 @@ export class Game {
 		var name1 = BABYLON.MeshBuilder.CreateText("myText", this.match.players[0].name!, fontData, { size: 1, resolution: 64, depth: 0.1 }, this.scene, (window as any).earcut.default);
 		var name2 = BABYLON.MeshBuilder.CreateText("myText", this.match.players[1].name!, fontData, { size: 1, resolution: 64, depth: 0.1 }, this.scene, (window as any).earcut.default);
 
-		name1.position.y = 5;
-		name1.position.x = -5;
-		name2.position.y = 5;
-		name2.position.x = 5;
+		name1!.position.y = 5;
+		name1!.position.x = -5;
+		name2!.position.y = 5;
+		name2!.position.x = 5;
 	}
 
 
@@ -804,7 +804,7 @@ export function startMatch(match_setup: MatchSetup): Promise<MatchSetup> {
     match_setup.game = game;
     match_setup.escape();
     game.launch();
-    resetSettings();
+    //resetSettings();
 	return game.whenEnded();
 }
 

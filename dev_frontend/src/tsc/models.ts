@@ -138,6 +138,7 @@ export class TournamentManager implements GameTypeManager {
   final: MatchSetup | null = null;
   currentRound = 0;
   guestsManager: GuestsManager;
+  shuffled: PlayerConfig[] = [];
 
   constructor() {
     this.guestsManager = new GuestsManager();
