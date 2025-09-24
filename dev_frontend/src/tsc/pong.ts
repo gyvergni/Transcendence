@@ -133,6 +133,7 @@ class Clock {
 	{
 		this.gameTimerStart = new Date().getTime();
 		this.pointTimerStart = new Date().getTime();
+		this.ballDelayStart = new Date().getTime();
 	}
 }
 
@@ -152,7 +153,6 @@ class Ball {
 	rebound: number = 0;
 	initialSpeed: number = BallSpeed;
 	pointOrder:string = "";
-	bool_startGameTimer: boolean = true; //to control match game Timer
 	rallyBounce: number = 0;
 	maxRallyBounce: number = 0;
 
@@ -173,13 +173,8 @@ class Ball {
         //this.startDelay = 0;
 		this.pTimer = 0;
 		this.clock = clock;
+		this.clock.ballDelayStart = new Date().getTime();
     }
-
-	delayBallStart()
-	{
-		setTimeout(() => {
-		}, 3000);
-	}
 
     resetDirection() {
         let randdir = getRandomInt(7);
@@ -193,11 +188,6 @@ class Ball {
 
     update(p_left : Paddle, p_right : Paddle) {
         
-		if (this.bool_startGameTimer)
-		{
-			this.delayBallStart();
-			this.bool_startGameTimer = false;
-		}
 		// Bounce on walls
         if (this.mesh.position.z >= 5 || this.mesh.position.z <= -5)
             this.dirZ = -this.dirZ;
@@ -228,10 +218,10 @@ class Ball {
             this.reset();
 		}
 
-		if (new Date().getTime() - this.clock.ballDelayStart == 500) 
+		if (new Date().getTime() - this.clock.ballDelayStart >= 500) 
 			this.particleSystem.stop();
 
-		if (new Date().getTime() - this.clock.ballDelayStart >= 3000)
+		if (new Date().getTime() - this.clock.ballDelayStart >= 2000)
 		{
 			this.mesh.position.x += this.dirX / 100;
             this.mesh.position.z += this.dirZ / 100;
@@ -297,7 +287,6 @@ class Ball {
         this.speed = BallSpeed;
         this.resetDirection();
         this.clock.ballDelayStart = new Date().getTime();
-		this.delayBallStart();
     }
 
 	createScoreParticles(scene: BABYLON.Scene) {
