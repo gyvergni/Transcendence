@@ -59,6 +59,7 @@ export async function setupPause(match: MatchSetup)
 	uiManager.setCurrentView("pause");
 	toggleBackButton(false);
 	uiManager.setIsAnimating(false);
+	setLang(currentLang); 
 	document.querySelectorAll("[data-view]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const option = (btn as HTMLElement).dataset.view;

@@ -107,6 +107,7 @@ export class MatchSetup implements GameTypeManager {
 function pause(match: MatchSetup, e: KeyboardEvent) {
 	console.log("game = ", match.game);
 	console.log("1: %d", uiManager.getIsAnimating());
+	console.log("uiManager.getisAnimating() = ", uiManager.getIsAnimating());
 	if (e.key === "Escape" && uiManager.getIsAnimating() === false && match.game != null) {
 		console.log("2: %d", uiManager.getIsAnimating());
 		uiManager.setIsAnimating(true);
@@ -138,6 +139,7 @@ export class TournamentManager implements GameTypeManager {
   final: MatchSetup | null = null;
   currentRound = 0;
   guestsManager: GuestsManager;
+  shuffled: PlayerConfig[] = [];
 
   constructor() {
     this.guestsManager = new GuestsManager();

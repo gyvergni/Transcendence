@@ -1,6 +1,6 @@
 //################ imports ############
 import * as BABYLON from "babylonjs";
-import * as earcut from 'earcut';
+import * as earcut from "earcut";
 (window as any).earcut = earcut;
 
 import uiManager from "./main.js";
@@ -562,10 +562,10 @@ export class Game {
 		var name1 = BABYLON.MeshBuilder.CreateText("myText", "in", fontData, { size: 1, resolution: 64, depth: 0.1 }, this.scene, (window as any).earcut.default);
 		var name2 = BABYLON.MeshBuilder.CreateText("myText", "nn", fontData, { size: 1, resolution: 64, depth: 0.1 }, this.scene, (window as any).earcut.default);
 
-		name1.position.y = 5;
-		name1.position.x = -5;
-		name2.position.y = 5;
-		name2.position.x = 5;
+		name1!.position.y = 5;
+		name1!.position.x = -5;
+		name2!.position.y = 5;
+		name2!.position.x = 5;
 	}
 
 
@@ -775,6 +775,7 @@ export class Game {
 			this.match.winner = this.player1.config;
 		else
 			this.match.winner = this.player2.config;
+		this.match.rm = true;
         this.engine.stopRenderLoop();
 		resetSettings();
 		this.resolveEnd(this.match);
@@ -790,7 +791,7 @@ export function startMatch(match_setup: MatchSetup): Promise<MatchSetup> {
     match_setup.game = game;
     match_setup.escape();
     game.launch();
-    resetSettings();
+    //resetSettings();
 	return game.whenEnded();
 }
 

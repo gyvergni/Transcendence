@@ -2,6 +2,7 @@
 import { animateContentBoxIn, animateContentBoxOut } from "./animations";
 import { setContentView } from "./views";
 import { TournamentManager } from "./models";
+import { setGameView } from "./views";
 
 export async function setupTournamentWaitingRoom(tournament: TournamentManager): Promise<void> {
     animateContentBoxIn();
@@ -31,7 +32,7 @@ export async function setupTournamentWaitingRoom(tournament: TournamentManager):
             rightplayer!.textContent = tournament.final!.players[1].name;
         }
         resumeBtn.addEventListener("click", () => {
-        animateContentBoxOut();
+        setGameView();
         resolve();
         }, { once: true }); // once = auto-remove listener after click
     });
