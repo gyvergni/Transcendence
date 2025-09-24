@@ -56,7 +56,7 @@ export async function setupPause(match: MatchSetup)
 	}
 	const html = await loadHTML("views/pause.html");
 	uiManager.contentInner.innerHTML = html;
-	uiManager.setCurrentView("views/pause.html");
+	uiManager.setCurrentView("pause");
 	toggleBackButton(false);
 	uiManager.setIsAnimating(false);
 	document.querySelectorAll("[data-view]").forEach((btn) => {

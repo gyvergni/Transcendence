@@ -24,6 +24,7 @@
 		"@tailwindcss/aspect-ratio": "^0.4.2",
 		"@tailwindcss/cli": "^4.1.10",
 		"babylonjs": "^8.25.0",
+		"earcut": "^3.0.2",
 		"chart.js": "^4.5.0"
 	},
 	"version": "1.0.0",

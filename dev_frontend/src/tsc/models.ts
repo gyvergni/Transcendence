@@ -59,9 +59,11 @@ export interface GameTypeManager {
 export class MatchSetup implements GameTypeManager {
 	players: PlayerConfig[] = [];
 	game: Game | null = null;
-  winner: PlayerConfig | null = null;
-  loser: PlayerConfig | null = null;
-  guestsManager: GuestsManager;
+	winner: PlayerConfig | null = null;
+	loser: PlayerConfig | null = null;
+	guestsManager: GuestsManager;
+	rm: boolean | boolean = false;
+	private keydownHandler?: (e: KeyboardEvent) => void;
 	
 	constructor() {
 		this.guestsManager = new GuestsManager();
@@ -79,39 +81,52 @@ export class MatchSetup implements GameTypeManager {
 		return this.players[0].isReady() === true && this.players[1]?.isReady() === true;
 	}
 
-	async escape()
-	{
-		console.log(uiManager.getIsAnimating());
-		toggleIsAnimation(false);
-		document.addEventListener("keydown", (e) => 
-		{
-			console.log("1: %d", uiManager.getIsAnimating());
-			if (e.key === "Escape" && uiManager.getIsAnimating() === false) {
-				console.log("2: %d", uiManager.getIsAnimating());
-				uiManager.setIsAnimating(true);
-				if (uiManager.getCurrentView().includes("pause"))
-				{
-					if (this.game != null && this.game.pause == true)
-						this.game.pause = false;
-					setGameView();
-					console.log("3: %d", uiManager.getIsAnimating());
-				}
-				else if (uiManager.getCurrentView().includes("game"))
-				{
-					if (this.game != null && this.game.pause == false)
-						this.game.pause = true;
-					animateContentBoxIn();
-					console.log("apres 2");
-					setupPause(this);
-					console.log("4: %d", uiManager.getIsAnimating());
-				};
+	async escape(): Promise<void> {
+		// Store the listener function so we can remove it later
+		this.keydownHandler = (e: KeyboardEvent) => {
+
+			// faire attention, actuellement tout les key press event passent ici
+			if (this.rm) {
+				this.rm = false;
+				document.removeEventListener("keydown", this.keydownHandler!);
+				return;
 			}
-		});
-		
+
+			console.log("ON KEY PRESS I GO HERE");
+			pause(this, e);
+		};
+
+		document.addEventListener("keydown", this.keydownHandler);
 	}
 
 	getGuestsManager(): GuestsManager {
 		return this.guestsManager;
+	}
+}
+
+function pause(match: MatchSetup, e: KeyboardEvent) {
+	console.log("game = ", match.game);
+	console.log("1: %d", uiManager.getIsAnimating());
+	if (e.key === "Escape" && uiManager.getIsAnimating() === false && match.game != null) {
+		console.log("2: %d", uiManager.getIsAnimating());
+		uiManager.setIsAnimating(true);
+		if (uiManager.getCurrentView().includes("pause"))
+		{
+			if (match.game != null && match.game.pause == true)
+				match.game.pause = false;
+			setGameView();
+			console.log("3: %d", uiManager.getIsAnimating());
+		}
+		else if (uiManager.getCurrentView().includes("game"))
+		{
+			if (match.game != null && match.game.pause == false) {
+				match.game.pause = true;
+			}
+			animateContentBoxIn();
+			console.log("apres 2");
+			setupPause(match);
+			console.log("4: %d", uiManager.getIsAnimating());
+		};
 	}
 }
 

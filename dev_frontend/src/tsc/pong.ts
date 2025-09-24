@@ -1,5 +1,8 @@
 //################ imports ############
 import * as BABYLON from "babylonjs";
+import * as earcut from 'earcut';
+(window as any).earcut = earcut;
+
 import uiManager from "./main.js";
 import {animateContentBoxIn} from "./animations.js";
 import {setContentView} from "./views.js";
@@ -536,17 +539,35 @@ export class Game {
 		this.createSkybox();
         this.createObjects();
 		this.createParticles();
+
+		//GUI Test
+		this.createNames();
+
         this.scene.registerBeforeRender(() => this.update());
 
 		this.promiseEnd = new Promise<MatchSetup>(resolve => {
 			this.resolveEnd = resolve;
 		});
     }
+
 	launch()
 	{
 		this.engine.runRenderLoop(() => this.scene.render());
         window.addEventListener("resize", () => this.engine.resize());
     }
+
+	async createNames() {
+		var fontData = await (await fetch("../../public/fonts/MaximumImpact_Regular.json")).json();
+
+		var name1 = BABYLON.MeshBuilder.CreateText("myText", "in", fontData, { size: 1, resolution: 64, depth: 0.1 }, this.scene, (window as any).earcut.default);
+		var name2 = BABYLON.MeshBuilder.CreateText("myText", "nn", fontData, { size: 1, resolution: 64, depth: 0.1 }, this.scene, (window as any).earcut.default);
+
+		name1.position.y = 5;
+		name1.position.x = -5;
+		name2.position.y = 5;
+		name2.position.x = 5;
+	}
+
 
 	dispose() {
 		this.engine.stopRenderLoop();
