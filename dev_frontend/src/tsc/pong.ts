@@ -1,6 +1,6 @@
 //################ imports ############
 import * as BABYLON from "babylonjs";
-import * as earcut from "earcut";
+import * as earcut from 'earcut';
 (window as any).earcut = earcut;
 
 import uiManager from "./main.js";
@@ -59,6 +59,10 @@ interface PlayerType {
 class Paddle {
 	mesh: BABYLON.Mesh;
 
+	//stat track
+	pSpeed: number = PaddleSpeed;
+	pSize: number = paddle_size;
+
     constructor(scene: BABYLON.Scene, x: number) {
         this.mesh = BABYLON.MeshBuilder.CreateBox("Paddle", 
             {width: 0.5, height: 0.5, depth: paddle_size}, scene);
@@ -101,12 +105,18 @@ class Ball {
 	pTimer: number = 0;
 	particleSystem: any;
 
+	//stat track
+	rebound: number = 0;
+	initialSpeed: number = BallSpeed;
+	pointOrder:string = "";
+	
+
     constructor(scene: BABYLON.Scene) {
-		if (BallShape === "square")
+		if (BallShape === "square") 
 			this.mesh = BABYLON.MeshBuilder.CreateBox("Ball", {width: BallSize * 0.1, height: BallSize * 0.1, depth: BallSize * 0.1}, scene);
 		else
         	this.mesh = BABYLON.MeshBuilder.CreateSphere("Ball", {diameter: BallSize * 0.1}, scene);
-        this.mesh.position.set(0, 0.5, 0);
+        this.mesh.position.set(0, BallSize * 0.1, 0);
 		
 		this.score1 = 0;
 		this.score2 = 0;
@@ -140,11 +150,13 @@ class Ball {
 
         // Score and reset
         if (this.mesh.position.x <= -11) {
+			this.pointOrder += "2";
 			this.score2 += 1;
 			this.popScoreParticles(this.mesh.position);
 			this.reset();
 		}
 		else if (this.mesh.position.x >= 11) {
+			this.pointOrder += "1";
 			this.score1 += 1;
 			this.popScoreParticles(this.mesh.position);
             this.reset();
@@ -193,6 +205,7 @@ class Ball {
             this.dirX = newDirX;
             this.dirZ = newDirZ;
             this.pTimer = 1;
+			this.rebound++;
             // Debug
             console.log(`Ball speed: ${this.speed}, dirX: ${this.dirX}, dirZ: ${this.dirZ}, impact: ${impact}`);
         }
@@ -563,8 +576,8 @@ export class Game {
 	async createNames() {
 		var fontData = await (await fetch("../../public/fonts/MaximumImpact_Regular.json")).json();
 
-		var name1 = BABYLON.MeshBuilder.CreateText("myText", "in", fontData, { size: 1, resolution: 64, depth: 0.1 }, this.scene, (window as any).earcut.default);
-		var name2 = BABYLON.MeshBuilder.CreateText("myText", "nn", fontData, { size: 1, resolution: 64, depth: 0.1 }, this.scene, (window as any).earcut.default);
+		var name1 = BABYLON.MeshBuilder.CreateText("myText", this.match.players[0].name!, fontData, { size: 1, resolution: 64, depth: 0.1 }, this.scene, (window as any).earcut.default);
+		var name2 = BABYLON.MeshBuilder.CreateText("myText", this.match.players[1].name!, fontData, { size: 1, resolution: 64, depth: 0.1 }, this.scene, (window as any).earcut.default);
 
 		name1!.position.y = 5;
 		name1!.position.x = -5;
