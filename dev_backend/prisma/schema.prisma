@@ -50,6 +50,10 @@ model matchHistory {
   identities_matchHistory_player1Toidentities identities @relation("matchHistory_player1Toidentities", fields: [player1_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
+//model matchStats { 
+//  id Int @Lier vers l'id dans match history;
+//}
+
 model stats {
   id         Int        @id @default(autoincrement())
   //user_id    Int        @unique(map: "sqlite_autoindex_stats_1")

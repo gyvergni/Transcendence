@@ -325,6 +325,47 @@ function setupProfileEvents() {
 	logoutBtn?.addEventListener("click", () => logoutUser());
 }
 
+function postQMatchResult(match: MatchSetup)
+{
+	
+async function postMatchStats(match: MatchSetup) {
+	let stats = {
+		player1Username: match.players[0].name,
+  		player2Username: match.players[1].name,
+  		player1Score: match.players[0].score,
+  		player2Score: match.players[1].score,
+  		match: {
+    		matchSettings: {
+    			ballSize: match.gameSettings.ballSize,
+    			ballSpeed: 5,
+    			paddleSize: 50,
+    			paddleSpeed: 5,
+    			gameMode: "classic",
+    		},
+    		matchStats: {
+    			totalHits: 120,
+    			longestRallyHits: 18,
+    			longestRallyTime: 5000,
+    			timeDuration: 60000,
+    			pointsOrder: [1,2,1,1,2],
+    		},
+  		},
+	}
+	const res = await fetch(`${API_BASE_URL}/stats`, {
+    method: "POST",
+    headers: {
+    	"Content-Type": "application/json",
+    },
+    body: JSON.stringify(stats),
+  });
+
+	if (!res.ok) {
+    	throw new Error(`Failed to post stats: ${res.status} ${res.statusText}`);
+	}
+
+	return await res.json();
+}}
+
 async function setQuickMatchView() {
   const container = document.getElementById("player-select-container")!;
   container.innerHTML = "";
@@ -362,6 +403,7 @@ async function setQuickMatchView() {
 
     setGameView();
     await startMatch(match);
+	postQMatchResult(match);
 	animateContentBoxIn();
 	setContentView("views/home.html");
   });
