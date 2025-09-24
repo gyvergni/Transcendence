@@ -512,6 +512,10 @@ export class Game {
 	groundRight: BABYLON.Mesh;
 	match: MatchSetup;
 
+	gameTime: number = 0; //total game time in seconds
+	gameTimerStart: number = 0; //timestamp when game started or resumed
+	pointTimerStart: number = 0;
+
     loadedTexturesL: any[] = [];
     loadedTexturesR: any[] = [];
 
