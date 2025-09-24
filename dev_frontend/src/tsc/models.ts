@@ -106,7 +106,7 @@ export class MatchSetup implements GameTypeManager {
 
 function pause(match: MatchSetup, e: KeyboardEvent) {
 	console.log("game = ", match.game);
-	console.log("1: %d", uiManager.getIsAnimating());
+	console.log("IS ANIMATING= %d", uiManager.getIsAnimating());
 	if (e.key === "Escape" && uiManager.getIsAnimating() === false && match.game != null) {
 		console.log("2: %d", uiManager.getIsAnimating());
 		uiManager.setIsAnimating(true);
