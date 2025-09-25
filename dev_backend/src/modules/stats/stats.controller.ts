@@ -7,8 +7,10 @@ import { PrismaClient, Prisma } from "../../generated/prisma";
 import { getGuestListByPseudoHandler } from "../guest/guest.controller";
 import { getGuestList } from "../guest/guest.service";
 import { addMatchSchema } from "./stats.schema";
-import { addMatch, checkIdentityExists, getStats } from "./stats.service";
+import { addMatch, checkIdentityExists, getStats, getStats2 } from "./stats.service";
 import { size } from "zod/v4";
+import { ca } from "zod/v4/locales";
+import { findUserByPseudo } from "../user/user.service";
 
 function isValidMatchScore(player1Score: number, player2Score: number) {
     if (player1Score < 0 || player2Score < 0) {
@@ -46,7 +48,7 @@ function isValidMatchBody(currentUserId: number, body: { player1Id: number, play
 }
 
 export async function addMatchHandler(req: FastifyRequest, reply: FastifyReply ) {
-    const body = req.body as { player1Id: number, player2Id: number, player1Score: number, player2Score: number };
+    const body: any = req.body;
     const currentUser = req.user;
 
     try {
@@ -55,57 +57,109 @@ export async function addMatchHandler(req: FastifyRequest, reply: FastifyReply )
         // console.log("Current user ID:", currentUser.id);
         // console.log("Guest list:", guestList);
 
-        if (!isValidMatchBody(currentUser.id, body, guestList)) {
+        // if (!isValidMatchBody(currentUser.id, body, guestList)) {
+        //     return httpError({
+        //         reply,
+        //         message: "Invalid match data",
+        //         code: StatusCodes.UNPROCESSABLE_ENTITY,
+        //     });
+        // };
+
+        const winnerUsername = body.player1Score > body.player2Score ? body.player1Username : body.player2Username;
+        const loserUsername = body.player1Score < body.player2Score ? body.player1Username : body.player2Username;
+        const winnerScore = Math.max(body.player1Score, body.player2Score);
+        const loserScore = Math.min(body.player1Score, body.player2Score);
+
+        const winner = await findUserByPseudo(winnerUsername);
+        const loser = await findUserByPseudo(loserUsername);
+        // if (!winner && !loser) {
+        //     return httpError({
+        //         reply,
+        //         message: "At least one player must be a registered user",
+        //         code: StatusCodes.UNPROCESSABLE_ENTITY,
+        //     });
+        // }
+        const winnerId = winner ? winner.id : guestList.find(guest => guest.pseudo === winnerUsername)?.id;
+        const loserId = loser ? loser.id : guestList.find(guest => guest.pseudo === loserUsername)?.id;
+
+        if (!winnerId || !loserId) {
             return httpError({
                 reply,
-                message: "Invalid match data",
+                message: "Player not found",
                 code: StatusCodes.UNPROCESSABLE_ENTITY,
             });
-        };
-
-        const winnerId = body.player1Score > body.player2Score ? body.player1Id : body.player2Id;
-        const loserId = body.player1Score < body.player2Score ? body.player1Id : body.player2Id;
-
+        }
     
-        const match = await addMatch(body, winnerId, loserId);
+        console.log("Body to add match:", body);
+        console.log("Winner ID:", winnerId, "Loser ID:", loserId);
+        const match = await addMatch(body, winnerId, loserId, winnerScore, loserScore);
 
         return reply.status(StatusCodes.CREATED).send({message: "Match added successfully"});
     } catch (e) {
-
+        console.error("Error in addMatchHandler:", e);
+        return httpError({
+            reply,
+            message: "Failed to add match",
+            code: StatusCodes.INTERNAL_SERVER_ERROR,
+        });
     }
 }
 
-export async function getStatsHandler(req: FastifyRequest<{Params: {id: number}, Querystring: {match: string, list: number}}>, reply: FastifyReply) {
-    const playerId = req.params.id ? +req.params.id as number : req.user.id as number;
-    const displayMatchHistory = req.query.match === 'true';
-    const sizeMatchHistory = req.query.list ? +req.query.list as number : 10; // Default to 10 if not provided
-    const currentUser = req.user;
-    // console.log("Player ID:", playerId, typeof playerId);
-    // console.log("Display match history:", displayMatchHistory);
-    // console.log("Size of match history:", sizeMatchHistory);
+export async function getStatsHandler(req: FastifyRequest<{Params: {username: string}, Querystring: {guest: string}}>, reply: FastifyReply) {
     try {
-        // Only the current user can see their own stats, or a guest can see their own stats
-        
-        // const guestList = await getGuestList(currentUser.id);
-        // if (playerId != currentUser.id && !guestList.some(guest => guest.id === playerId)) {
-        //     return httpError({
-        //         reply,
-        //         message: "This id does not exist in your guest list",
-        //         code: StatusCodes.NOT_FOUND,
-        //     });
-        // }
-
-        // Everyone can see stats of any player, so we don't check the guest list here
-        if (await checkIdentityExists(playerId) === false) {
-            return httpError({
-                reply,
-                message: "This id does not exist",
-                code: StatusCodes.NOT_FOUND,
-            });
+        if (req.params.username) {
+            const username = req.params.username;
+            const userId = await findUserByPseudo(username);
+            if (!userId) {
+                return httpError({
+                    reply,
+                    message: "User not found",
+                    code: StatusCodes.NOT_FOUND,
+                });
+            }
+            const guestname = req.query.guest;
+            const guestList = await getGuestList(userId.id);
+            if (guestname){
+                const guestFound = guestList.find(g => g.pseudo === guestname);
+                if (!guestFound) {
+                    return httpError({
+                        reply,
+                        message: "Guest not found",
+                        code: StatusCodes.NOT_FOUND,
+                    });
+                }
+                const stats = await getStats2(guestFound);
+                if (!stats) {
+                    return httpError({
+                        reply,
+                        message: "Faild to fetch stats",
+                        code: StatusCodes.INTERNAL_SERVER_ERROR,
+                    });
+                }
+                return reply.status(StatusCodes.OK).send(stats);
+            } else {
+                const stats = await getStats2(userId);
+                if (!stats) {
+                    return httpError({
+                        reply,
+                        message: "Faild to fetch stats",
+                        code: StatusCodes.INTERNAL_SERVER_ERROR,
+                    });
+                }
+                return reply.status(StatusCodes.OK).send(stats);
+            }
+        } else {
+            const currentUser = req.user;
+            const stats = await getStats2(currentUser);
+            if (!stats) {
+                return httpError({
+                    reply,
+                    message: "Faild to fetch stats",
+                    code: StatusCodes.INTERNAL_SERVER_ERROR,
+                });
+            }
+            return reply.status(StatusCodes.OK).send(stats);
         }
-        const stats = await getStats(playerId, displayMatchHistory, sizeMatchHistory);
-        // console.log("Stats fetched:", stats);
-        return reply.status(StatusCodes.OK).send(stats);
     } catch (e) {
         return httpError({
             reply,

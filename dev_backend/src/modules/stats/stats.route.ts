@@ -10,7 +10,7 @@ export async function statRoutes(server: FastifyInstance) {
         handler: addMatchHandler,
     });
 
-    server.withTypeProvider<ZodTypeProvider>().get("/:id", {
+    server.withTypeProvider<ZodTypeProvider>().get("/:username?", {
         schema: getStatsSchema,
         preHandler: [server.auth],
         handler: getStatsHandler,

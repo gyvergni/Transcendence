@@ -46,19 +46,25 @@ model matchHistory {
   player1_score                               Int
   player2_score                               Int
   date                                        DateTime   @default(now())
+  ballSize                                    Int
+  ballSpeed                                   Int
+  paddleSize                                  Int
+  paddleSpeed                                 Int
+  gameMode                                    String
+  totalHits                                   Int
+  longestRallyHits                            Int
+  longestRallyTime                            Int
+  timeDuration                                Int
+  pointsOrder                                 String
   identities_matchHistory_player2Toidentities identities @relation("matchHistory_player2Toidentities", fields: [player2_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   identities_matchHistory_player1Toidentities identities @relation("matchHistory_player1Toidentities", fields: [player1_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
-//model matchStats { 
-//  id Int @Lier vers l'id dans match history;
-//}
-
 model stats {
   id         Int        @id @default(autoincrement())
   //user_id    Int        @unique(map: "sqlite_autoindex_stats_1")
-  win        Int?       @default(0)
-  lose       Int?       @default(0)
+  wins        Int?       @default(0)
+  losses       Int?       @default(0)
   identities identities @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
