@@ -96,6 +96,20 @@ const translations: Record<Lang, Record<string, string>> =
 		"signup.verify-pw": "Verify Password",
 		"signup.signup-btn": "Sign Up",
 
+		//stats-dashboard.html
+		"stats.statistics": "Statistics",
+		"stats.totalgames": "Total Games",
+		"stats.wins": "Wins",
+		"stats.losses": "Losses",
+		"stats.winratio": "Win Ratio",
+		"stats.longuestRally": "Longuest Rally",
+		"stats.avgGameLength": "Avgerage Game length",
+		"stats.lastMatches": "Match History",
+		"stats.guestsMatchup": "Individual matchup stats",
+		"stats.guestsChoose": "Choose guest",
+		"stats.vsAI": "Recap vs AI",
+		"stats.aiExplanation": "Win - Loss vs the 3 AI Difficulties",
+
 		//tournament.html
 		"tournament.title": "Tournament",
 		"tournament.instructions": "Select 4 players or AI",

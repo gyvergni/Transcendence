@@ -11,11 +11,11 @@ import { loginUser, submitLogin2FA } from "./features/login.js";
 import { logoutUser } from "./features/logout.js";
 import { signupUser } from "./features/signup.js";
 import { account2FAHandler, accountEditAvatar, editIgUsername, editPassword, setup2FA, loadAccountAvatar, loadAccountInfo, enable2FA, disable2FA } from "./features/account.js";
-import { attachStatsIfViewPresent } from "./features/stats.js";
 import { getSettings } from "./settings.js";
 import { setLang, currentLang } from "./translation.js";
 import { addFriend, deleteFriend, friendsCache, loadFriends, renderFriends } from "./features/friends.js";
 import { setupTournamentWaitingRoom } from "./t-waitingscreen.js";
+import { initStatsView } from "./features/stats.js";
 
 async function loadHTML(path: string): Promise<string> {
 	const res = await fetch(path);
@@ -44,8 +44,8 @@ export async function setContentView(viewPath: string): Promise<void> {
 	else if (viewPath.includes("tournament")) setupTournament();
 	else if (viewPath.includes("account")) setupAccountEvents();
 	else if (viewPath.includes("friends")) setupFriendsEvents();
+	else if (viewPath.includes("stats")) initStatsView();
 	// allow views to attach feature-specific logic (e.g. stats scripts)
-	try { attachStatsIfViewPresent(); } catch (e) { /* ignore if not present */ }
 }
 
 export async function setupPause(match: MatchSetup)
@@ -329,6 +329,7 @@ function postQMatchResult(match: MatchSetup)
 {
 	
 async function postMatchStats(match: MatchSetup) {
+	const gameSettings = getSettings();
 	let stats = {
 		player1Username: match.players[0].name,
   		player2Username: match.players[1].name,
@@ -336,18 +337,18 @@ async function postMatchStats(match: MatchSetup) {
   		player2Score: match.players[1].score,
   		match: {
     		matchSettings: {
-    			ballSize: match.gameSettings.ballSize,
-    			ballSpeed: 5,
-    			paddleSize: 50,
-    			paddleSpeed: 5,
-    			gameMode: "classic",
+    			ballSize: gameSettings.ballSize,
+    			ballSpeed: gameSettings.ballSpeed,
+    			paddleSize: gameSettings.paddleSize,
+    			paddleSpeed: gameSettings.paddleSpeed,
+    			gameMode: match.gameMode,
     		},
     		matchStats: {
-    			totalHits: 120,
+    			//totalHits: match.game?.totalHits,
     			longestRallyHits: 18,
-    			longestRallyTime: 5000,
-    			timeDuration: 60000,
-    			pointsOrder: [1,2,1,1,2],
+    			longestRallyTime: match.game?.clock.pointMaxTime,
+    			timeDuration: match.game?.clock.gameTime,
+    			//pointsOrder: match.game?.pointsOrder,
     		},
   		},
 	}

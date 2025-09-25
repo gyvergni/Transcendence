@@ -604,16 +604,8 @@ export class Game {
 	private resolveEnd!: (match: MatchSetup) => void;
 	private promiseEnd: Promise<MatchSetup>;
 
-	//stat track
-	type: string;
-
-    constructor(canvas: HTMLCanvasElement, match_setup: MatchSetup, type: number)
+    constructor(canvas: HTMLCanvasElement, match_setup: MatchSetup)
 	{
-		this.type = "Quickmatch";
-		if (type === 1)
-			this.type = "Tournament semi";
-		else if (type === 2)
-			this.type = "Tournament finale";
 		this.gameover = false;
 		this.pause = false;
         this.canvas = canvas;
@@ -885,11 +877,11 @@ export class Game {
 }
 
 // ################### Run the Game ###################
-export function startMatch(match_setup: MatchSetup, type: number): Promise<MatchSetup> {
+export function startMatch(match_setup: MatchSetup): Promise<MatchSetup> {
     const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
     setUpSettings();
     console.log("Game settings loaded:", { paddle_size, PaddleColor, BallSize, BallColor });
-    const game = new Game(canvas, match_setup, type);
+    const game = new Game(canvas, match_setup);
     match_setup.game = game;
     match_setup.escape();
     game.launch();
@@ -901,10 +893,10 @@ export function startMatch(match_setup: MatchSetup, type: number): Promise<Match
 export async function startTournament(tournament: TournamentManager): Promise<void>
 {
 	console.log("started tournament with", tournament.firstRound[0].players[0].name);
-    await startMatch(tournament.firstRound[0], 1);
+    await startMatch(tournament.firstRound[0]);
 	console.log(tournament.firstRound[0].winner!.name);
 	await setupTournamentWaitingRoom(tournament);
-	await startMatch(tournament.firstRound[1], 1);
+	await startMatch(tournament.firstRound[1]);
 	console.log(tournament.firstRound[1].winner!.name);
 	tournament.currentRound = 1;
     tournament.final = new MatchSetup;
@@ -912,9 +904,10 @@ export async function startTournament(tournament: TournamentManager): Promise<vo
     {
     	tournament.final.addPlayer(tournament.firstRound[0].winner);
     	tournament.final.addPlayer(tournament.firstRound[1].winner);
+		tournament.final.gameMode = "tournament final";
 		await setupTournamentWaitingRoom(tournament);
     	tournament.currentRound = 2;
-		await startMatch(tournament.final, 2);
+		await startMatch(tournament.final);
 		console.log("Tournament winner:", tournament.final.winner!.name);
 		await setupTournamentEndScreen(tournament);
     }

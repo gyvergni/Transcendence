@@ -15,6 +15,7 @@ export class PlayerConfig {
 	difficulty: AIDifficulty = null;
 	lockedIn: boolean = false;
 	position: number = -1;
+	score: number = 0;
 
 	constructor(type: PlayerType = "human") {
 		this.type = type;
@@ -63,8 +64,9 @@ export class MatchSetup implements GameTypeManager {
 	loser: PlayerConfig | null = null;
 	guestsManager: GuestsManager;
 	rm: boolean | boolean = false;
+	gameMode: "tournament first round" | "tournament final" | "quickMatch" = "quickMatch";
 	private keydownHandler?: (e: KeyboardEvent) => void;
-	
+
 	constructor() {
 		this.guestsManager = new GuestsManager();
 	}

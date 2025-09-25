@@ -221,10 +221,13 @@ export async function createPlayerSlot(id: string, config: PlayerConfig, gameTyp
     if (role === "player") {
       config.type = "human";
       selector = await loadPlayerSelect(id, config, gameType);
-    } else if (role === "ai") {
+    }
+    else if (role === "ai") {
       config.type = "ai";
       selector = await loadAISelect(id, config);
-    } else return;
+    }
+    else
+      return;
 
     container.replaceChild(selector, clone);
     setLang(currentLang);

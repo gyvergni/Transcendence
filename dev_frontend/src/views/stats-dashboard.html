@@ -1,43 +1,43 @@
 <div class="fixed inset-0 overflow-auto p-6 bg-neutral-900/80 text-white">
   <!-- center and make the panel take most of the viewport -->
   <div class="w-full max-w-7xl mx-auto h-[90vh]">
-    <h2 class="text-3xl mb-4 font-bold text-center text-purple-300">Statistics</h2>
+    <h2 class="text-3xl mb-4 font-bold text-center text-purple-300" data-i18n="stats.statistics"></h2>
 
   <!-- Summary boxes -->
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4 mb-6 h-28">
-    <div class="summary-box flex flex-col justify-center p-4 bg-indigo-800/60 rounded-lg text-center">Total games<br><span id="stat-total" class="text-2xl md:text-3xl font-bold">—</span></div>
-    <div class="summary-box flex flex-col justify-center p-4 bg-green-800/60 rounded-lg text-center">Wins<br><span id="stat-wins" class="text-2xl md:text-3xl font-bold">—</span></div>
-    <div class="summary-box flex flex-col justify-center p-4 bg-red-800/60 rounded-lg text-center">Losses<br><span id="stat-losses" class="text-2xl md:text-3xl font-bold">—</span></div>
-    <div class="summary-box flex flex-col justify-center p-4 bg-purple-800/60 rounded-lg text-center">Win %<br><span id="stat-winrate" class="text-2xl md:text-3xl font-bold">—</span></div>
-    <div class="summary-box flex flex-col justify-center p-4 bg-slate-800/60 rounded-lg text-center">Avg wall bounces<br><span id="stat-bounces" class="text-2xl md:text-3xl font-bold">—</span></div>
-    <div class="summary-box flex flex-col justify-center p-4 bg-yellow-800/60 rounded-lg text-center">Avg % time top<br><span id="stat-toptime" class="text-2xl md:text-3xl font-bold">—</span></div>
+    <div class="summary-box flex flex-col justify-center p-4 bg-indigo-800/60 rounded-lg text-center" data-i18n="stats.totalgames"><br><span id="stat-total" class="text-2xl md:text-3xl font-bold">—</span></div>
+    <div class="summary-box flex flex-col justify-center p-4 bg-green-800/60 rounded-lg text-center" data-i18n="stats.wins" ><br><span id="stat-wins" class="text-2xl md:text-3xl font-bold">—</span></div>
+    <div class="summary-box flex flex-col justify-center p-4 bg-red-800/60 rounded-lg text-center" data-i18n="stats.losses"><br><span id="stat-losses" class="text-2xl md:text-3xl font-bold">—</span></div>
+    <div class="summary-box flex flex-col justify-center p-4 bg-purple-800/60 rounded-lg text-center" data-i18n="stats.winratio"><br><span id="stat-winrate" class="text-2xl md:text-3xl font-bold">—</span></div>
+    <div class="summary-box flex flex-col justify-center p-4 bg-slate-800/60 rounded-lg text-center" data-i18n="stats.longuestRally"><br><span id="stat-bounces" class="text-2xl md:text-3xl font-bold">—</span></div>
+    <div class="summary-box flex flex-col justify-center p-4 bg-yellow-800/60 rounded-lg text-center" data-i18n="stats.avgGamelength"><br><span id="stat-toptime" class="text-2xl md:text-3xl font-bold">—</span></div>
   </div>
 
   <div class="flex flex-col md:flex-row gap-6 h-[calc(90vh-220px)]">
     <!-- Match history -->
     <div class="w-full md:w-1/2 bg-black/30 rounded-lg p-4 h-full flex flex-col">
-      <h3 class="font-semibold mb-2">Last matches</h3>
+      <h3 class="font-semibold mb-2" data-i18n="stats.lastMatches"></h3>
       <ul id="match-history" class="space-y-2 overflow-auto flex-1">
         <!-- JS injects li elements here -->
       </ul>
     </div>
 
-    <!-- Right column: friend stats and heatmap -->
+    <!-- Right column: guest stats and heatmap -->
     <div class="w-full md:w-1/2 space-y-4 h-full flex flex-col">
       <div class="bg-black/30 rounded-lg p-3">
         <div class="flex items-center justify-between mb-2">
-          <h3 class="font-semibold">Friends — Wins / Losses</h3>
-          <select id="friend-select" class="bg-transparent border border-white/10 rounded px-2 py-1 text-sm">
-            <option value="all">All friends</option>
+          <h3 class="font-semibold" data-i18n="stats.guestsMatchup"></h3>
+          <select id="guest-select" class="bg-transparent border border-white/10 rounded px-2 py-1 text-sm">
+            <option value="all" data-i18n="stats.guestsChoose"></option>
           </select>
         </div>
-        <canvas id="friends-bar" class="w-full" height="220"></canvas>
+        <canvas id="guests-bar" class="w-full" height="220"></canvas>
       </div>
 
       <div class="bg-black/30 rounded-lg p-3">
-        <h3 class="font-semibold mb-2">Win/Loss vs AI</h3>
+        <h3 class="font-semibold mb-2" data-i18n="stats.vsAI"></h3>
         <canvas id="ai-difficulty" class="w-full" height="200"></canvas>
-        <div class="text-xs text-gray-300 mt-2">Wins (green) vs Losses (red) across AI difficulty</div>
+        <div class="text-xs text-gray-300 mt-2" data-i18n="stats.aiExplanation"></div>
       </div>
     </div>
   </div>

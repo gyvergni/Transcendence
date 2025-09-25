@@ -49,10 +49,11 @@ console.log("tournament length: ", tournament.players.length);
     // First match: players 0 and 1
     tournament.firstRound[0].addPlayer(shuffled[0]);
     tournament.firstRound[0].addPlayer(shuffled[1]);
-
+    tournament.firstRound[0].gameMode = "tournament first round";
     // Second match: players 2 and 3
     tournament.firstRound[1].addPlayer(shuffled[2]);
     tournament.firstRound[1].addPlayer(shuffled[3]);
+    tournament.firstRound[1].gameMode = "tournament first round";
 
     console.log("Match 1:", tournament.firstRound[0].players.map(p => p.name));
     console.log("Match 2:", tournament.firstRound[1].players.map(p => p.name));

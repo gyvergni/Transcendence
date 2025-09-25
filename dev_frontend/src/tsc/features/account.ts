@@ -56,6 +56,7 @@ export async function loadAccountAvatar() {
 	};
 }
 
+
 export async function loadAccountInfo() {
 	try {
 		const response = await fetch(API_BASE_URL + '/users/me', {
