@@ -149,6 +149,10 @@ class Ball {
 	particleSystem: any;
 	clock: Clock;
 
+	countDown3: BABYLON.Mesh;
+	countDown2: BABYLON.Mesh;
+	countDown1: BABYLON.Mesh;
+
 	//stat track
 	rebound: number = 0;
 	initialSpeed: number = BallSpeed;
@@ -174,7 +178,21 @@ class Ball {
 		this.pTimer = 0;
 		this.clock = clock;
 		this.clock.ballDelayStart = new Date().getTime();
+
+		this.setupCountDown(scene);
     }
+
+	async setupCountDown(scene: BABYLON.Scene) {
+		var fontData = await (await fetch("../../public/fonts/MaximumImpact_Regular.json")).json()
+
+		this.countDown3 = BABYLON.MeshBuilder.CreateText("myText", "3", fontData, { size: 1, resolution: 64, depth: 0.1 }, scene, (window as any).earcut.default);
+		this.countDown2 = BABYLON.MeshBuilder.CreateText("myText", "2", fontData, { size: 1, resolution: 64, depth: 0.1 }, scene, (window as any).earcut.default);
+		this.countDown1 = BABYLON.MeshBuilder.CreateText("myText", "1", fontData, { size: 1, resolution: 64, depth: 0.1 }, scene, (window as any).earcut.default);
+
+		this.countDown1.position.y = -2;
+		this.countDown2.position.y = -2;
+		this.countDown3.position.y = 5;
+	}
 
     resetDirection() {
         let randdir = getRandomInt(7);
@@ -223,22 +241,25 @@ class Ball {
 
 		if (new Date().getTime() - this.clock.ballDelayStart >= 2000)
 		{
+			if(this.countDown1)
+				this.countDown1.position.y = -2;
 			this.mesh.position.x += this.dirX / 100;
             this.mesh.position.z += this.dirZ / 100;
 		}
-
-        // Delay start version frames
-        /* if (this.startDelay < 120) {
-			this.startDelay++;
-			if (this.startDelay == 120)
-				this.clock.
+		else {
+			if (new Date().getTime() - this.clock.ballDelayStart >= 666 && new Date().getTime() - this.clock.ballDelayStart < 1332) {
+				if(this.countDown3)
+					this.countDown3.position.y = -2;
+				if(this.countDown2)
+					this.countDown2.position.y = 5;
+			}
+			else if (new Date().getTime() - this.clock.ballDelayStart >= 1332) {
+				if(this.countDown2)
+					this.countDown2.position.y = -2;
+				if(this.countDown1)
+					this.countDown1.position.y = 5;
+			}
 		}
-		if (this.startDelay == 30)
-			this.particleSystem.stop();
-        if (this.startDelay === 120) {
-            this.mesh.position.x += this.dirX / 100;
-            this.mesh.position.z += this.dirZ / 100;
-        } */
     }
 
     checkPaddleCollision(paddle: Paddle, hitX: number, limitX: number) {
@@ -287,6 +308,7 @@ class Ball {
         this.speed = BallSpeed;
         this.resetDirection();
         this.clock.ballDelayStart = new Date().getTime();
+		this.countDown3.position.y = 5;
     }
 
 	createScoreParticles(scene: BABYLON.Scene) {
@@ -604,8 +626,16 @@ export class Game {
 	private resolveEnd!: (match: MatchSetup) => void;
 	private promiseEnd: Promise<MatchSetup>;
 
-    constructor(canvas: HTMLCanvasElement, match_setup: MatchSetup)
+	//stat track
+	type: string
+
+    constructor(canvas: HTMLCanvasElement, match_setup: MatchSetup, type: number)
 	{
+		this.type = "Quickmatch";
+		if (type === 1)
+			this.type = "Tournament semi";
+		else if (type === 2)
+			this.type = "Tournament finale";
 		this.gameover = false;
 		this.pause = false;
         this.canvas = canvas;
@@ -620,14 +650,12 @@ export class Game {
         this.groundLeft = BABYLON.MeshBuilder.CreateGround("ground", {width: 10, height: 11}, this.scene);
 		this.groundRight = BABYLON.MeshBuilder.CreateGround("ground", {width: 10, height: 11}, this.scene);
 		this.clock = new Clock();
+		this.createText();
         this.createCameraAndLight();
         this.createGround();
 		this.createSkybox();
         this.createObjects();
 		this.createParticles();
-
-		//GUI Test
-		this.createNames();
 
 		this.clock.start();
 
@@ -644,7 +672,7 @@ export class Game {
         window.addEventListener("resize", () => this.engine.resize());
     }
 
-	async createNames() {
+	async createText() {
 		var fontData = await (await fetch("../../public/fonts/MaximumImpact_Regular.json")).json();
 
 		var name1 = BABYLON.MeshBuilder.CreateText("myText", this.match.players[0].name!, fontData, { size: 1, resolution: 64, depth: 0.1 }, this.scene, (window as any).earcut.default);
@@ -660,20 +688,6 @@ export class Game {
 	dispose() {
 		this.engine.stopRenderLoop();
 		this.scene = new BABYLON.Scene(this.engine);
-        // this.scene.dispose();
-		// this.engine.dispose();
-		// this.scene.dispose();
-    	// this.ball.mesh.dispose();
-    	// this.p_left.mesh.dispose();
-    	// this.p_right.mesh.dispose();
-		// this.particleSystem.dispose();
-    	// this.groundLeft.dispose();
-		// this.groundRight.dispose();
-
-		// for (let i = 0; i++; i <= 5) {
-    	// 	this.loadedTexturesL[i].dispose();
-    	// 	this.loadedTexturesR[i].dispose();
-		// }
 	}
 
     createCameraAndLight() {
@@ -776,6 +790,8 @@ export class Game {
     			result.set(Pcolor_r/255, Pcolor_g/255, Pcolor_b/255, 1);
   			} else if (mesh.name === "Ball") {
     			result.set(Bcolor_r/255, Bcolor_g/255, Bcolor_b/255, 1);
+  			} else if (mesh.name === "myText") {
+    			result.set(1, 1, 1, 1);
   			} else {
     			result.set(0, 0, 0, 1);
 			}
@@ -877,11 +893,11 @@ export class Game {
 }
 
 // ################### Run the Game ###################
-export function startMatch(match_setup: MatchSetup): Promise<MatchSetup> {
+export function startMatch(match_setup: MatchSetup, type: number): Promise<MatchSetup> {
     const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
     setUpSettings();
     console.log("Game settings loaded:", { paddle_size, PaddleColor, BallSize, BallColor });
-    const game = new Game(canvas, match_setup);
+    const game = new Game(canvas, match_setup, type);
     match_setup.game = game;
     match_setup.escape();
     game.launch();
@@ -893,10 +909,10 @@ export function startMatch(match_setup: MatchSetup): Promise<MatchSetup> {
 export async function startTournament(tournament: TournamentManager): Promise<void>
 {
 	console.log("started tournament with", tournament.firstRound[0].players[0].name);
-    await startMatch(tournament.firstRound[0]);
+    await startMatch(tournament.firstRound[0], 1);
 	console.log(tournament.firstRound[0].winner!.name);
 	await setupTournamentWaitingRoom(tournament);
-	await startMatch(tournament.firstRound[1]);
+	await startMatch(tournament.firstRound[1], 1);
 	console.log(tournament.firstRound[1].winner!.name);
 	tournament.currentRound = 1;
     tournament.final = new MatchSetup;
@@ -907,7 +923,7 @@ export async function startTournament(tournament: TournamentManager): Promise<vo
 		tournament.final.gameMode = "tournament final";
 		await setupTournamentWaitingRoom(tournament);
     	tournament.currentRound = 2;
-		await startMatch(tournament.final);
+		await startMatch(tournament.final, 2);
 		console.log("Tournament winner:", tournament.final.winner!.name);
 		await setupTournamentEndScreen(tournament);
     }

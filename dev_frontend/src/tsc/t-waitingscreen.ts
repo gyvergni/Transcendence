@@ -1,7 +1,7 @@
 // t-waitingscreen.ts
 import { animateContentBoxIn, animateContentBoxOut } from "./animations";
 import { setContentView } from "./views";
-import { TournamentManager } from "./models";
+import { MatchSetup, TournamentManager } from "./models";
 import { setGameView } from "./views";
 
 export async function setupTournamentWaitingRoom(tournament: TournamentManager): Promise<void> {
@@ -51,6 +51,27 @@ export async function setupTournamentEndScreen(tournament: TournamentManager): P
         }
         let champion = document.getElementById("champion-name");
         champion!.textContent = tournament.final!.winner!.name;
+
+        homeBtn.addEventListener("click", () => {
+            setContentView("views/home.html");
+            resolve();
+        }, { once: true }); // once = auto-remove listener after click
+    });
+}
+
+export async function setupGameEndScreen(match: MatchSetup): Promise<void> {
+    animateContentBoxIn();
+    await setContentView("views/game-end.html");
+    console.log("In game end screen setup");
+    return new Promise<void>((resolve) => {
+        const homeBtn = document.getElementById("home-btn");
+        if (!homeBtn) {
+            console.error("Home button not found in game end screen");
+            resolve(); // fallback: don't block
+            return;
+        }
+        let winner = document.getElementById("winner-name");
+        winner!.textContent = match.winner!.name;
 
         homeBtn.addEventListener("click", () => {
             setContentView("views/home.html");

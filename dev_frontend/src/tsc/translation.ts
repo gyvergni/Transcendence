@@ -124,7 +124,11 @@ const translations: Record<Lang, Record<string, string>> =
 
 		//tournament-end.html
 		"tournament.endTitle": "🏆 Tournament Champion 🏆",
-		"tournament.home-btn": "Return Home"
+		"tournament.home-btn": "Return Home",
+
+		//game-end.html
+		"endgame.endTitle": "Winner",
+		"endgame.home-btn": "Return Home"
 	},
 
 	fr: {
@@ -235,7 +239,11 @@ const translations: Record<Lang, Record<string, string>> =
 
 		//tournament-end.html
 		"tournament.endTitle": "🏆 Champion du tournoi 🏆",
-		"tournament.home-btn": "Retour a l'accueil"
+		"tournament.home-btn": "Retour a l'accueil",
+
+		//game-end.html
+		"endgame.endTitle": "Gagnant",
+		"endgame.home-btn": "Retour a l'accueil"
 	},
 	es: {
 		//home.html
@@ -345,7 +353,11 @@ const translations: Record<Lang, Record<string, string>> =
 
 		//tournament-end.html
 		"tournament.endTitle": "🏆 Campeon del torneo 🏆",
-		"tournament.home-btn": "Volver al inicio"
+		"tournament.home-btn": "Volver al inicio",
+
+		//game-end.html
+		"endgame.endTitle": "Ganador",
+		"endgame.home-btn": "Volver al inicio"
 	}
 };
 

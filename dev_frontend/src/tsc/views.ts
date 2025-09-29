@@ -14,7 +14,7 @@ import { account2FAHandler, accountEditAvatar, editIgUsername, editPassword, set
 import { getSettings } from "./settings.js";
 import { setLang, currentLang } from "./translation.js";
 import { addFriend, deleteFriend, friendsCache, loadFriends, renderFriends } from "./features/friends.js";
-import { setupTournamentWaitingRoom } from "./t-waitingscreen.js";
+import { setupGameEndScreen, setupTournamentWaitingRoom } from "./t-waitingscreen.js";
 import { initStatsView } from "./features/stats.js";
 
 async function loadHTML(path: string): Promise<string> {
@@ -403,7 +403,8 @@ async function setQuickMatchView() {
     }
 
     setGameView();
-    await startMatch(match);
+    await startMatch(match, 0);
+	await setupGameEndScreen(match);
 	postQMatchResult(match);
 	animateContentBoxIn();
 	setContentView("views/home.html");
