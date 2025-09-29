@@ -247,7 +247,11 @@ class Ball {
             this.mesh.position.z += this.dirZ / 100;
 		}
 		else {
-			if (new Date().getTime() - this.clock.ballDelayStart >= 666 && new Date().getTime() - this.clock.ballDelayStart < 1332) {
+			if (new Date().getTime() - this.clock.ballDelayStart >= 34 && new Date().getTime() - this.clock.ballDelayStart < 666) {
+				if(this.countDown3)
+					this.countDown3.position.y = 5;
+			}
+			else if (new Date().getTime() - this.clock.ballDelayStart >= 666 && new Date().getTime() - this.clock.ballDelayStart < 1332) {
 				if(this.countDown3)
 					this.countDown3.position.y = -2;
 				if(this.countDown2)
@@ -308,7 +312,6 @@ class Ball {
         this.speed = BallSpeed;
         this.resetDirection();
         this.clock.ballDelayStart = new Date().getTime();
-		this.countDown3.position.y = 5;
     }
 
 	createScoreParticles(scene: BABYLON.Scene) {
