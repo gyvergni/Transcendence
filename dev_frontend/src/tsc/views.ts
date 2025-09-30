@@ -404,10 +404,11 @@ async function setQuickMatchView() {
 
     setGameView();
     await startMatch(match, 0);
-	await setupGameEndScreen(match);
+	if (match.game?.pause === false)
+		await setupGameEndScreen(match);
 	postQMatchResult(match);
-	animateContentBoxIn();
-	setContentView("views/home.html");
+	//animateContentBoxIn();
+	//setContentView("views/home.html");
   });
 }
 
