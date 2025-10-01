@@ -21,15 +21,37 @@ export async function setupTournamentWaitingRoom(tournament: TournamentManager):
 
         if (tournament.firstRound[1].winner == null)
         {
-            prevWinner!.textContent = tournament.firstRound[0].winner!.name;
-            leftplayer!.textContent = tournament.firstRound[1].players[0].name;
-            rightplayer!.textContent = tournament.firstRound[1].players[1].name;
+            if (tournament.firstRound[0]?.winner?.name && prevWinner)
+                prevWinner.textContent = tournament.firstRound[0].winner!.name;
+            else
+                prevWinner!.textContent = "AI";
+
+            if (tournament.firstRound[1].players[0].name && leftplayer)
+                leftplayer.textContent = tournament.firstRound[1].players[0].name;
+            else
+                leftplayer!.textContent = "AI";
+
+            if (tournament.firstRound[1].players[1].name && rightplayer)
+                rightplayer.textContent = tournament.firstRound[1].players[1].name;
+            else
+                rightplayer!.textContent = "AI";
         }
         else
         {
-            prevWinner!.textContent = tournament.firstRound[1].winner!.name;
-            leftplayer!.textContent = tournament.final!.players[0].name;
-            rightplayer!.textContent = tournament.final!.players[1].name;
+            if (tournament.firstRound[1].winner?.name && prevWinner)
+                prevWinner.textContent = tournament.firstRound[1].winner!.name;
+            else
+                prevWinner!.textContent = "AI";
+
+            if ( tournament.final?.players[0].name && leftplayer)
+                leftplayer.textContent =  tournament.final!.players[0].name;
+            else
+                leftplayer!.textContent = "AI";
+
+            if (tournament.final?.players[1].name && rightplayer)
+                rightplayer.textContent = tournament.final!.players[1].name;
+            else
+                rightplayer!.textContent = "AI";
         }
         resumeBtn.addEventListener("click", () => {
         setGameView();
@@ -50,7 +72,10 @@ export async function setupTournamentEndScreen(tournament: TournamentManager): P
             return;
         }
         let champion = document.getElementById("champion-name");
-        champion!.textContent = tournament.final!.winner!.name;
+        if (tournament.final?.winner?.name && champion)
+            champion.textContent = tournament.final.winner.name;
+        else
+            champion!.textContent = "AI";
 
         homeBtn.addEventListener("click", () => {
             setContentView("views/home.html");
@@ -71,7 +96,10 @@ export async function setupGameEndScreen(match: MatchSetup): Promise<void> {
             return;
         }
         let winner = document.getElementById("winner-name");
-        winner!.textContent = match.winner!.name;
+        if (match.winner?.name && winner)
+            winner.textContent = match.winner.name;
+        else
+            winner!.textContent = "AI";
 
         homeBtn.addEventListener("click", () => {
             setContentView("views/home.html");
