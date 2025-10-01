@@ -678,13 +678,21 @@ export class Game {
 	async createText() {
 		var fontData = await (await fetch("../../public/fonts/MaximumImpact_Regular.json")).json();
 
-		var name1 = BABYLON.MeshBuilder.CreateText("myText", this.match.players[0].name!, fontData, { size: 1, resolution: 64, depth: 0.1 }, this.scene, (window as any).earcut.default);
-		var name2 = BABYLON.MeshBuilder.CreateText("myText", this.match.players[1].name!, fontData, { size: 1, resolution: 64, depth: 0.1 }, this.scene, (window as any).earcut.default);
+		var name1 = null;
+		var name2 = null;
+		if (this.match.players[0].name)
+			name1 = BABYLON.MeshBuilder.CreateText("myText", this.match.players[0].name, fontData, { size: 1, resolution: 64, depth: 0.1 }, this.scene, (window as any).earcut.default);
+		if (this.match.players[1].name)
+			name2 = BABYLON.MeshBuilder.CreateText("myText", this.match.players[1].name, fontData, { size: 1, resolution: 64, depth: 0.1 }, this.scene, (window as any).earcut.default);
 
-		name1!.position.y = 5;
-		name1!.position.x = -5;
-		name2!.position.y = 5;
-		name2!.position.x = 5;
+		if (name1) {
+			name1.position.y = 5;
+			name1.position.x = -5;
+		}
+		if (name2) {
+			name2.position.y = 5;
+			name2.position.x = 5;
+		}
 	}
 
 
@@ -928,6 +936,7 @@ export async function startTournament(tournament: TournamentManager): Promise<vo
     	tournament.currentRound = 2;
 		await startMatch(tournament.final, 2);
 		console.log("Tournament winner:", tournament.final.winner!.name);
-		await setupTournamentEndScreen(tournament);
+		if (tournament.final?.game?.pause === false)
+			await setupTournamentEndScreen(tournament);
     }
 }

@@ -402,10 +402,11 @@ async function setQuickMatchView() {
 
     setGameView();
     await startMatch(match, 0);
-	await setupGameEndScreen(match);
-	postMatchStats(match);
-	animateContentBoxIn();
-	setContentView("views/home.html");
+	if (match.game?.pause === false)
+		await setupGameEndScreen(match);
+	postQMatchResult(match);
+	//animateContentBoxIn();
+	//setContentView("views/home.html");
   });
 }
 
