@@ -325,9 +325,6 @@ function setupProfileEvents() {
 	logoutBtn?.addEventListener("click", () => logoutUser());
 }
 
-function postQMatchResult(match: MatchSetup)
-{
-	
 async function postMatchStats(match: MatchSetup) {
 	const gameSettings = getSettings();
 	let stats = {
@@ -352,7 +349,8 @@ async function postMatchStats(match: MatchSetup) {
     		},
   		},
 	}
-	const res = await fetch(`${API_BASE_URL}/stats`, {
+	console.log("sending match stats");
+	const res = await fetch(`${API_BASE_URL}/stats/match/create/`, {
     method: "POST",
     headers: {
     	"Content-Type": "application/json",
@@ -365,7 +363,7 @@ async function postMatchStats(match: MatchSetup) {
 	}
 
 	return await res.json();
-}}
+}
 
 async function setQuickMatchView() {
   const container = document.getElementById("player-select-container")!;
@@ -405,7 +403,7 @@ async function setQuickMatchView() {
     setGameView();
     await startMatch(match, 0);
 	await setupGameEndScreen(match);
-	postQMatchResult(match);
+	postMatchStats(match);
 	animateContentBoxIn();
 	setContentView("views/home.html");
   });
