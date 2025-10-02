@@ -28,6 +28,7 @@ export class PlayerConfig {
   setDifficulty(level: AIDifficulty) {
     if (this.type === "ai") {
       this.difficulty = level;
+	  this.name = "AI (" + this.difficulty + ")";
     }
   }
 

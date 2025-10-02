@@ -2,16 +2,41 @@
   <!-- center and make the panel take most of the viewport -->
   <div class="w-full max-w-7xl mx-auto h-[90vh]">
     <h2 class="text-3xl mb-4 font-bold text-center text-purple-300" data-i18n="stats.statistics"></h2>
-
+    <div class="flex justify-center mb-6">
+      <label for="main-user-select" class="mr-2 font-semibold">Select user:</label>
+      <select id="main-user-select" class="bg-transparent border border-white/20 rounded px-3 py-2 text-base">
+      <!-- Populated by JS -->
+      </select>
+    </div> 
   <!-- Summary boxes -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4 mb-6 h-28">
-    <div class="summary-box flex flex-col justify-center p-4 bg-indigo-800/60 rounded-lg text-center" data-i18n="stats.totalgames"><br><span id="stat-total" class="text-2xl md:text-3xl font-bold">—</span></div>
-    <div class="summary-box flex flex-col justify-center p-4 bg-green-800/60 rounded-lg text-center" data-i18n="stats.wins" ><br><span id="stat-wins" class="text-2xl md:text-3xl font-bold">—</span></div>
-    <div class="summary-box flex flex-col justify-center p-4 bg-red-800/60 rounded-lg text-center" data-i18n="stats.losses"><br><span id="stat-losses" class="text-2xl md:text-3xl font-bold">—</span></div>
-    <div class="summary-box flex flex-col justify-center p-4 bg-purple-800/60 rounded-lg text-center" data-i18n="stats.winratio"><br><span id="stat-winrate" class="text-2xl md:text-3xl font-bold">—</span></div>
-    <div class="summary-box flex flex-col justify-center p-4 bg-slate-800/60 rounded-lg text-center" data-i18n="stats.longuestRally"><br><span id="stat-bounces" class="text-2xl md:text-3xl font-bold">—</span></div>
-    <div class="summary-box flex flex-col justify-center p-4 bg-yellow-800/60 rounded-lg text-center" data-i18n="stats.avgGamelength"><br><span id="stat-toptime" class="text-2xl md:text-3xl font-bold">—</span></div>
+<!-- Summary boxes -->
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4 mb-6 h-28">
+  <div class="summary-box flex flex-col justify-center p-4 bg-indigo-800/60 rounded-lg text-center">
+    <span class="text-sm" data-i18n="stats.totalgames"></span>
+    <span id="stat-total" class="text-2xl md:text-3xl font-bold">—</span>
   </div>
+  <div class="summary-box flex flex-col justify-center p-4 bg-green-800/60 rounded-lg text-center">
+    <span class="text-sm" data-i18n="stats.wins"></span>
+    <span id="stat-wins" class="text-2xl md:text-3xl font-bold">—</span>
+  </div>
+  <div class="summary-box flex flex-col justify-center p-4 bg-red-800/60 rounded-lg text-center">
+    <span class="text-sm" data-i18n="stats.losses"></span>
+    <span id="stat-losses" class="text-2xl md:text-3xl font-bold">—</span>
+  </div>
+  <div class="summary-box flex flex-col justify-center p-4 bg-purple-800/60 rounded-lg text-center">
+    <span class="text-sm" data-i18n="stats.winratio"></span>
+    <span id="stat-winrate" class="text-2xl md:text-3xl font-bold">—</span>
+  </div>
+  <div class="summary-box flex flex-col justify-center p-4 bg-slate-800/60 rounded-lg text-center">
+    <span class="text-sm" data-i18n="stats.longuestRally"></span>
+    <span id="stat-bounces" class="text-2xl md:text-3xl font-bold">—</span>
+  </div>
+  <div class="summary-box flex flex-col justify-center p-4 bg-yellow-800/60 rounded-lg text-center">
+    <span class="text-sm" data-i18n="stats.avgGamelength"></span>
+    <span id="stat-toptime" class="text-2xl md:text-3xl font-bold">—</span>
+  </div>
+</div>
+
 
   <div class="flex flex-col md:flex-row gap-6 h-[calc(90vh-220px)]">
     <!-- Match history -->

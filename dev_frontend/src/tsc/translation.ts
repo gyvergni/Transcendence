@@ -224,6 +224,20 @@ const translations: Record<Lang, Record<string, string>> =
 		"signup.password": "Mot de passe",
 		"signup.verify-pw": "Verifier le mot de passe",
 		"signup.signup-btn": "S'inscrire",
+
+		//stats-dashboard.html
+		"stats.statistics": "Statistiques",
+		"stats.totalgames": "Parties totales",
+		"stats.wins": "Victoires",
+		"stats.losses": "Défaites",
+		"stats.winratio": "Ratio de victoires",
+		"stats.longuestRally": "Plus long échange",
+		"stats.avgGameLength": "Durée moyenne d'une partie",
+		"stats.lastMatches": "Historique des parties",
+		"stats.guestsMatchup": "Statistiques par invité",
+		"stats.guestsChoose": "Choisir un invité",
+		"stats.vsAI": "Résumé contre l'IA",
+		"stats.aiExplanation": "Victoires - Défaites contre les 3 niveaux de difficulté de l'IA",
 		
 		//tournament.html
 		"tournament.title": "Tournoi",
@@ -339,6 +353,20 @@ const translations: Record<Lang, Record<string, string>> =
 		"signup.verify-pw": "Verificar contrasena",
 		"signup.signup-btn": "Registrarse",
 		
+		//stats-dashboard.html
+		"stats.statistics": "Estadísticas",
+		"stats.totalgames": "Partidas totales",
+		"stats.wins": "Victorias",
+		"stats.losses": "Derrotas",
+		"stats.winratio": "Ratio de victorias",
+		"stats.longuestRally": "Rally más largo",
+		"stats.avgGameLength": "Duración media de la partida",
+		"stats.lastMatches": "Historial de partidas",
+		"stats.guestsMatchup": "Estadísticas por invitado",
+		"stats.guestsChoose": "Elegir invitado",
+		"stats.vsAI": "Resumen contra la IA",
+		"stats.aiExplanation": "Victorias - Derrotas contra las 3 dificultades de la IA",
+
 		//tournament.html
 		"tournament.title": "Torneo",
 		"tournament.instructions": "Seleccione 4 jugadores o IA",

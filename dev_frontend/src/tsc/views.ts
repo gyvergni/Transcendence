@@ -324,46 +324,63 @@ function setupProfileEvents() {
 
 	logoutBtn?.addEventListener("click", () => logoutUser());
 }
-
 async function postMatchStats(match: MatchSetup) {
 	const gameSettings = getSettings();
+	console.log("player 1 " + match.players[0].name);
+	console.log("player 2 " + match.players[1].name);
+	// Build the clean payload
 	let stats = {
 		player1Username: match.players[0].name,
-  		player2Username: match.players[1].name,
-  		player1Score: match.players[0].score,
-  		player2Score: match.players[1].score,
-  		match: {
-    		matchSettings: {
-    			ballSize: gameSettings.ballSize,
-    			ballSpeed: gameSettings.ballSpeed,
-    			paddleSize: gameSettings.paddleSize,
-    			paddleSpeed: gameSettings.paddleSpeed,
-    			gameMode: match.gameMode,
-    		},
-    		matchStats: {
-    			//totalHits: match.game?.totalHits,
-    			longestRallyHits: 18,
-    			longestRallyTime: match.game?.clock.pointMaxTime,
-    			timeDuration: match.game?.clock.gameTime,
-    			//pointsOrder: match.game?.pointsOrder,
-    		},
-  		},
-	}
-	console.log("sending match stats");
-	const res = await fetch(`${API_BASE_URL}/stats/match/create/`, {
-    method: "POST",
-    headers: {
-    	"Content-Type": "application/json",
-    },
-    body: JSON.stringify(stats),
-  });
+		player2Username: match.players[1].name,
+		player1Score: match.players[0].score,
+		player2Score: match.players[1].score,
+		match: {
+			matchSettings: {
+				ballSize: gameSettings.ballSize,
+				ballSpeed: gameSettings.ballSpeed,
+				paddleSize: gameSettings.paddleSize,
+				paddleSpeed: gameSettings.paddleSpeed,
+				gameMode: match.gameMode,
+			},
+			matchStats: {
+				totalHits: match.game?.ball.rebound,
+				longestRallyHits: match.game?.ball.maxRallyBounce,
+				longestRallyTime: match.game?.clock?.pointMaxTime,
+				timeDuration: match.game?.clock?.gameTime,
+				pointsOrder: match.game?.ball.pointOrder,
+			},
+		},
+	};
 
-	if (!res.ok) {
-    	throw new Error(`Failed to post stats: ${res.status} ${res.statusText}`);
-	}
+	console.log("📤 Preparing to send match stats:", stats);
 
-	return await res.json();
+	try {
+		const res = await fetch(`${API_BASE_URL}/stats/match/create`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				"Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
+			},
+			body: JSON.stringify(stats),
+		});
+
+		console.log("✅ Response received:", res);
+
+		if (!res.ok) {
+			const errorText = await res.text();
+			console.error(`❌ Failed to post stats: ${res.status} ${res.statusText}`, errorText);
+			throw new Error(`Failed to post stats: ${res.status} ${res.statusText}`);
+		}
+
+		const data = await res.json();
+		console.log("✅ Stats successfully saved:", data);
+		return data;
+	} catch (err) {
+		console.error("❌ Error posting match stats:", err);
+		throw err;
+	}
 }
+
 
 async function setQuickMatchView() {
   const container = document.getElementById("player-select-container")!;
@@ -402,11 +419,10 @@ async function setQuickMatchView() {
 
     setGameView();
     await startMatch(match, 0);
-	if (match.game?.pause === false)
-		await setupGameEndScreen(match);
-	postQMatchResult(match);
-	//animateContentBoxIn();
-	//setContentView("views/home.html");
+	await setupGameEndScreen(match);
+	postMatchStats(match);
+	animateContentBoxIn();
+	setContentView("views/home.html");
   });
 }
 
