@@ -70,8 +70,25 @@ export async function addMatchHandler(req: FastifyRequest, reply: FastifyReply )
         const winnerScore = Math.max(body.player1Score, body.player2Score);
         const loserScore = Math.min(body.player1Score, body.player2Score);
 
-        const winner = await findUserByPseudo(winnerUsername);
-        const loser = await findUserByPseudo(loserUsername);
+        const aiPlayers = ["ai-easy", "ai-medium", "ai-hard"];
+        let winner;
+        let winnerId;
+        if (aiPlayers.includes(winnerUsername)) {
+            winnerId = aiPlayers.indexOf(winnerUsername) + 1;
+        } else {
+            winner = await findUserByPseudo(winnerUsername);
+            winnerId = winner ? winner.id : guestList.find(guest => guest.pseudo === winnerUsername)?.id;
+        }
+
+        let loser;
+        let loserId;
+        if (aiPlayers.includes(loserUsername)) {
+            loserId = aiPlayers.indexOf(loserUsername) + 1;
+        } else {
+            loser = await findUserByPseudo(loserUsername);
+            loserId = loser ? loser.id : guestList.find(guest => guest.pseudo === loserUsername)?.id;
+        }
+
         // if (!winner && !loser) {
         //     return httpError({
         //         reply,
@@ -79,8 +96,6 @@ export async function addMatchHandler(req: FastifyRequest, reply: FastifyReply )
         //         code: StatusCodes.UNPROCESSABLE_ENTITY,
         //     });
         // }
-        const winnerId = winner ? winner.id : guestList.find(guest => guest.pseudo === winnerUsername)?.id;
-        const loserId = loser ? loser.id : guestList.find(guest => guest.pseudo === loserUsername)?.id;
 
         if (!winnerId || !loserId) {
             return httpError({

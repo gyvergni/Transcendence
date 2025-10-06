@@ -46,6 +46,10 @@ export async function addMatch(input: AddMatchBody, winnerId: number, loserId: n
 }
 
 export async function findPseudoWithId(playerId: number) {
+    if (playerId >= 1 && playerId <= 3) {
+        const aiNames = ["ai-easy", "ai-medium", "ai-hard"];
+        return aiNames[playerId - 1];
+    }
     const users = await findUsers();
     const user = users.find(user => user.id === playerId);
     if (user) {

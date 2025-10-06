@@ -15,6 +15,7 @@ import { httpError } from "./modules/utils/http";
 import { statRoutes } from "./modules/stats/stats.route";
 import websocket from '@fastify/websocket';
 import { wsRoute } from "./utils/ws";
+import { createAIIdentities } from "./utils/prisma";
 
 export const server = Fastify({
 	// logger: true,
@@ -127,6 +128,7 @@ async function main() {
 	server.register(wsRoute, {prefix: '/ws'});
 
     try {
+        await createAIIdentities();
         await server.listen({ port: 3000, host: "0.0.0.0" });
         console.log('Server ready');
     }
