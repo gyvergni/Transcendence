@@ -2,7 +2,7 @@
 
   <!-- Paddle Size -->
   <div>
-    <h2 class="text-xl font-semibold mb-2" data-i18n="settings.paddle-size"></h2>
+    <h2 class="text-xl font-semibold mb-2" data-i18n="settings.paddle-size"><span id="paddle-size-display"></span></h2>
     <input type="range" id="paddle-size-value" min="2" max="10" value="5"
       class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
   </div>
@@ -21,7 +21,7 @@
 
   <!-- Paddle Speed -->
   <div>
-    <h2 class="text-xl font-semibold mb-2" data-i18n="settings.paddle-speed"></h2>
+    <h2 class="text-xl font-semibold mb-2" data-i18n="settings.paddle-speed"><span id="paddle-speed-display"></span></h2>
     <input type="range" id="paddle-speed-value" min="5" max="15" value="10"
       class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
   </div>
@@ -40,25 +40,31 @@
 
   <!-- Ball Size -->
   <div>
-    <h2 class="text-xl font-semibold mb-2" data-i18n="settings.ball-size"></h2>
+    <h2 class="text-xl font-semibold mb-2" data-i18n="settings.ball-size"><span id="ball-size-display"></span></h2>
     <input type="range" id="ball-size" min="2" max="20" value="5"
       class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
   </div>
 
   <!-- Ball Speed -->
   <div>
-    <h2 class="text-xl font-semibold mb-2" data-i18n="settings.ball-speed"></h2>
+    <h2 class="text-xl font-semibold mb-2" data-i18n="settings.ball-speed"><span id="ball-speed-display"></span></h2>
     <input type="range" id="ball-speed" min="5" max="20" value="10"
       class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer">
   </div>
 
   <!-- Ball Shape -->
   <div>
-    <h2 class="text-xl font-semibold mb-2" data-i18n="settings.ball-shape"></h2>
+    <h2 class="text-xl font-semibold mb-2" data-i18n="settings.ball-shape"><span id="ball-shape-display"></span></h2>
     <div class="flex space-x-3">
       <div class="w-10 h-10 rounded-full cursor-pointer bg-white border-2 border-transparent hover:ring-2 hover:ring-cyan-500" data-ball-shape="round"></div>
       <div class="w-10 h-10 rounded cursor-pointer bg-white border-2 border-transparent hover:ring-2 hover:ring-white" data-ball-shape="square"></div>
     </div>
+  </div>
+
+  <!-- reset Button -->
+  <div class="flex flex-col space-y-4 items-center w-full">
+  <button reset-btn="reset" class=" bg-cyan-500/70 border border-cyan-300 backdrop-blur-md p-10 animate-hologram-pulse
+  	w-full px-4 py-2 text-white rounded-md hover:bg-cyan-700 transition" data-i18n="settings.reset"></button>
   </div>
 
   <!-- Language Selection -->
