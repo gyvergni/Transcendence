@@ -1,7 +1,7 @@
 import {UIManager} from "./ui-manager.js";
 import {setContentView} from "./views.js";
 import { checkTokenValidity } from "./features/auth.js";
-import {setLang} from "./translation.js"
+import {Lang, setLang} from "./translation.js"
 const uiManager = new UIManager();
 export default uiManager;
 
@@ -13,7 +13,16 @@ document.addEventListener("DOMContentLoaded",  async () => {
 	if (!isTokenValid) {
 		return ;
 	}
-	setLang("en");
+
+	const settingsStr = localStorage.getItem("pong-settings");
+	let lang: Lang = "en";
+	if (settingsStr) {
+		const settings = JSON.parse(settingsStr);
+		lang = (settings.language as Lang) || "en";
+	}
+	
+	console.log("Language from storage:", lang);
+	setLang(lang);
 	// console.log("User is authenticated");//
 	setContentView("views/home.html");
 });

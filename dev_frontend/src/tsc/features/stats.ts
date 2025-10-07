@@ -1,5 +1,6 @@
 import { API_BASE_URL } from "./utils-api.js";
 import { GuestsManager } from "../models.js";
+import { getApiErrorText } from "./utils-api.js";
 
 type MatchStatsResponse = {
     id: number;
@@ -39,7 +40,10 @@ async function fetchStats(accountUsername: string, guest?: string): Promise<Matc
             headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
         });
 
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) {
+            try { console.error("Failed to fetch stats:", getApiErrorText(await res.json())); } catch {}
+            throw new Error(`HTTP ${res.status}`);
+        }
         return await res.json() as MatchStatsResponse;
     } catch (err) {
         console.error("Failed to fetch stats", err);

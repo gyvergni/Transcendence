@@ -1,5 +1,5 @@
 import { setContentView } from "../views.js";
-import { API_BASE_URL } from "./utils-api.js";
+import { API_BASE_URL, getApiErrorText } from "./utils-api.js";
 import { loginWithWebSocket } from "./auth.js";
 
 const temp = false;
@@ -51,12 +51,18 @@ export async function signupUser(e: Event, form: HTMLFormElement) {
 			body: JSON.stringify({ pseudo: username, password })
 		})
 
-		if (signupResponse.status === 409) {
-			errorDiv.textContent = "Pseudo already exists !";
-			usernameDiv.classList.add("wrong-signup-input");
-			return ;
-		} else if (!signupResponse.ok) {
-			errorDiv.textContent = "Internal Error / Bad Request (Probleme schema zod pas le meme que le parsing username)";
+		if (!signupResponse.ok) {
+			const errorDiv = document.querySelector("#login-error-message") as HTMLDivElement;
+			try {
+				const err = await signupResponse.json();
+				errorDiv.textContent = getApiErrorText(err);
+			} catch {
+				errorDiv.textContent = "Internal Error";
+			}
+			if (signupResponse.status === 409) {
+				const usernameDiv = document.querySelector('#signup-username')!;
+				usernameDiv.classList.add("wrong-signup-input");
+			}
 			return ;
 		}
 		const loginResponse = await fetch(API_BASE_URL + "/users/login", {
@@ -67,7 +73,8 @@ export async function signupUser(e: Event, form: HTMLFormElement) {
 			body: JSON.stringify({ pseudo: username, password })
 		});
 		if (!loginResponse.ok) {
-			errorDiv!.textContent = "Internal Error";
+			const errorDiv = document.querySelector("#login-error-message") as HTMLDivElement;
+			try { errorDiv.textContent = getApiErrorText(await loginResponse.json()); } catch { errorDiv.textContent = "Internal Error"; }
 			return ;
 		}
 		const data = await loginResponse.json();

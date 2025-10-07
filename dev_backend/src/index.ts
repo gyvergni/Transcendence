@@ -59,6 +59,7 @@ server.decorate("auth", async (request: FastifyRequest, reply: FastifyReply) => 
 			reply,
             code: StatusCodes.UNAUTHORIZED,
             message: "No access token provided",
+            errorKey: "error.auth.no_token"
         });
     }
     try {
@@ -70,6 +71,7 @@ server.decorate("auth", async (request: FastifyRequest, reply: FastifyReply) => 
 			reply,
             code: StatusCodes.UNAUTHORIZED,
             message: 'Invalid access token',
+            errorKey: "error.auth.invalid_token"
         });
     }
 });

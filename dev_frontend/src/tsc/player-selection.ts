@@ -1,7 +1,7 @@
 // player-selection.ts
 import { API_BASE_URL } from "./features/utils-api.js";
 import { PlayerConfig, MatchSetup, GameTypeManager, Guest } from "./models.js";
-import { currentLang, setLang } from "./translation.js";
+import { currentLang, getTranslatedKey, setLang } from "./translation.js";
 
 // const registeredUsers: string[] = ["alice", "bob", "carol", "dave", "eve", "frank"];
 
@@ -102,10 +102,10 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
     const name = input.value.trim();
     if (!name) return;
 	if (name === guestsManager.host) {
-		alert("You cannot delete the host player.");
+		alert(getTranslatedKey("error.guest.delete_host"));
 		return;
 	} else if (!guestsManager.pseudoExists(name)) {
-      alert(`${name} is not registered.`);
+      alert(getTranslatedKey("error.guest.delete.not_found"));
       return;
 	} else if (gameType.getPlayers().some(p => p && p.name === name)) {
 		alert("You cannot delete a player who is already locked in.");

@@ -1,6 +1,6 @@
 import { setContentView } from "../views.js";
 import { disconnectWebSocket } from "./auth.js";
-import { API_BASE_URL } from "./utils-api.js";
+import { API_BASE_URL, getApiErrorText } from "./utils-api.js";
 
 export async function logoutUser() {
 	try {
@@ -11,7 +11,7 @@ export async function logoutUser() {
 			}
 		});
 		if (!logoutResponse.ok) {
-			console.error("Logout failed:", logoutResponse.statusText);
+			try { console.error("Logout failed:", getApiErrorText(await logoutResponse.json())); } catch { console.error("Logout failed"); }
 			return;
 		}
 		localStorage.removeItem("accessToken");

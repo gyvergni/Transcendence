@@ -2,7 +2,7 @@
 import * as BABYLON from "babylonjs";
 import * as earcut from "earcut";
 (window as any).earcut = earcut;
-import { API_BASE_URL } from "./features/utils-api.js";
+import { API_BASE_URL, getApiErrorText } from "./features/utils-api.js";
 
 import uiManager from "./main.js";
 import {animateContentBoxIn} from "./animations.js";
@@ -952,8 +952,13 @@ async function postMatchStats(match: MatchSetup) {
 		console.log("✅ Response received:", res);
 
 		if (!res.ok) {
-			const errorText = await res.text();
-			console.error(`❌ Failed to post stats: ${res.status} ${res.statusText}`, errorText);
+			try {
+				const body = await res.json();
+				console.error("❌ Failed to post stats:", getApiErrorText(body));
+			} catch (e) {
+				const errorText = await res.text();
+				console.error(`❌ Failed to post stats: ${res.status} ${res.statusText}`, errorText);
+			}
 			throw new Error(`Failed to post stats: ${res.status} ${res.statusText}`);
 		}
 
