@@ -179,6 +179,8 @@ async function loadAISelect(id: string, config: PlayerConfig): Promise<HTMLEleme
       return;
     }
     config.setDifficulty(selectedDifficulty as any);
+    config.name = "ai-" + selectedDifficulty;
+    console.log("AI player name is: " + config.name);
     config.lockIn();
 
     const readyBox = document.createElement("div");
