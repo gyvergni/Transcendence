@@ -28,6 +28,7 @@ export async function createUserHandler(req: FastifyRequest<{Body: CreateUserBod
                     reply,
                     message: "Pseudo already exists",
                     code: StatusCodes.CONFLICT,
+					errorKey: "error.user.duplicate_username"
                 })
             }
         }
@@ -35,6 +36,7 @@ export async function createUserHandler(req: FastifyRequest<{Body: CreateUserBod
             reply,
             message: "Failed to create user",
             code: StatusCodes.INTERNAL_SERVER_ERROR,
+			errorKey: "error.user.create_failed"
         });
     }
 }
@@ -48,6 +50,7 @@ export async function loginUserHandler(req: FastifyRequest<{Body: LoginUserInput
             reply,
             message: "Invalid pseudo or password",
             code: StatusCodes.UNAUTHORIZED,
+			errorKey: "error.auth.invalid_credentials"
         })
     }
 
@@ -59,6 +62,7 @@ export async function loginUserHandler(req: FastifyRequest<{Body: LoginUserInput
             reply,
             message: "Invalid pseudo or password",
             code: StatusCodes.UNAUTHORIZED,
+			errorKey: "error.auth.invalid_credentials"
         })
     }
 
@@ -81,6 +85,7 @@ export async function loginUserHandler(req: FastifyRequest<{Body: LoginUserInput
             reply,
             message: "Failed to login user",
             code: StatusCodes.INTERNAL_SERVER_ERROR,
+			errorKey: "error.auth.login_failed"
         });
     }
 }
@@ -98,6 +103,7 @@ export async function getUsersHandler(req: FastifyRequest<{ Params: {username: s
                     reply,
                     message: "User not found",
                     code: StatusCodes.NOT_FOUND,
+					errorKey: "error.user.not_found"
                 });
             }
             users = [user];
@@ -108,6 +114,7 @@ export async function getUsersHandler(req: FastifyRequest<{ Params: {username: s
             reply,
             message: "Failed to fetch users",
             code: StatusCodes.INTERNAL_SERVER_ERROR,
+			errorKey: "error.user.fetch_failed"
         });
     }
 }
@@ -121,6 +128,7 @@ export async function getMeHandler(req: FastifyRequest, reply: FastifyReply) {
 				reply,
 				message: "User not found",
 				code: StatusCodes.NOT_FOUND,
+				errorKey: "error.user.not_found"
 			});
 		}
 		const dbUser = await findUserByPseudo(user.pseudo);
@@ -129,6 +137,7 @@ export async function getMeHandler(req: FastifyRequest, reply: FastifyReply) {
 				reply,
 				message: "User not found in database",
 				code: StatusCodes.NOT_FOUND,
+				errorKey: "error.user.not_found"
 			});
 		}
 		const {password, ...rest} = dbUser;
@@ -138,6 +147,7 @@ export async function getMeHandler(req: FastifyRequest, reply: FastifyReply) {
 			reply,
 			message: "Failed to fetch user",
 			code: StatusCodes.INTERNAL_SERVER_ERROR,
+			errorKey: "error.user.fetch_failed"
 		});
 	}
 }
@@ -150,6 +160,7 @@ export async function getFriendsHandler(req: FastifyRequest, reply: FastifyReply
 				reply,
 				message: "User not found",
 				code: StatusCodes.NOT_FOUND,
+				errorKey: "error.user.not_found"
 			});
 		}
 
@@ -159,6 +170,7 @@ export async function getFriendsHandler(req: FastifyRequest, reply: FastifyReply
 				reply,
 				message: "No friends found",
 				code: StatusCodes.NOT_FOUND,
+				errorKey: "error.friend.not_found"
 			});
 		}
 		return reply.code(StatusCodes.OK).send(friends);
@@ -167,6 +179,7 @@ export async function getFriendsHandler(req: FastifyRequest, reply: FastifyReply
 			reply,
 			message: "Failed to fetch friends",
 			code: StatusCodes.INTERNAL_SERVER_ERROR,
+			errorKey: "error.friend.fetch_failed"
 		});
 	}
 }
@@ -182,6 +195,7 @@ export async function addFriendHandler(req: FastifyRequest<{Body: AddFriendInput
                 reply,
                 message: "User not found",
                 code: StatusCodes.NOT_FOUND,
+				errorKey: "error.user.not_found"
             });
         }
         if (friend.id === req.user.id) {
@@ -189,6 +203,7 @@ export async function addFriendHandler(req: FastifyRequest<{Body: AddFriendInput
                 reply,
                 message: "You cannot add yourself as a friend",
                 code: StatusCodes.UNPROCESSABLE_ENTITY,
+				errorKey: "error.friend.add_self"
             });
         }
         const currentUser = req.user;
@@ -204,13 +219,15 @@ export async function addFriendHandler(req: FastifyRequest<{Body: AddFriendInput
                     reply,
                     message: "You are already friends with this user",
                     code: StatusCodes.CONFLICT,
+                    errorKey: "error.friend.already_friends",
                 });
             }
         }
         return httpError({
             reply,
-            message: "Failed to find user",
+            message: "Failed to add friend",
             code: StatusCodes.INTERNAL_SERVER_ERROR,
+            errorKey: "error.friend.add_failed",
         });
     }
 }
@@ -227,6 +244,7 @@ export async function deleteFriendHandler(req: FastifyRequest<{Body: AddFriendIn
                 reply,
                 message: "User not found",
                 code: StatusCodes.NOT_FOUND,
+                errorKey: "error.user.not_found",
             });
         }
         const currentUser = req.user;
@@ -237,6 +255,7 @@ export async function deleteFriendHandler(req: FastifyRequest<{Body: AddFriendIn
                 reply,
                 message: "You are not friends with this user",
                 code: StatusCodes.UNPROCESSABLE_ENTITY,
+                errorKey: "error.friend.not_friends",
             });
         }
         return reply.code(StatusCodes.OK).send({message: "Friend deleted successfully"});
@@ -245,8 +264,9 @@ export async function deleteFriendHandler(req: FastifyRequest<{Body: AddFriendIn
         console.error("Prisma error:", e);
         return httpError({
             reply,
-            message: "Failed to find user",
+            message: "Failed to delete friend",
             code: StatusCodes.INTERNAL_SERVER_ERROR,
+            errorKey: "error.friend.delete_failed",
         });
     }
 }
@@ -263,6 +283,7 @@ export async function changePasswordHandler(req: FastifyRequest<{Body: ChangePas
                 reply,
                 message: "User not found",
                 code: StatusCodes.NOT_FOUND,
+                errorKey: "error.user.not_found",
             });
         }
 
@@ -272,6 +293,7 @@ export async function changePasswordHandler(req: FastifyRequest<{Body: ChangePas
                 reply,
                 message: "Invalid old password",
                 code: StatusCodes.UNPROCESSABLE_ENTITY,
+                errorKey: "error.user.invalid_old_password",
             });
         }
 
@@ -285,6 +307,7 @@ export async function changePasswordHandler(req: FastifyRequest<{Body: ChangePas
             reply,
             message: "Failed to change password",
             code: StatusCodes.INTERNAL_SERVER_ERROR,
+            errorKey: "error.user.change_password_failed",
         });
     }
 }
@@ -292,11 +315,12 @@ export async function changePasswordHandler(req: FastifyRequest<{Body: ChangePas
 
 export async function changeUsernameHandler(req: FastifyRequest<{Body: ChangeUsernameInput}>, reply: FastifyReply) {
     const body = req.body;
-    if (body.newPseudo === "Deleted Guest") {
+    if (body.newPseudo === "Deleted Guest" || body.newPseudo === "Invité supprimé" || body.newPseudo === "Invitado") {// A suppr faire la trad espagnol
         return httpError({
             reply,
             code: StatusCodes.BAD_REQUEST,
-            message: "Pseudo 'Deleted Guest' is reserved and cannot be used",	
+            message: "Pseudo 'Deleted Guest' is reserved and cannot be used",
+            errorKey: "error.user.username_reserved",
         });
     }
     try {
@@ -308,6 +332,7 @@ export async function changeUsernameHandler(req: FastifyRequest<{Body: ChangeUse
                 reply,
                 message: "User not found",
                 code: StatusCodes.NOT_FOUND,
+                errorKey: "error.user.not_found",
             });
         }
 
@@ -316,6 +341,7 @@ export async function changeUsernameHandler(req: FastifyRequest<{Body: ChangeUse
                 reply,
                 message: "Invalid password",
                 code: StatusCodes.UNPROCESSABLE_ENTITY,
+                errorKey: "error.user.invalid_password",
             });
         }
 
@@ -325,6 +351,7 @@ export async function changeUsernameHandler(req: FastifyRequest<{Body: ChangeUse
                 reply,
                 message: "This pseudo is already taken by a guest",
                 code: StatusCodes.UNPROCESSABLE_ENTITY,
+                errorKey: "error.user.username_taken_by_guest",
             });
         }
         await updateUsername(dbUser.id, body.newPseudo);
@@ -334,6 +361,7 @@ export async function changeUsernameHandler(req: FastifyRequest<{Body: ChangeUse
             reply,
             message: "Failed to change username",
             code: StatusCodes.INTERNAL_SERVER_ERROR,
+            errorKey: "error.user.change_username_failed",
         });
     }	
 }
@@ -347,6 +375,7 @@ export async function logoutUserHandler(req: FastifyRequest, reply: FastifyReply
             reply,
             message: "No access token provided",
             code: StatusCodes.UNAUTHORIZED,
+            errorKey: "error.auth.no_token",
         });
     }
     try {
@@ -358,6 +387,7 @@ export async function logoutUserHandler(req: FastifyRequest, reply: FastifyReply
             reply,
             message: "Failed to logout user",
             code: StatusCodes.INTERNAL_SERVER_ERROR,
+            errorKey: "error.auth.logout_failed",
         });
     }
 }
@@ -384,6 +414,7 @@ export async function changeAvatarHandler(req: FastifyRequest<{Body: ChangeAvata
 				reply,
 				message: "No file uploaded",
 				code: StatusCodes.UNPROCESSABLE_ENTITY,
+				errorKey: "error.user.avatar_no_file",
 			});
 		}
 	
@@ -401,6 +432,7 @@ export async function changeAvatarHandler(req: FastifyRequest<{Body: ChangeAvata
             reply,
             message: "Failed to change avatar",
             code: StatusCodes.INTERNAL_SERVER_ERROR,
+            errorKey: "error.user.change_avatar_failed",
         });
     }
 }
@@ -415,6 +447,7 @@ export async function getAvatarHandler(req: FastifyRequest, reply: FastifyReply)
 				reply,
 				message: "Avatar not found",
 				code: StatusCodes.NOT_FOUND,
+				errorKey: "error.user.avatar_not_found",
 			});
 		}
 
@@ -424,7 +457,8 @@ export async function getAvatarHandler(req: FastifyRequest, reply: FastifyReply)
 		return httpError({
 			reply,
 			message: "Failed to get avatar",
-			code: StatusCodes.INTERNAL_SERVER_ERROR,
+		 code: StatusCodes.INTERNAL_SERVER_ERROR,
+		 errorKey: "error.user.get_avatar_failed",
 		});
 	}
 }

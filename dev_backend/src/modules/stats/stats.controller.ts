@@ -114,6 +114,7 @@ export async function addMatchHandler(req: FastifyRequest, reply: FastifyReply )
                 reply,
                 message: "Player not found",
                 code: StatusCodes.UNPROCESSABLE_ENTITY,
+				errorKey: "error.stats.player_not_found"
             });
         }
     
@@ -128,6 +129,7 @@ export async function addMatchHandler(req: FastifyRequest, reply: FastifyReply )
             reply,
             message: "Failed to add match",
             code: StatusCodes.INTERNAL_SERVER_ERROR,
+			errorKey: "error.stats.add_match_failed"
         });
     }
 }
@@ -142,6 +144,7 @@ export async function getStatsHandler(req: FastifyRequest<{Params: {username: st
                     reply,
                     message: "User not found",
                     code: StatusCodes.NOT_FOUND,
+					errorKey: "error.user.not_found"
                 });
             }
             const guestname = req.query.guest;
@@ -153,6 +156,7 @@ export async function getStatsHandler(req: FastifyRequest<{Params: {username: st
                         reply,
                         message: "Guest not found",
                         code: StatusCodes.NOT_FOUND,
+						errorKey: "error.guest.not_found"
                     });
                 }
                 const stats = await getStats2({id: guestFound.id, game_username: guestFound.pseudo});
@@ -161,6 +165,7 @@ export async function getStatsHandler(req: FastifyRequest<{Params: {username: st
                         reply,
                         message: "Faild to fetch stats",
                         code: StatusCodes.INTERNAL_SERVER_ERROR,
+						errorKey: "error.stats.fetch_failed"
                     });
                 }
                 return reply.status(StatusCodes.OK).send(stats);
@@ -171,6 +176,7 @@ export async function getStatsHandler(req: FastifyRequest<{Params: {username: st
                         reply,
                         message: "Faild to fetch stats",
                         code: StatusCodes.INTERNAL_SERVER_ERROR,
+						errorKey: "error.stats.fetch_failed"
                     });
                 }
                 return reply.status(StatusCodes.OK).send(stats);
@@ -183,6 +189,7 @@ export async function getStatsHandler(req: FastifyRequest<{Params: {username: st
                     reply,
                     message: "Faild to fetch stats",
                     code: StatusCodes.INTERNAL_SERVER_ERROR,
+					errorKey: "error.stats.fetch_failed"
                 });
             }
             return reply.status(StatusCodes.OK).send(stats);
@@ -192,6 +199,7 @@ export async function getStatsHandler(req: FastifyRequest<{Params: {username: st
             reply,
             message: "Failed to fetch stats",
             code: StatusCodes.INTERNAL_SERVER_ERROR,
+			errorKey: "error.stats.fetch_failed"
         });
     }
 }

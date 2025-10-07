@@ -1,6 +1,6 @@
 import { setContentView } from "../views.js";
 import { a2fStatus, loginWithWebSocket } from "./auth.js";
-import { API_BASE_URL } from "./utils-api.js";
+import { API_BASE_URL, getApiErrorText } from "./utils-api.js";
 
 let pendingSessionId: string | null = null;
 
@@ -24,13 +24,15 @@ export async function loginUser(e: Event, form: HTMLFormElement) {
 			},
 			body: JSON.stringify({ pseudo: username, password })
 		});
-		if (loginResponse.status === 401) {
-			// console.error("Login failed:", loginResponse.statusText);
-			errorDiv!.textContent = "Invalid username or password";
+		if (!loginResponse.ok) {
+			const errorDiv = document.querySelector("#login-error-message") as HTMLDivElement;
+			try {
+				const err = await loginResponse.json();
+				errorDiv.textContent = getApiErrorText(err);
+			} catch {
+				errorDiv.textContent = "Internal Error";
+			}
 			return;
-		} else if (!loginResponse.ok) {
-			errorDiv!.textContent = "Internal Error";
-			return ;
 		}
 
 		const data = await loginResponse.json();
@@ -98,11 +100,7 @@ export async function submitLogin2FA(e: Event, form: HTMLFormElement) {
 		const data = await response.json();
 		if (!response.ok) {
 			const errorDiv = document.querySelector("#login-2fa-error") as HTMLDivElement;
-			if (response.status === 401) {
-				errorDiv.textContent = "Invalid 2FA token";
-			} else {
-				errorDiv.textContent = "Internal Error";
-			}
+			errorDiv.textContent = getApiErrorText(data);
 			return;
 		}
 

@@ -5,6 +5,7 @@ import {animateContentBoxOut, animateContentBoxIn, toggleIsAnimation} from "./an
 import {setContentView, setGameView, setupPause} from "./views.js";
 import uiManager from "./main.js";
 import { API_BASE_URL } from "./features/utils-api.js";
+import { getApiErrorText } from "./features/utils-api.js";
 
 export type PlayerType = "human" | "ai";
 export type AIDifficulty = "easy" | "medium" | "hard" | null;
@@ -219,14 +220,14 @@ export class GuestsManager {
 			});
 			const data = await response.json();
 			if (response.status === 400) {
-				console.error("Failed to add guest, ", data.message);
-				return { succes: false, message: data.message };
+				console.error("Failed to add guest, ", getApiErrorText(data));
+				return { succes: false, message: getApiErrorText(data) };
 			} else if (response.status === 409) {
-				console.error("Failed to add guest, ", data.message);
-				return { succes: false, message: data.message };
+				console.error("Failed to add guest, ", getApiErrorText(data));
+				return { succes: false, message: getApiErrorText(data) };
 			} else if (!response.ok) {
 				console.error("Failed to add guest, server error.");
-				return { succes: false, message: data.message };
+				return { succes: false, message: getApiErrorText(data) };
 			}
 			await this.fetchGuests();
 			return { succes: true, message: "Guest added successfully" };
@@ -248,11 +249,11 @@ export class GuestsManager {
 			});
 			const data = await response.json();
 			if (response.status === 404) {
-				console.error("Failed to delete guest, ", data.message);
-				return { succes: false, message: data.message };
+				console.error("Failed to delete guest, ", getApiErrorText(data));
+				return { succes: false, message: getApiErrorText(data) };
 			} else if (!response.ok) {
 				console.error("Failed to delete guest, server error.");
-				return { succes: false, message: data.message };
+				return { succes: false, message: getApiErrorText(data) };
 			}
 			await this.fetchGuests();
 			return { succes: true, message: "Guest deleted successfully" };

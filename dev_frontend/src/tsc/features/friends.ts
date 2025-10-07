@@ -1,7 +1,7 @@
 import { freemem } from "os";
 import { toggleBackButton } from "../animations";
 import { setContentView } from "../views";
-import { API_BASE_URL, parseApiErrorMessage } from "./utils-api";
+import { API_BASE_URL, getApiErrorText } from "./utils-api";
 
 type Friend = {
 	id: number;
@@ -125,8 +125,8 @@ export async function addFriend(e: Event, form: HTMLFormElement) {
 		if (!response.ok) {
 			const errorData = await response.json();
 			const errorDiv = document.querySelector("#add-friend-error") as HTMLDivElement;
-			errorDiv.textContent = parseApiErrorMessage(errorData.message);
-			console.error("Failed to add friend. Status:", response.status, "Message:", errorData.message);
+			errorDiv.textContent = getApiErrorText(errorData);
+			console.error("Failed to add friend. Status:", response.status, "Message:", getApiErrorText(errorData));
 			return ;
 		}
 		await fetchFriends();
@@ -164,7 +164,10 @@ export async function deleteFriend(e:Event, root: HTMLElement, tpl: HTMLTemplate
 		});
 
 		if (!response.ok) {
-			console.error("Failed to remove friend. Status:", response.status);
+			try {
+				const errorData = await response.json();
+				console.error("Failed to remove friend. Status:", response.status, getApiErrorText(errorData));
+			} catch {}
 			return ;
 		}
 		console.log("Friend removed successfully:", friendPseudo);

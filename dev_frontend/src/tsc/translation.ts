@@ -129,11 +129,57 @@ const translations: Record<Lang, Record<string, string>> =
 
 		//game-end.html
 		"endgame.endTitle": "Winner",
-		"endgame.return": "Return Home"
+		"endgame.return": "Return Home",
+
+
+		// Error messages
+		"error.guest.not_found": "Guest not found",
+		"error.guest.fetch_failed": "Failed to fetch guests",
+		"error.guest.username_reserved": "Username ‘Deleted Guest‘ is reserved and cannot be used",
+		"error.guest.create_failed": "Failed to create guest",
+		"error.guest.host_username_conflict": "Guest pseudo cannot be the same as your host in-game username",
+		"error.guest.list_full": "Guest list is full, you cannot create more than 10 guests",
+		"error.guest.duplicate_username": "Guest with this pseudo already exists",
+		"error.guest.delete_failed": "An error occurred while deleting the guest",
+		"error.guest.delete.not_found": "You cannot delete a guest that does not exist",
+		"error.guest.delete_host": "You cannot delete the host player",
+
+		"error.stats.player_not_found": "Player not found",
+		"error.stats.add_match_failed": "Failed to add match",
+		"error.stats.fetch_failed": "Failed to fetch stats",
+		
+		"error.user.not_found": "User not found",
+		"error.user.duplicate_username": "Pseudo already exists",
+		"error.user.create_failed": "Failed to create user",
+		"error.user.fetch_failed": "Failed to fetch users",
+		"error.user.invalid_old_password": "Invalid old password",
+		"error.user.username_reserved": "Username 'Deleted Guest' is reserved and cannot be used",
+		"error.user.invalid_password": "Invalid password",
+		"error.user.username_taken_by_guest": "This pseudo is already taken by a guest",
+		"error.user.change_password_failed": "Failed to change password",
+		"error.user.change_username_failed": "Failed to change username",
+		"error.user.avatar_no_file": "No file uploaded",
+		"error.user.change_avatar_failed": "Failed to change avatar",
+		"error.user.avatar_not_found": "Avatar not found",
+		"error.user.get_avatar_failed": "Failed to get avatar",
+		
+		"error.auth.invalid_credentials": "Invalid pseudo or password",
+		"error.auth.login_failed": "Failed to login user",
+		"error.auth.no_token": "No access token provided",
+		"error.auth.invalid_token": "Invalid access token",
+		"error.auth.logout_failed": "Failed to logout user",
+
+		"error.friend.not_found": "No friends found",
+		"error.friend.fetch_failed": "Failed to fetch friends",
+		"error.friend.add_self": "You cannot add yourself as a friend",
+		"error.friend.already_friends": "You are already friends with this user",
+		"error.friend.add_failed": "Failed to add friend",
+		"error.friend.not_friends": "You are not friends with this user",
+		"error.friend.delete_failed": "Failed to delete friend",
+
 	},
 
-	fr: {
-		//home.html
+	fr: {		//home.html
 		"home.menu": "Menu Principal",
 		"home.qmatch": "Partie Rapide",
 		"home.tournament": "Tournoi",
@@ -259,7 +305,53 @@ const translations: Record<Lang, Record<string, string>> =
 
 		//game-end.html
 		"endgame.endTitle": "Gagnant",
-		"endgame.return": "Retour a l'accueil"
+		"endgame.return": "Retour a l'accueil",
+
+
+		// Error messages
+		"error.guest.not_found": "Invite introuvable",
+		"error.guest.fetch_failed": "Echec de la recuperation des invites",
+		"error.guest.username_reserved": "Le pseudo 'Deleted Guest' est reserve et ne peut pas etre utilise",
+		"error.guest.create_failed": "Echec de la creation de l'invite",
+		"error.guest.host_username_conflict": "Le pseudo de l'invite ne peut pas etre le meme que votre pseudo in-game",
+		"error.guest.list_full": "La liste des invites est pleine (max 10)",
+		"error.guest.duplicate_username": "Un invite avec ce pseudo existe deja",
+		"error.guest.delete_failed": "Une erreur est survenue lors de la suppression de l'invite",
+		"error.guest.delete.not_found": "Vous ne pouvez pas supprimer un invite qui n'existe pas",
+		"error.guest.delete_host": "Vous ne pouvez pas supprimer le joueur hote",
+
+		"error.stats.player_not_found": "Joueur introuvable",
+		"error.stats.add_match_failed": "Echec de l'ajout du match",
+		"error.stats.fetch_failed": "Echec de la recuperation des statistiques",
+		
+		"error.user.not_found": "Utilisateur introuvable",
+		"error.user.duplicate_username": "Le pseudo existe deja",
+		"error.user.create_failed": "Echec de la creation de l'utilisateur",
+		"error.user.fetch_failed": "Echec de la recuperation des utilisateurs",
+		"error.user.invalid_old_password": "Ancien mot de passe invalide",
+		"error.user.username_reserved": "Le pseudo 'Deleted Guest' est reserve et ne peut pas etre utilise",
+		"error.user.invalid_password": "Mot de passe invalide",
+		"error.user.username_taken_by_guest": "Ce pseudo est deja utilise par un invite",
+		"error.user.change_password_failed": "Echec du changement de mot de passe",
+		"error.user.change_username_failed": "Echec du changement de pseudo",
+		"error.user.avatar_no_file": "Aucun fichier envoye",
+		"error.user.change_avatar_failed": "Echec du changement d'avatar",
+		"error.user.avatar_not_found": "Avatar introuvable",
+		"error.user.get_avatar_failed": "Echec de la recuperation de l'avatar",
+		
+		"error.auth.invalid_credentials": "Pseudo ou mot de passe invalide",
+		"error.auth.login_failed": "Echec de la connexion",
+		"error.auth.no_token": "Aucun jeton d'acces fourni",
+		"error.auth.invalid_token": "Jeton d'acces invalide",
+		"error.auth.logout_failed": "Echec de la deconnexion",
+
+		"error.friend.not_found": "Aucun ami trouve",
+		"error.friend.fetch_failed": "Echec de la recuperation des amis",
+		"error.friend.add_self": "Vous ne pouvez pas vous ajouter en ami",
+		"error.friend.already_friends": "Vous etes deja amis avec cet utilisateur",
+		"error.friend.add_failed": "Echec de l'ajout de l'ami",
+		"error.friend.not_friends": "Vous n'etes pas amis avec cet utilisateur",
+		"error.friend.delete_failed": "Echec de la suppression de l'ami",
 	},
 	es: {
 		//home.html
@@ -388,7 +480,53 @@ const translations: Record<Lang, Record<string, string>> =
 
 		//game-end.html
 		"endgame.endTitle": "Ganador",
-		"endgame.return": "Volver al inicio"
+		"endgame.return": "Volver al inicio",
+
+
+		// Error messages
+		"error.guest.not_found": "Invitado no encontrado",
+		"error.guest.fetch_failed": "Error al obtener invitados",
+		"error.guest.username_reserved": "El nombre 'Deleted Guest' esta reservado y no puede usarse",
+		"error.guest.create_failed": "Error al crear invitado",
+		"error.guest.host_username_conflict": "El nombre del invitado no puede ser el mismo que tu nombre en el juego",
+		"error.guest.list_full": "La lista de invitados esta llena (max 10)",
+		"error.guest.duplicate_username": "Ya existe un invitado con este nombre",
+		"error.guest.delete_failed": "Ocurrio un error al eliminar el invitado",
+		"error.guest.delete.not_found": "No puedes eliminar un invitado que no existe",
+
+
+		"error.stats.player_not_found": "Jugador no encontrado",
+		"error.stats.add_match_failed": "Error al agregar partida",
+		"error.stats.fetch_failed": "Error al obtener estadisticas",
+
+		"error.user.not_found": "Usuario no encontrado",
+		"error.user.duplicate_username": "El pseudo ya existe",
+		"error.user.create_failed": "Error al crear usuario",
+		"error.user.fetch_failed": "Error al obtener usuarios",
+		"error.user.invalid_old_password": "Contrasena antigua invalida",
+		"error.user.username_reserved": "El nombre 'Deleted Guest' esta reservado y no puede usarse",
+		"error.user.invalid_password": "Contrasena invalida",
+		"error.user.username_taken_by_guest": "Este pseudo ya esta usado por un invitado",
+		"error.user.change_password_failed": "Error al cambiar la contrasena",
+		"error.user.change_username_failed": "Error al cambiar el nombre",
+		"error.user.avatar_no_file": "No se subio ningun archivo",
+		"error.user.change_avatar_failed": "Error al cambiar el avatar",
+		"error.user.avatar_not_found": "Avatar no encontrado",
+		"error.user.get_avatar_failed": "Error al obtener el avatar",
+
+		"error.auth.invalid_credentials": "Pseudo o contrasena invalido",
+		"error.auth.login_failed": "Error al iniciar sesion",
+		"error.auth.no_token": "No se proporciono token de acceso",
+		"error.auth.invalid_token": "Token de acceso invalido",
+		"error.auth.logout_failed": "Error al cerrar sesion",
+
+		"error.friend.not_found": "No se encontraron amigos",
+		"error.friend.fetch_failed": "Error al obtener amigos",
+		"error.friend.add_self": "No puedes agregarte a ti mismo como amigo",
+		"error.friend.already_friends": "Ya son amigos",
+		"error.friend.add_failed": "Error al agregar amigo",
+		"error.friend.not_friends": "No eres amigo de este usuario",
+		"error.friend.delete_failed": "Error al eliminar amigo",
 	}
 };
 
@@ -410,4 +548,9 @@ export function setLang(lang: Lang) {
 		const text = translations[currentLang][key];
 		if (text) el.setAttribute("title", text);
 	});
+}
+
+export function getTranslatedKey(key: string): string {
+	const message = translations[currentLang][key];
+	return message ? message : key;
 }

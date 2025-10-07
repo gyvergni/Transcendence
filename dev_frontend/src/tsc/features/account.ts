@@ -1,4 +1,4 @@
-import { API_BASE_URL, parseApiErrorMessage } from "./utils-api.js";
+import { API_BASE_URL, getApiErrorText, parseApiErrorMessage } from "./utils-api.js";
 import { toggleBackButton } from "../animations.js";
 import { setContentView } from "../views.js";
 import { a2fStatus, checkTokenValidity } from "./auth.js";
@@ -22,7 +22,7 @@ export async function accountEditAvatar() {
 			body: formData
 		});
 		if (!response.ok) {
-			console.error("Failed to upload avatar:", response.statusText);
+			try { console.error("Failed to upload avatar:", getApiErrorText(await response.json())); } catch {}
 			return ;
 		}
 		const data = await response.json();
@@ -42,7 +42,7 @@ export async function loadAccountAvatar() {
 			}
 		});
 		if (!response.ok) {
-			console.error("Failed to load avatar:", response.statusText);
+			try { console.error("Failed to load avatar:", getApiErrorText(await response.json())); } catch {}
 			return ;
 		}
 		const data = await response.json();
@@ -66,7 +66,7 @@ export async function loadAccountInfo() {
 		});
 		// console.log(response);
 		if (!response.ok) {
-			console.error("Failed to load account info:", response.statusText);
+			try { console.error("Failed to load account info:", getApiErrorText(await response.json())); } catch {}
 			return ;
 		}
 		const data = await response.json();
@@ -130,8 +130,8 @@ export async function editIgUsername(e: Event, form: HTMLFormElement) {
 		if (!response.ok) {
 			const errorData = await response.json();
 			const errorDiv = document.querySelector("#edit-igUsername-error") as HTMLDivElement;
-			errorDiv.textContent = parseApiErrorMessage(errorData.message);
-			console.error("Failed to change IG username:", response.statusText);
+			errorDiv.textContent = getApiErrorText(errorData);
+			console.error("Failed to change IG username:", getApiErrorText(errorData));
 			return ;
 		}
 		loadAccountInfo();
@@ -175,8 +175,8 @@ export async function editPassword(e: Event, form: HTMLFormElement) {
 		})
 		if (!response.ok) {
 			const errorData = await response.json();
-			errorDiv.textContent = parseApiErrorMessage(errorData.message);
-			console.error("Failed to change password:", response.statusText);
+			errorDiv.textContent = getApiErrorText(errorData);
+			console.error("Failed to change password:", getApiErrorText(errorData));
 			return ;
 		}
 		toggleBackButton(true, () => {
@@ -246,7 +246,7 @@ export async function setup2FA() {
 		});
 		if (!response.ok) {
 			const errorData = await response.json();
-			console.error("Failed to enable 2FA:", parseApiErrorMessage(errorData.message));
+			console.error("Failed to enable 2FA:", getApiErrorText(errorData));
 			return ;
 		}
 		const data = await response.json();
@@ -362,7 +362,7 @@ export async function disable2FA(e: Event, form: HTMLFormElement) {
 		if (!response.ok) {
 			const errorData = await response.json();
 			errorDiv.textContent = errorData.message || "Failed to disable 2FA";
-			console.error("Failed to disable 2FA", response.statusText);
+			console.error("Failed to disable 2FA", getApiErrorText(errorData));
 			return ;
 		}
 

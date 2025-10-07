@@ -7,25 +7,6 @@ import { findUserByPseudo } from "../user/user.service";
 import { CreateGuestBody, DeleteGuestBody } from "./guest.schema";
 import { getGuestList, createGuest, deleteGuest } from "./guest.service";
 
-// export async function getGuestListHandler(req: FastifyRequest, reply: FastifyReply) {
-//     const body = req.body;
-
-//     try {
-//         const currentUser = req.user;
-
-//         const guestList = await getGuestList(currentUser.id);
-//         return reply.status(StatusCodes.OK).send({message: "Guest list retrieved successfully", guests: guestList, numberOfGuests: guestList.length});
-//     } 
-//     catch (e) {
-//         return httpError({
-//             reply,
-//             message: "Failed to fetch guests",
-//             code: StatusCodes.INTERNAL_SERVER_ERROR,
-//         });
-//     }
-
-// }
-
 export async function getGuestListByPseudoHandler(req: FastifyRequest<{Params: {username: string}, Querystring: {guestname: string}}>, reply: FastifyReply) {
     try {
         if (req.params.username)
@@ -38,6 +19,7 @@ export async function getGuestListByPseudoHandler(req: FastifyRequest<{Params: {
                     reply,
                     message: "User not found",
                     code: StatusCodes.NOT_FOUND,
+					errorKey: "error.user.not_found"
                 });
             }
             const guestname = req.query.guestname;
@@ -50,6 +32,7 @@ export async function getGuestListByPseudoHandler(req: FastifyRequest<{Params: {
                         reply,
                         message: "Guest not found",
                         code: StatusCodes.NOT_FOUND,
+						errorKey: "error.guest.not_found"
                     });
                 }
                 const guestFoundArray = [guestFound];
@@ -70,6 +53,7 @@ export async function getGuestListByPseudoHandler(req: FastifyRequest<{Params: {
 					reply,
 					message: "Failed to fetch guests",
 					code: StatusCodes.INTERNAL_SERVER_ERROR,
+					errorKey: "error.guest.fetch_failed"
 				});
 			}
             return reply.status(StatusCodes.OK).send({message: "Guest list retrieved successfully", user: user.game_username, guests: guestList, numberOfGuests: guestList.length});
@@ -80,6 +64,7 @@ export async function getGuestListByPseudoHandler(req: FastifyRequest<{Params: {
             reply,
             message: "Failed to fetch guests",
             code: StatusCodes.INTERNAL_SERVER_ERROR,
+			errorKey: "error.guest.fetch_failed"
         });
     }
 }
@@ -91,7 +76,8 @@ export async function createGuestHandler(req: FastifyRequest<{Body: CreateGuestB
         return httpError({
             reply,
             code: StatusCodes.BAD_REQUEST,
-            message: "Pseudo 'Deleted Guest' is reserved and cannot be used",
+            message: "Username 'Deleted Guest' is reserved and cannot be used",
+			errorKey: "error.guest.username_reserved"
         });
     }
     try {
@@ -101,14 +87,16 @@ export async function createGuestHandler(req: FastifyRequest<{Body: CreateGuestB
 		if (!user) {
 			return httpError({
 				reply,
-				message: "Failed to create guest",
+				message: "An error occurred while creating the guest",
 				code: StatusCodes.INTERNAL_SERVER_ERROR,
+				errorKey: "error.guest.create_failed"
 			});
 		} else if (body.pseudo === user.game_username) {
 			return httpError({
 				reply,
 				code: StatusCodes.BAD_REQUEST,
-				message: "Guest pseudo cannot be the same as your user in-game username",
+				message: "Guest pseudo cannot be the same as your host in-game username",
+				errorKey: "error.guest.host_username_conflict"
 			});
 		}
 
@@ -119,6 +107,7 @@ export async function createGuestHandler(req: FastifyRequest<{Body: CreateGuestB
                 reply,
                 code: StatusCodes.CONFLICT,
                 message: "Guest list is full, you cannot create more than 10 guests",
+				errorKey: "error.guest.list_full"
             });
         }
         if (guestList.find(g => g.pseudo === body.pseudo && g.active === true)) {
@@ -126,6 +115,7 @@ export async function createGuestHandler(req: FastifyRequest<{Body: CreateGuestB
                 reply,
                 code: StatusCodes.CONFLICT,
                 message: "Guest with this pseudo already exists",
+				errorKey: "error.guest.duplicate_username"
             });
 
         }
@@ -133,8 +123,8 @@ export async function createGuestHandler(req: FastifyRequest<{Body: CreateGuestB
         return reply.status(StatusCodes.CREATED).send({
             message: "Guest created successfully",
             userPseudo: currentUser.pseudo,
-            guestId: guest.id,
-            guestPseudo: guest.pseudo,
+            guestId:guest.id,
+            guestPseudo:guest.pseudo,
         });
     }
     catch (e) {
@@ -142,6 +132,7 @@ export async function createGuestHandler(req: FastifyRequest<{Body: CreateGuestB
             reply,
             code: StatusCodes.INTERNAL_SERVER_ERROR,
             message: "An error occurred while creating the guest",
+			errorKey: "error.guest.create_failed"
         })
     }
 }
@@ -159,6 +150,7 @@ export async function deleteGuestHandler(req: FastifyRequest<{Body: DeleteGuestB
                 reply,
                 code: StatusCodes.NOT_FOUND,
                 message: "Guest not found",
+				errorKey: "error.guest.not_found"
             });
         }
         await deleteGuest(guestToDelete.id);
@@ -170,6 +162,10 @@ export async function deleteGuestHandler(req: FastifyRequest<{Body: DeleteGuestB
             reply,
             code: StatusCodes.INTERNAL_SERVER_ERROR,
             message: "An error occurred while deleting the guest",
+			errorKey: "error.guest.delete_failed"
         });
     }
 }
+
+
+
