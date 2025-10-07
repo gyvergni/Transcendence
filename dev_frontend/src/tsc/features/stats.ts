@@ -29,7 +29,8 @@ type MatchStatsResponse = {
             timeDuration: number;
             pointsOrder: string[];
             timeOrder: number[];
-            hitsOrder: number[];
+            wallBounce1: number;
+            wallBounce2: number;
         };
     }[];
 };

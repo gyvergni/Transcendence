@@ -146,6 +146,8 @@ class Ball {
     startDelay: number = 0;
 	score1: number = 0;
 	score2: number = 0;
+    wallBounce1: number = 0;
+    wallBounce2: number = 0;
 	pTimer: number = 0;
 	particleSystem: any;
 	clock: Clock;
@@ -158,6 +160,7 @@ class Ball {
 	rebound: number = 0;
 	initialSpeed: number = BallSpeed;
 	pointOrder:string = "";
+    timeOrder:number[]=[];
 	rallyBounce: number = 0;
 	maxRallyBounce: number = 0;
 
@@ -209,8 +212,13 @@ class Ball {
         
 		// Bounce on walls
         if (this.mesh.position.z >= 5 || this.mesh.position.z <= -5)
+        {
+            if (this.dirX > 0)
+                this.wallBounce1++;
+            else
+                this.wallBounce2++;
             this.dirZ = -this.dirZ;
-
+        }
         // Paddle collision
         this.checkPaddleCollision(p_left, -10, -9.5);
         this.checkPaddleCollision(p_right, 10, 9.5);
@@ -306,6 +314,8 @@ class Ball {
     }
 
     reset() {
+        this.timeOrder.push(new Date().getTime() - this.clock.pointTimerStart + this.clock.pointCurrentTime);
+        console.log("Point time: " + (new Date().getTime() - this.clock.pointTimerStart + this.clock.pointCurrentTime));
 		this.clock.updateGameTimer();
 		this.clock.updatePointTimer();
 		this.clock.pointCurrentTime = 0;
@@ -901,10 +911,13 @@ export class Game {
 		//resetSettings();
 		console.log("max time: ", this.clock.pointMaxTime/1000);
 		console.log("Total game time: ", this.clock.gameTime/1000);
-		this.resolveEnd(this.match);
 		console.log("longuest rally = ", this.ball.maxRallyBounce);
 		if (this.pause === false)
 			postMatchStats(this.match);
+        console.log("wallBounce1: " + this.ball.wallBounce1);
+        console.log("wallBounce2: " + this.ball.wallBounce2);
+        console.log("timeOrder: " + this.ball.timeOrder);
+        this.resolveEnd(this.match);
 	}
 }
 
@@ -933,6 +946,9 @@ async function postMatchStats(match: MatchSetup) {
 				longestRallyTime: match.game?.clock?.pointMaxTime,
 				timeDuration: match.game?.clock?.gameTime,
 				pointsOrder: match.game?.ball.pointOrder,
+                pointTimeOrder: match.game?.ball.timeOrder,
+                wallBounce1: match.game?.ball.wallBounce1,
+                wallBounce2: match.game?.ball.wallBounce2,
 			},
 		},
 	};
