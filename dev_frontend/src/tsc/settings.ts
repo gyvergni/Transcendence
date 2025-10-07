@@ -14,7 +14,7 @@ interface GameSettings {
 const STORAGE_KEY = "pong-settings";
 
 const defaultSettings: GameSettings = {
-	paddleSize: 5,
+	paddleSize: 4,
 	paddleColor: "#ffffff",
 	paddleSpeed: 10,
 	ballColor: "#ffffff",
@@ -57,12 +57,15 @@ function saveSettings(currentSettings: GameSettings) {
 }
 
 export function resetSettings() {
+	const tempLang = settings.language;
 	localStorage.removeItem(STORAGE_KEY);
 	saveSettings(defaultSettings);
 
 	const stored = localStorage.getItem(STORAGE_KEY);
-	if (stored)
+	if (stored) {
 		settings = JSON.parse(stored);
+		settings.language = tempLang;
+	}
 	saveSettings(settings);
 }
 

@@ -66,7 +66,7 @@ class Paddle {
     constructor(scene: BABYLON.Scene, x: number) {
         this.mesh = BABYLON.MeshBuilder.CreateBox("Paddle", 
             {width: 0.5, height: 0.5, depth: paddle_size}, scene);
-        this.mesh.position.set(x, 0.5, 0);
+        this.mesh.position.set(x, BallSize * 0.1, 0);
     }
 
     move(up: boolean, down: boolean) {
@@ -271,8 +271,8 @@ class Ball {
         const bz = this.mesh.position.z;
         const bx = this.mesh.position.x;
 
-        const hit = (limitX < hitX) ? (bx <= hitX && bx >= limitX) : (bx >= hitX && bx <= limitX);
-        const within = (bz > (pz - paddle_size/2)) && (bz < (pz + paddle_size/2));
+        const hit = (limitX < hitX) ? (bx - BallSize * 0.1 <= hitX && bx >= limitX) : (bx + BallSize * 0.1 >= hitX && bx <= limitX);
+        const within = (bz + BallSize * 0.1 > (pz - paddle_size/2)) && (bz - BallSize * 0.1 < (pz + paddle_size/2));
 
         if (hit && within && ((hitX < 0 && this.dirX < 0) || (hitX > 0 && this.dirX > 0))) {
 			// Increment speed on paddle hit (steady growth), up to BallSpeedLimit
@@ -308,7 +308,7 @@ class Ball {
 		this.clock.updateGameTimer();
 		this.clock.updatePointTimer();
 		this.clock.pointCurrentTime = 0;
-        this.mesh.position.set(0, 0.5, 0);
+        this.mesh.position.set(0, BallSize * 0.1, 0);
         this.speed = BallSpeed;
         this.resetDirection();
         this.clock.ballDelayStart = new Date().getTime();
