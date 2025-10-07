@@ -5,7 +5,6 @@ import { startMatch } from "./pong.js";
 import {createPlayerSlot} from "./player-selection.js";
 import { PlayerConfig, MatchSetup, GuestsManager } from "./models.js";
 import {setupTournament} from "./tournament.js"
-import { API_BASE_URL } from "./features/utils-api.js";
 import { checkTokenValidity } from "./features/auth.js";
 import { loginUser, submitLogin2FA } from "./features/login.js";
 import { logoutUser } from "./features/logout.js";
@@ -324,63 +323,6 @@ function setupProfileEvents() {
 
 	logoutBtn?.addEventListener("click", () => logoutUser());
 }
-async function postMatchStats(match: MatchSetup) {
-	const gameSettings = getSettings();
-	console.log("player 1 " + match.players[0].name);
-	console.log("player 2 " + match.players[1].name);
-	// Build the clean payload
-	let stats = {
-		player1Username: match.players[0].name,
-		player2Username: match.players[1].name,
-		player1Score: match.players[0].score,
-		player2Score: match.players[1].score,
-		match: {
-			matchSettings: {
-				ballSize: gameSettings.ballSize,
-				ballSpeed: gameSettings.ballSpeed,
-				paddleSize: gameSettings.paddleSize,
-				paddleSpeed: gameSettings.paddleSpeed,
-				gameMode: match.gameMode,
-			},
-			matchStats: {
-				totalHits: match.game?.ball.rebound,
-				longestRallyHits: match.game?.ball.maxRallyBounce,
-				longestRallyTime: match.game?.clock?.pointMaxTime,
-				timeDuration: match.game?.clock?.gameTime,
-				pointsOrder: match.game?.ball.pointOrder,
-			},
-		},
-	};
-
-	console.log("📤 Preparing to send match stats:", stats);
-
-	try {
-		const res = await fetch(`${API_BASE_URL}/stats/match/create`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"Authorization": `Bearer ${localStorage.getItem("accessToken")}`,
-			},
-			body: JSON.stringify(stats),
-		});
-
-		console.log("✅ Response received:", res);
-
-		if (!res.ok) {
-			const errorText = await res.text();
-			console.error(`❌ Failed to post stats: ${res.status} ${res.statusText}`, errorText);
-			throw new Error(`Failed to post stats: ${res.status} ${res.statusText}`);
-		}
-
-		const data = await res.json();
-		console.log("✅ Stats successfully saved:", data);
-		return data;
-	} catch (err) {
-		console.error("❌ Error posting match stats:", err);
-		throw err;
-	}
-}
-
 
 async function setQuickMatchView() {
   const container = document.getElementById("player-select-container")!;
@@ -419,10 +361,12 @@ async function setQuickMatchView() {
 
     setGameView();
     await startMatch(match, 0);
-	await setupGameEndScreen(match);
-	postMatchStats(match);
-	animateContentBoxIn();
-	setContentView("views/home.html");
+	if (match.game?.pause === false)
+	{	
+		await setupGameEndScreen(match);
+	}
+	//animateContentBoxIn();
+	//setContentView("views/home.html");
   });
 }
 
