@@ -1,14 +1,44 @@
-<div class="w-full mx-auto">
-  <h2 class="text-2xl mb-4 font-bold text-center text-purple-300">Match Detail</h2>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <div class="bg-black/30 rounded-lg p-4">
-      <h3 class="font-semibold mb-2">Wall bounces</h3>
-      <canvas id="detail-wall" height="160"></canvas>
+<!-- Match detail modal (overlay, hidden by default) -->
+<div id="match-detail" class="fixed inset-0 z-50 flex items-start md:items-center justify-center p-6" style="display:none">
+  <div class="w-full max-w-4xl bg-black/60 rounded-lg p-4">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="font-semibold text-xl">Match Detail 2</h3>
+      <button id="close-match-detail" class="px-2 py-1 bg-red-700 rounded hover:bg-red-600">Close</button>
     </div>
-    <div class="bg-black/30 rounded-lg p-4">
-      <h3 class="font-semibold mb-2">Time top / bottom</h3>
-      <canvas id="detail-time" height="160"></canvas>
+
+    <!-- Charts -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div>
+        <h4 class="text-sm font-medium mb-2">Wall Bounces</h4>
+        <canvas id="match-wall" height="140"></canvas>
+      </div>
+      <div>
+        <h4 class="text-sm font-medium mb-2">Time Distribution</h4>
+        <canvas id="match-time" height="140"></canvas>
+      </div>
+    </div>
+
+    <!-- Player Stats Table -->
+    <div id="match-players" class="mt-4 overflow-auto max-h-60">
+      <table class="min-w-full text-sm text-left border-collapse">
+        <thead>
+          <tr class="border-b border-white/20">
+            <th class="px-3 py-2">Player</th>
+            <th class="px-3 py-2">Score</th>
+            <th class="px-3 py-2">Total Hits</th>
+            <th class="px-3 py-2">Longest Rally</th>
+            <th class="px-3 py-2">Duration (s)</th>
+          </tr>
+        </thead>
+        <tbody id="match-players-body">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
     </div>
   </div>
-  <div id="detail-players" class="mt-4 bg-black/30 p-4 rounded-lg overflow-auto"></div>
 </div>
+
+<style>
+  #match-detail { backdrop-filter: blur(6px); }
+  .match-player-row:hover { background: rgba(255,255,255,0.05); }
+</style>

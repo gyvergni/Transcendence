@@ -1,5 +1,7 @@
-import { API_BASE_URL } from "./utils-api.js";
-import { GuestsManager } from "../models.js";
+import { API_BASE_URL } from "./utils-api";
+import { GuestsManager } from "../models";
+import { setContentView } from "../views";
+import Chart from "chart.js/auto";
 
 type MatchStatsResponse = {
     id: number;
@@ -25,6 +27,8 @@ type MatchStatsResponse = {
             longestRallyTime: number;
             timeDuration: number;
             pointsOrder: string[];
+            timeOrder: number[];
+            hitsOrder: number[];
         };
     }[];
 };
@@ -33,13 +37,15 @@ type MatchStatsResponse = {
 async function fetchStats(accountUsername: string, guest?: string): Promise<MatchStatsResponse | null> {
     try {
         const url = new URL(`${API_BASE_URL}/stats/${encodeURIComponent(accountUsername)}`);
-        if (guest) url.searchParams.set("guest", guest);
+        if (guest)
+            url.searchParams.set("guest", guest);
 
         const res = await fetch(url.toString(), {
             headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
         });
 
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok)
+            throw new Error(`HTTP ${res.status}`);
         return await res.json() as MatchStatsResponse;
     } catch (err) {
         console.error("Failed to fetch stats", err);
@@ -67,6 +73,74 @@ function renderSummary(data: MatchStatsResponse) {
     }
 }
 
+function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0]) {
+  const modal = document.getElementById("match-detail")!;
+  modal.style.display = "flex";
+
+  // Close button
+  const closeBtn = document.getElementById("close-match-detail")!;
+  closeBtn.onclick = () => 
+    {
+        (modal.style.display = "none");
+        setContentView("../views/stats-dashboard.html");
+    }
+  // Populate player table
+  const tbody = document.getElementById("match-players-body")!;
+  tbody.innerHTML = "";
+
+  const players = [
+    { name: match.player1Username, score: match.player1Score, stats: match.matchStats },
+    { name: match.player2Username, score: match.player2Score, stats: match.matchStats }
+  ];
+
+  players.forEach(p => {
+    const tr = document.createElement("tr");
+    tr.className = "match-player-row border-b border-white/10";
+    tr.innerHTML = `
+      <td class="px-3 py-2">${p.name}</td>
+      <td class="px-3 py-2 font-semibold">${p.score}</td>
+      <td class="px-3 py-2">${p.stats.totalHits}</td>
+      <td class="px-3 py-2">${p.stats.longestRallyHits}</td>
+      <td class="px-3 py-2">${Math.round(p.stats.timeDuration / 1000)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Wall Bounces Chart (Longest Rally Hits)
+  const wallCanvas = document.getElementById("match-wall") as HTMLCanvasElement;
+  if ((wallCanvas as any)._chart) (wallCanvas as any)._chart.destroy();
+  (wallCanvas as any)._chart = new Chart(wallCanvas, {
+    type: "bar",
+    data: {
+      labels: [match.player1Username, match.player2Username],
+      datasets: [{
+        label: "Longest Rally Hits",
+        data: [match.matchStats.longestRallyHits, match.matchStats.longestRallyHits],
+        backgroundColor: ["#22c55e", "#ef4444"]
+      }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+  });
+
+  // Time Duration Chart
+  const timeCanvas = document.getElementById("match-time") as HTMLCanvasElement;
+  if ((timeCanvas as any)._chart) (timeCanvas as any)._chart.destroy();
+  (timeCanvas as any)._chart = new Chart(timeCanvas, {
+    type: "bar",
+    data: {
+      labels: [match.player1Username, match.player2Username],
+      datasets: [{
+        label: "Time Duration (s)",
+        data: [match.matchStats.timeDuration / 1000, match.matchStats.timeDuration / 1000],
+        backgroundColor: ["#6366f1", "#facc15"]
+      }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+  });
+}
+
+
+
 function renderHistory(matchHistory: MatchStatsResponse["matchHistory"]) {
     const container = document.getElementById("match-history")!;
     container.innerHTML = "";
@@ -88,6 +162,8 @@ function renderHistory(matchHistory: MatchStatsResponse["matchHistory"]) {
         li.addEventListener("click", async () =>
         {
             console.log("clicked on match");
+            await setContentView("../views/match-detail.html");
+            handleMatchDetail(m);
         })
         });
 }
@@ -126,14 +202,16 @@ function renderMatchupChart(mainGuest: string, opponentGuest: string, matchHisto
 // -------------------- DROPDOWN HANDLERS --------------------
 async function handleMainGuestChange(accountUsername: string, guest: string | undefined, matchupSelect: HTMLSelectElement) {
     const stats = await fetchStats(accountUsername, guest);
-    if (!stats) return;
+    if (!stats)
+        return;
 
     renderSummary(stats);
     renderHistory(stats.matchHistory);
 
     // Update matchup chart if right-hand guest is selected
     const opponent = matchupSelect.value;
-    if (opponent) renderMatchupChart(guest || accountUsername, opponent, stats.matchHistory);
+    if (opponent)
+        renderMatchupChart(guest || accountUsername, opponent, stats.matchHistory);
 }
 
 function populateDropdown(select: HTMLSelectElement, options: string[], defaultText: string) {
@@ -157,32 +235,50 @@ export async function initStatsView() {
     if (!accountRes.ok) return console.error("Failed to get account info");
     const accountData = await accountRes.json();
     const accountUsername = accountData.pseudo;
+    const accountIngame = accountData.game_username;
 
     const gm = new GuestsManager();
     await gm.fetchGuests();
-    const guestList = gm.guests.map(g => g.pseudo);
+    let guestList = gm.guests.map(g => g.pseudo);
 
     const mainSelect = document.getElementById("main-user-select") as HTMLSelectElement;
     const matchupSelect = document.getElementById("guest-select") as HTMLSelectElement;
 
-    populateDropdown(mainSelect, guestList, `${accountUsername} (default)`);
-    populateDropdown(matchupSelect, guestList, "Select guest");
+    populateDropdown(mainSelect, guestList, `${accountIngame} (Default)`);
+    guestList.push(accountIngame);
+    populateDropdown(matchupSelect, guestList , `Select Player`);
 
     let currentMainGuest = "";
 
     mainSelect.addEventListener("change", async () => {
-        currentMainGuest = mainSelect.value;
-        await handleMainGuestChange(accountUsername, currentMainGuest || undefined, matchupSelect);
-    });
+    currentMainGuest = mainSelect.value;
+    console.log("Main selected:", currentMainGuest);
 
-    matchupSelect.addEventListener("change", async () => {
+    //If the selected guest is the main in-game username, treat it as the base account (no guest param)
+    const guestParam = currentMainGuest === accountIngame || currentMainGuest === "" 
+        ? undefined 
+        : currentMainGuest;
+
+    await handleMainGuestChange(accountUsername, guestParam, matchupSelect);
+});
+
+
+    matchupSelect.addEventListener("change", async () =>
+    {
         const guest = currentMainGuest || accountUsername;
         const stats = await fetchStats(accountUsername, currentMainGuest || undefined);
-        if (!stats) return;
-        if (!matchupSelect.value) return;
+        if (!stats)
+            return;
+        const opponent = matchupSelect.value;
+        if (!opponent)
+            return;
 
-        renderMatchupChart(currentMainGuest || accountUsername, matchupSelect.value, stats.matchHistory);
+        // If the opponent selected is the main in-game username, treat it like the base account (no guest param).
+        const opponentFetchName = opponent === accountIngame ? accountUsername : opponent;
+
+        renderMatchupChart(currentMainGuest || accountIngame, opponent, stats.matchHistory);
     });
+
 
     // Initial load
     await handleMainGuestChange(accountUsername, undefined, matchupSelect);

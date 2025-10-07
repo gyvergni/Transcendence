@@ -275,20 +275,20 @@ function setupProfileEvents() {
 	{
 		setContentView("views/home.html");
 	});
-	statsBtn.addEventListener("click", () => {
+	statsBtn.addEventListener("click", async () => {
 		console.log("Show stats view");
 		// Expand the content box to act as a near-fullscreen dashboard
-		uiManager.contentBox.classList.remove("max-w-md", "rounded-xl");
+		uiManager.contentBox.classList.remove("rounded-xl");
 		uiManager.contentBox.classList.add("max-w-7xl", "w-full", "h-[95vh]", "p-6", "rounded-none");
 		// Set back button to revert layout back to profile when closing stats
-		toggleBackButton(true, () => {
+		toggleBackButton(true, async () => {
 			uiManager.contentBox.classList.remove("max-w-7xl", "w-full", "h-[95vh]", "p-6", "rounded-none");
-			uiManager.contentBox.classList.add("max-w-md", "p-10", "rounded-xl");
-			setContentView("views/profile.html");
+			uiManager.contentBox.classList.add("rounded-xl");
+			await setContentView("views/profile.html");
 		});
 		// animate the content box into view (it was expanded above)
 		animateContentBoxIn();
-		setContentView("views/stats-dashboard.html");
+		await setContentView("views/stats-dashboard.html");
 	});
 
 	// Note: `setContentView` already calls `attachStatsIfViewPresent()` after injecting HTML.
@@ -328,13 +328,11 @@ async function setQuickMatchView() {
   const container = document.getElementById("player-select-container")!;
   container.innerHTML = "";
 
-  uiManager.contentBox.classList.remove("max-w-md");
   uiManager.contentBox.classList.add("max-w-3xl");
 
-  toggleBackButton(true, () => {
+  toggleBackButton(true, async () => {
     uiManager.contentBox.classList.remove("max-w-3xl");
-    uiManager.contentBox.classList.add("max-w-md");
-    setContentView("views/home.html");
+    await setContentView("views/home.html");
   });
 
   const startBtn = document.getElementById("start-btn");
@@ -372,8 +370,8 @@ async function setQuickMatchView() {
 
 function setupFriendsEvents() {
 	checkTokenValidity();
-	uiManager.setCurrentView("friends");
 	animateContentBoxIn();
+	uiManager.setCurrentView("friends");
 	toggleBackButton(true, () => {
 		setContentView("views/profile.html");
 	});
