@@ -3,6 +3,7 @@ import { animateContentBoxIn, animateContentBoxOut } from "./animations";
 import { setContentView } from "./views";
 import { MatchSetup, TournamentManager } from "./models";
 import { setGameView } from "./views";
+import { setLang, currentLang } from "./translation";
 
 export async function setupTournamentWaitingRoom(tournament: TournamentManager): Promise<void> {
     animateContentBoxIn();
@@ -76,7 +77,7 @@ export async function setupTournamentEndScreen(tournament: TournamentManager): P
             champion.textContent = tournament.final.winner.name;
         else
             champion!.textContent = "AI";
-
+        setLang(currentLang);
         homeBtn.addEventListener("click", () => {
             setContentView("views/home.html");
             resolve();
@@ -100,7 +101,7 @@ export async function setupGameEndScreen(match: MatchSetup): Promise<void> {
             winner.textContent = match.winner.name;
         else
             winner!.textContent = "AI";
-
+        setLang(currentLang);
         homeBtn.addEventListener("click", () => {
             setContentView("views/home.html");
             resolve();

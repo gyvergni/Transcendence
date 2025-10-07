@@ -124,11 +124,11 @@ const translations: Record<Lang, Record<string, string>> =
 
 		//tournament-end.html
 		"tournament.endTitle": "🏆 Tournament Champion 🏆",
-		"tournament.home-btn": "Return Home",
+		"tournament.return": "Return Home",
 
 		//game-end.html
 		"endgame.endTitle": "Winner",
-		"endgame.home-btn": "Return Home"
+		"endgame.return": "Return Home"
 	},
 
 	fr: {
@@ -253,11 +253,11 @@ const translations: Record<Lang, Record<string, string>> =
 
 		//tournament-end.html
 		"tournament.endTitle": "🏆 Champion du tournoi 🏆",
-		"tournament.home-btn": "Retour a l'accueil",
+		"tournament.return": "Accueil",
 
 		//game-end.html
 		"endgame.endTitle": "Gagnant",
-		"endgame.home-btn": "Retour a l'accueil"
+		"endgame.return": "Retour a l'accueil"
 	},
 	es: {
 		//home.html
@@ -381,15 +381,15 @@ const translations: Record<Lang, Record<string, string>> =
 
 		//tournament-end.html
 		"tournament.endTitle": "🏆 Campeon del torneo 🏆",
-		"tournament.home-btn": "Volver al inicio",
+		"tournament.return": "Volver al inicio",
 
 		//game-end.html
 		"endgame.endTitle": "Ganador",
-		"endgame.home-btn": "Volver al inicio"
+		"endgame.return": "Volver al inicio"
 	}
 };
 
-export let currentLang: Lang = "fr";
+export let currentLang: Lang = "en";
 
 export function setLang(lang: Lang) {
 	currentLang = lang;
