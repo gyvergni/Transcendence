@@ -898,7 +898,7 @@ export class Game {
         this.engine.stopRenderLoop();
 		this.match.players[0].score = this.ball.score1;
 		this.match.players[1].score = this.ball.score2;
-		resetSettings();
+		//resetSettings();
 		console.log("max time: ", this.clock.pointMaxTime/1000);
 		console.log("Total game time: ", this.clock.gameTime/1000);
 		this.resolveEnd(this.match);

@@ -24,32 +24,50 @@ const defaultSettings: GameSettings = {
 	language: "en",
 };
 
-// Load from localStorage (or defaults if empty)
+// Load from localStorage (or defaults if empty) right now only doing default
 function loadSettings(): GameSettings {
+
 	PaddleSizeSetting();
-	PaddleColorSetting();
-	PaddleSpeedSetting();
+		PaddleColorSetting();
+		PaddleSpeedSetting();
 
-	BallColorSetting();
-	BallSizeSetting();
-	BallSpeedSetting();
-	BallShapeSetting();
+		BallColorSetting();
+		BallSizeSetting();
+		BallSpeedSetting();
+		BallShapeSetting();
 
-	LanguageSetting();
+		SettingsResetButton();
+
+		LanguageSetting();
+
 	const stored = localStorage.getItem(STORAGE_KEY);
-	return stored ? JSON.parse(stored) : { ...defaultSettings };
+	if (!stored) {
+		console.log("no stored values");
+		return { ...defaultSettings };}
+	else {
+		console.log("stored values");
+		return JSON.parse(stored);}
 }
 
-function saveSettings(settings: GameSettings) {
-	localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+
+function saveSettings(currentSettings: GameSettings) {
+	settings = currentSettings;
+	localStorage.setItem(STORAGE_KEY, JSON.stringify(currentSettings));
+	//settings = loadSettings();
 }
 
 export function resetSettings() {
+	localStorage.removeItem(STORAGE_KEY);
 	saveSettings(defaultSettings);
+
+	const stored = localStorage.getItem(STORAGE_KEY);
+	if (stored)
+		settings = JSON.parse(stored);
+	saveSettings(settings);
 }
 
 // Initialize current settings
-const settings: GameSettings = loadSettings();
+var settings: GameSettings = loadSettings();
 
 // ---------- Paddle Size ----------
 export function PaddleSizeSetting() {
@@ -82,22 +100,14 @@ export function PaddleColorSetting() {
 
 // ---------- Paddle Speed ----------
 export function PaddleSpeedSetting() {
-	const PaddleSpeedInput = document.getElementById("paddle-speed") as HTMLInputElement;
-	const PaddleSpeedValue = document.getElementById("paddle-speed-value");
+	const paddleSpeedInput = document.getElementById("paddle-speed-value") as HTMLInputElement;
+	if (paddleSpeedInput) {
+		paddleSpeedInput.value = settings.paddleSpeed.toString();
 
-	if (PaddleSpeedInput) {
-		PaddleSpeedInput.value = settings.paddleSpeed.toString();
-		if (PaddleSpeedValue) {
-			PaddleSpeedValue.textContent = settings.paddleSpeed.toString();
-		}
-
-		PaddleSpeedInput.addEventListener("input", () => {
-			settings.paddleSpeed = parseInt(PaddleSpeedInput.value, 10);
+		paddleSpeedInput.addEventListener("input", () => {
+			settings.paddleSpeed = parseInt(paddleSpeedInput.value, 10);
 			saveSettings(settings);
-			if (PaddleSpeedValue) {
-				PaddleSpeedValue.textContent = settings.paddleSpeed.toString();
-			}
-			console.log("Paddle speed saved:", settings.paddleSpeed);
+			console.log("Paddle Speed saved:", settings.paddleSpeed);
 		});
 	}
 }
@@ -172,6 +182,16 @@ export function BallShapeSetting() {
 				saveSettings(settings);
 				console.log("Ball Shape saved:", settings.ballShape);
 			}
+		});
+	});
+}
+
+export function SettingsResetButton() {
+	const reset = document.querySelectorAll("[reset-btn]")
+	reset.forEach((btn) => {
+		btn.addEventListener("click", () => {
+			resetSettings();
+			console.log("reseted settings :", settings);
 		});
 	});
 }

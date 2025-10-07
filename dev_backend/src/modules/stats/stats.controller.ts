@@ -71,13 +71,20 @@ export async function addMatchHandler(req: FastifyRequest, reply: FastifyReply )
         const loserScore = Math.min(body.player1Score, body.player2Score);
 
         const aiPlayers = ["ai-easy", "ai-medium", "ai-hard"];
+
+		const currentUserDb = await findUserByPseudo(currentUser.pseudo);
         let winner;
         let winnerId;
         if (aiPlayers.includes(winnerUsername)) {
             winnerId = aiPlayers.indexOf(winnerUsername) + 1;
         } else {
-            winner = await findUserByPseudo(winnerUsername);
-            winnerId = winner ? winner.id : guestList.find(guest => guest.pseudo === winnerUsername)?.id;
+			if (currentUserDb && currentUserDb.game_username === winnerUsername) 
+				winnerId = currentUserDb.id;
+			else {
+            	winner = await findUserByPseudo(winnerUsername);
+				winnerId = winner ? winner.id : guestList.find(guest => guest.pseudo === winnerUsername)?.id;
+			}
+			console.log("WinnerId:", winnerId);
         }
 
         let loser;
@@ -85,8 +92,13 @@ export async function addMatchHandler(req: FastifyRequest, reply: FastifyReply )
         if (aiPlayers.includes(loserUsername)) {
             loserId = aiPlayers.indexOf(loserUsername) + 1;
         } else {
-            loser = await findUserByPseudo(loserUsername);
-            loserId = loser ? loser.id : guestList.find(guest => guest.pseudo === loserUsername)?.id;
+			if (currentUserDb && currentUserDb.game_username === loserUsername)
+				loserId = currentUserDb.id;
+			else {
+            	loser = await findUserByPseudo(loserUsername);
+            	loserId = loser ? loser.id : guestList.find(guest => guest.pseudo === loserUsername)?.id;
+			}
+			console.log("WinnerId:", loserId);
         }
 
         // if (!winner && !loser) {
@@ -143,7 +155,7 @@ export async function getStatsHandler(req: FastifyRequest<{Params: {username: st
                         code: StatusCodes.NOT_FOUND,
                     });
                 }
-                const stats = await getStats2(guestFound);
+                const stats = await getStats2({id: guestFound.id, game_username: guestFound.pseudo});
                 if (!stats) {
                     return httpError({
                         reply,
@@ -165,7 +177,7 @@ export async function getStatsHandler(req: FastifyRequest<{Params: {username: st
             }
         } else {
             const currentUser = req.user;
-            const stats = await getStats2(currentUser);
+            const stats = await getStats2({id: currentUser.id, game_username: currentUser.pseudo});
             if (!stats) {
                 return httpError({
                     reply,

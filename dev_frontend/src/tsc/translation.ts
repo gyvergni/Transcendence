@@ -88,6 +88,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"settings.ball-speed": "Ball Speed",
 		"settings.ball-shape": "Ball Shape",
 		"settings.language": "Language",
+		"settings.reset": "Reset",
 
 		//signup.html
 		"signup.create-acc": "Create an account",
@@ -217,6 +218,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"settings.ball-speed": "Vitesse de la balle",
 		"settings.ball-shape": "Forme de la balle",
 		"settings.language": "Langue",
+		"settings.reset": "Réinitialiser",
 		
 		//signup.html
 		"signup.create-acc": "Creer un compte",
@@ -345,6 +347,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"settings.ball-speed": "Velocidad de la pelota",
 		"settings.ball-shape": "Forma de la pelota",
 		"settings.language": "Idioma",
+		"settings.reset": "Reiniciar",
 		
 		//signup.html
 		"signup.create-acc": "Crear una cuenta",

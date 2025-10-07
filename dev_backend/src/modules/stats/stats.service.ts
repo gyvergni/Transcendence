@@ -53,7 +53,7 @@ export async function findPseudoWithId(playerId: number) {
     const users = await findUsers();
     const user = users.find(user => user.id === playerId);
     if (user) {
-        return user.pseudo;
+        return user.game_username;// A Modifier
     }
     const guestList = await getAllGuests();
     const guest = guestList.find(guest => guest.id === playerId);
@@ -147,7 +147,7 @@ export async function checkIdentityExists(playerId: number) {
     return stats !== null;
 }
 
-export async function getStats2(player: { id: number, pseudo: string }) {
+export async function getStats2(player: { id: number, game_username: string }) {
     const stats = await prisma.stats.findUnique({
         where: { id: player.id },
     });
@@ -204,7 +204,7 @@ export async function getStats2(player: { id: number, pseudo: string }) {
 
     const result = {
         id: stats.id,
-        username: player.pseudo,
+        username: player.game_username,
         wins: stats.wins,
         losses: stats.losses,
         matchHistory: matchHistory,
