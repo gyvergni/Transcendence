@@ -1,30 +1,37 @@
-<!-- Match detail modal (overlay, hidden by default) -->
-<div id="match-detail" class="fixed inset-0 z-50 flex flex-col p-6" style="display:none">
-  <div class="w-full max-w-6xl mx-auto bg-black/60 rounded-lg p-4 flex flex-col space-y-6">
-
+<!-- Match detail modal (overlay) -->
+<div id="match-detail" class="fixed inset-0 z-50 flex items-center justify-center p-6 bg-neutral-950/80 backdrop-blur-lg" style="display:none;">
+  <div class="w-full max-w-6xl h-[90vh] bg-black/40 border border-cyan-500/30 rounded-xl p-6 flex flex-col relative text-cyan-200 shadow-[0_0_20px_rgba(0,255,255,0.15)]">
+    
     <!-- Header -->
-    <div class="flex items-center justify-between">
-      <h3 class="font-semibold text-xl text-cyan-400" id="match-title">Match Detail</h3>
-      <button id="close-match-detail" class="px-2 py-1 bg-red-700 rounded hover:bg-red-600">Close</button>
+    <div class="flex justify-between items-center mb-6">
+      <h3 id="match-title" class="text-2xl font-bold tracking-wide text-cyan-300">Match Detail</h3>
+      <button id="close-match-detail" class="px-3 py-1 rounded bg-red-700 hover:bg-red-600 transition">Close</button>
     </div>
 
-    <!-- Charts top row -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-      <div>
-        <h4 class="text-sm font-medium mb-2 text-cyan-300">Wall Bounces</h4>
-        <canvas id="match-wall" height="140"></canvas>
+    <!-- Top row: settings & stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <!-- Settings recap -->
+      <div id="match-settings" class="bg-black/30 rounded-lg p-4 border border-cyan-400/30 backdrop-blur-md">
+        <h4 class="text-lg font-semibold mb-3 text-cyan-300">Game Settings</h4>
+        <ul class="space-y-1 text-sm leading-relaxed">
+          <!-- Injected via TS -->
+        </ul>
       </div>
-      <div>
-        <h4 class="text-sm font-medium mb-2 text-cyan-300">Time Distribution</h4>
-        <canvas id="match-time" height="140"></canvas>
+
+      <!-- Stats recap -->
+      <div id="match-stats-summary" class="bg-black/30 rounded-lg p-4 border border-cyan-400/30 backdrop-blur-md">
+        <h4 class="text-lg font-semibold mb-3 text-cyan-300">Match Stats</h4>
+        <ul class="space-y-1 text-sm leading-relaxed text-right">
+          <!-- Injected via TS -->
+        </ul>
       </div>
     </div>
 
     <!-- Player Stats Table -->
-    <div id="match-players" class="overflow-auto max-h-60">
+    <div id="match-players" class="bg-black/30 border border-cyan-400/20 rounded-lg p-4 overflow-auto max-h-[25vh] mb-6 backdrop-blur-md">
       <table class="min-w-full text-sm text-left border-collapse">
         <thead>
-          <tr class="border-b border-white/20 text-cyan-300">
+          <tr class="border-b border-cyan-500/20 text-cyan-300">
             <th class="px-3 py-2">Player</th>
             <th class="px-3 py-2">Score</th>
             <th class="px-3 py-2">Total Hits</th>
@@ -36,26 +43,25 @@
       </table>
     </div>
 
-    <!-- Timeline chart -->
-    <div class="bg-black/50 backdrop-blur-md rounded-lg p-4 border border-cyan-400/50">
-      <h4 class="text-sm font-medium mb-2 text-cyan-300">Point Timeline</h4>
-      <canvas id="match-points-timeline" height="160"></canvas>
-    </div>
-
-    <!-- Footer recaps -->
-    <div class="flex flex-col md:flex-row justify-between gap-4">
-      <div id="match-settings" class="text-sm text-cyan-300 bg-black/40 rounded-lg p-3 border border-cyan-400/50 w-full md:w-1/2">
-        <!-- Match settings injected here -->
-      </div>
-      <div id="match-stats-summary" class="text-sm text-cyan-300 bg-black/40 rounded-lg p-3 border border-cyan-400/50 w-full md:w-1/2 text-right">
-        <!-- Stats summary injected here -->
-      </div>
+    <!-- Timeline chart (full width bottom) -->
+    <div class="bg-black/30 border border-cyan-400/30 rounded-lg p-4 flex-1 backdrop-blur-md">
+      <h4 class="text-lg font-semibold mb-3 text-cyan-300">Point Timeline</h4>
+      <canvas id="match-points-timeline" class="w-full h-full"></canvas>
     </div>
 
   </div>
 </div>
 
 <style>
-  #match-detail { backdrop-filter: blur(6px); }
-  .match-player-row:hover { background: rgba(255,255,255,0.05); }
+  #match-detail h4 {
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 0.5px;
+  }
+  #match-detail ul li::before {
+    content: "• ";
+    color: #06b6d4;
+  }
+  .match-player-row:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
 </style>

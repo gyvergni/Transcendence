@@ -76,6 +76,7 @@ function renderSummary(data: MatchStatsResponse) {
         if (el) el.textContent = String(summaryMap[selector as keyof typeof summaryMap]);
     }
 }
+
 function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0]) {
   const modal = document.getElementById("match-detail")!;
   modal.style.display = "flex";
@@ -83,25 +84,44 @@ function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0]) {
   const title = document.getElementById("match-title")!;
   title.textContent = `${match.player1Username} vs ${match.player2Username}`;
 
-  // Close button
-  const closeBtn = document.getElementById("close-match-detail")!;
-  closeBtn.onclick = () => {
+  document.getElementById("close-match-detail")!.onclick = () => {
     modal.style.display = "none";
     setContentView("../views/stats-dashboard.html");
   };
 
-  // ------------------- Player Table -------------------
+  // SETTINGS RECAP
+  const s = match.matchSettings;
+  const settingsUl = document.querySelector("#match-settings ul")!;
+  settingsUl.innerHTML = `
+    <li>Ball Size: ${s.ballSize}</li>
+    <li>Ball Speed: ${s.ballSpeed}</li>
+    <li>Paddle Size: ${s.paddleSize}</li>
+    <li>Paddle Speed: ${s.paddleSpeed}</li>
+    <li>Mode: ${s.gameMode}</li>
+  `;
+
+  // STATS RECAP
+  const ms = match.matchStats;
+  const statsUl = document.querySelector("#match-stats-summary ul")!;
+  statsUl.innerHTML = `
+    <li>Total Hits: ${ms.totalHits}</li>
+    <li>Longest Rally Hits: ${ms.longestRallyHits}</li>
+    <li>Longest Rally Time: ${Math.round(ms.longestRallyTime / 1000)}s</li>
+    <li>Wall Bounce P1: ${ms.wallBounce1}</li>
+    <li>Wall Bounce P2: ${ms.wallBounce2}</li>
+  `;
+
+  // PLAYER TABLE
   const tbody = document.getElementById("match-players-body")!;
   tbody.innerHTML = "";
-
   const players = [
-    { name: match.player1Username, score: match.player1Score, stats: match.matchStats, wall: match.matchStats.wallBounce1 },
-    { name: match.player2Username, score: match.player2Score, stats: match.matchStats, wall: match.matchStats.wallBounce2 }
+    { name: match.player1Username, score: match.player1Score, stats: ms },
+    { name: match.player2Username, score: match.player2Score, stats: ms }
   ];
 
-  players.forEach((p) => {
+  players.forEach(p => {
     const tr = document.createElement("tr");
-    tr.className = "match-player-row border-b border-white/10";
+    tr.className = "match-player-row border-b border-cyan-400/20";
     tr.innerHTML = `
       <td class="px-3 py-2">${p.name}</td>
       <td class="px-3 py-2 font-semibold">${p.score}</td>
@@ -112,91 +132,34 @@ function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0]) {
     tbody.appendChild(tr);
   });
 
-  // ------------------- Wall Bounces Chart -------------------
-  const wallCanvas = document.getElementById("match-wall") as HTMLCanvasElement;
-  if ((wallCanvas as any)._chart) (wallCanvas as any)._chart.destroy();
-  (wallCanvas as any)._chart = new Chart(wallCanvas, {
-    type: "bar",
-    data: {
-      labels: [match.player1Username, match.player2Username],
-      datasets: [{
-        label: "Wall Bounces",
-        data: [match.matchStats.wallBounce1, match.matchStats.wallBounce2],
-        backgroundColor: ["#06b6d4", "#0891b2"]
-      }]
-    },
-    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-  });
+  // TIMELINE CHART
+  const canvas = document.getElementById("match-points-timeline") as HTMLCanvasElement;
+  if ((canvas as any)._chart) (canvas as any)._chart.destroy();
 
-  // ------------------- Time Duration Chart -------------------
-  const timeCanvas = document.getElementById("match-time") as HTMLCanvasElement;
-  if ((timeCanvas as any)._chart) (timeCanvas as any)._chart.destroy();
-  (timeCanvas as any)._chart = new Chart(timeCanvas, {
-    type: "bar",
-    data: {
-      labels: [match.player1Username, match.player2Username],
-      datasets: [{
-        label: "Time Duration (s)",
-        data: [match.matchStats.timeDuration / 1000, match.matchStats.timeDuration / 1000],
-        backgroundColor: ["#06b6d4", "#0891b2"]
-      }]
-    },
-    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-  });
+  const labels = ms.pointsOrder.map((_, i) => `P${i + 1}`);
+  const durations = ms.timeOrder.map(t => t / 1000);
+  const colors = ms.pointsOrder.map(winner => winner === "1" ? "#06b6d4" : "#0891b2");
 
-  // ------------------- Timeline Chart -------------------
-  const timelineCanvas = document.getElementById("match-points-timeline") as HTMLCanvasElement;
-  if ((timelineCanvas as any)._chart) (timelineCanvas as any)._chart.destroy();
-
-  const labels = match.matchStats.pointsOrder.map((_, i) => `Pt ${i + 1}`);
-  const durations = match.matchStats.timeOrder.map(t => t / 1000);
-  const colors = match.matchStats.pointsOrder.map(winner =>
-    winner === "1" ? "#06b6d4" : "#0891b2"
-  );
-
-  (timelineCanvas as any)._chart = new Chart(timelineCanvas, {
+  (canvas as any)._chart = new Chart(canvas, {
     type: "bar",
     data: {
       labels,
       datasets: [{
-        label: "Rally Time (s)",
+        label: "Rally Duration (s)",
         data: durations,
         backgroundColor: colors
       }]
     },
     options: {
       responsive: true,
+      maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        y: { beginAtZero: true, title: { display: true, text: "Seconds" } },
-        x: { title: { display: true, text: "Points" } }
+        x: { title: { display: true, text: "Points" }, ticks: { color: "#a5f3fc" } },
+        y: { beginAtZero: true, title: { display: true, text: "Seconds" }, ticks: { color: "#a5f3fc" } }
       }
     }
   });
-
-  // ------------------- Settings Recap -------------------
-  const settingsEl = document.getElementById("match-settings")!;
-  const s = match.matchSettings;
-  settingsEl.innerHTML = `
-    <div class="font-semibold mb-1">Match Settings</div>
-    <div>Ball Size: ${s.ballSize}</div>
-    <div>Ball Speed: ${s.ballSpeed}</div>
-    <div>Paddle Size: ${s.paddleSize}</div>
-    <div>Paddle Speed: ${s.paddleSpeed}</div>
-    <div>Mode: ${s.gameMode}</div>
-  `;
-
-  // ------------------- Stats Recap -------------------
-  const statsEl = document.getElementById("match-stats-summary")!;
-  const ms = match.matchStats;
-  statsEl.innerHTML = `
-    <div class="font-semibold mb-1">Match Summary</div>
-    <div>Total Hits: ${ms.totalHits}</div>
-    <div>Longest Rally Hits: ${ms.longestRallyHits}</div>
-    <div>Longest Rally Time: ${Math.round(ms.longestRallyTime / 1000)}s</div>
-    <div>Wall Bounce P1: ${ms.wallBounce1}</div>
-    <div>Wall Bounce P2: ${ms.wallBounce2}</div>
-  `;
 }
 
 

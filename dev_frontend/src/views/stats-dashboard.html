@@ -1,101 +1,86 @@
-<div class="fixed inset-0 overflow-auto p-6 bg-neutral-900/80 text-white">
-  <!-- center and make the panel take most of the viewport -->
-  <div class="w-full max-w-7xl mx-auto h-[90vh]">
-    <h2 class="text-3xl mb-4 font-bold text-center text-purple-300" data-i18n="stats.statistics"></h2>
-    <div class="flex justify-center mb-6">
-      <label for="main-user-select" class="mr-2 font-semibold">Select user:</label>
-      <select id="main-user-select" class="bg-transparent border border-white/20 rounded px-3 py-2 text-base">
-      <!-- Populated by JS -->
-      </select>
-    </div> 
-  <!-- Summary boxes -->
-<!-- Summary boxes -->
-<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4 mb-6 h-28">
-  <div class="summary-box flex flex-col justify-center p-4 bg-indigo-800/60 rounded-lg text-center">
-    <span class="text-sm" data-i18n="stats.totalgames"></span>
-    <span id="stat-total" class="text-2xl md:text-3xl font-bold">—</span>
-  </div>
-  <div class="summary-box flex flex-col justify-center p-4 bg-green-800/60 rounded-lg text-center">
-    <span class="text-sm" data-i18n="stats.wins"></span>
-    <span id="stat-wins" class="text-2xl md:text-3xl font-bold">—</span>
-  </div>
-  <div class="summary-box flex flex-col justify-center p-4 bg-red-800/60 rounded-lg text-center">
-    <span class="text-sm" data-i18n="stats.losses"></span>
-    <span id="stat-losses" class="text-2xl md:text-3xl font-bold">—</span>
-  </div>
-  <div class="summary-box flex flex-col justify-center p-4 bg-purple-800/60 rounded-lg text-center">
-    <span class="text-sm" data-i18n="stats.winratio"></span>
-    <span id="stat-winrate" class="text-2xl md:text-3xl font-bold">—</span>
-  </div>
-  <div class="summary-box flex flex-col justify-center p-4 bg-slate-800/60 rounded-lg text-center">
-    <span class="text-sm" data-i18n="stats.longuestRally"></span>
-    <span id="stat-bounces" class="text-2xl md:text-3xl font-bold">—</span>
-  </div>
-  <div class="summary-box flex flex-col justify-center p-4 bg-yellow-800/60 rounded-lg text-center">
-    <span class="text-sm" data-i18n="stats.avgGamelength"></span>
-    <span id="stat-toptime" class="text-2xl md:text-3xl font-bold">—</span>
-  </div>
-</div>
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-neutral-950 text-white">
+<head>
+  <meta charset="UTF-8" />
+  <title>Stats Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="h-full">
 
+  <div class="fixed inset-0 overflow-auto p-6 bg-neutral-900/80 text-white">
+    <div class="w-full max-w-7xl mx-auto h-[90vh] flex flex-col">
+      
+      <!-- Title -->
+      <h2 class="text-3xl mb-6 font-bold text-center text-cyan-300 drop-shadow-lg" data-i18n="stats.statistics">Statistics</h2>
 
-  <div class="flex flex-col md:flex-row gap-6 h-[calc(90vh-220px)]">
-    <!-- Match history -->
-    <div class="w-full md:w-1/2 bg-black/30 rounded-lg p-4 h-full flex flex-col">
-      <h3 class="font-semibold mb-2" data-i18n="stats.lastMatches"></h3>
-      <ul id="match-history" class="space-y-2 overflow-auto flex-1">
-        <!-- JS injects li elements here -->
-      </ul>
-    </div>
+      <!-- Main user selector -->
+      <div class="flex justify-center mb-6">
+        <label for="main-user-select" class="mr-2 font-semibold text-cyan-300">Select user:</label>
+        <select id="main-user-select" class="bg-transparent border border-cyan-400/30 rounded px-3 py-2 text-base focus:outline-none focus:ring focus:ring-cyan-500">
+          <!-- populated by JS -->
+        </select>
+      </div> 
 
-    <!-- Right column: guest stats and heatmap -->
-    <div class="w-full md:w-1/2 space-y-4 h-full flex flex-col">
-      <div class="bg-black/30 rounded-lg p-3">
-        <div class="flex items-center justify-between mb-2">
-          <h3 class="font-semibold" data-i18n="stats.guestsMatchup"></h3>
-          <select id="guest-select" class="bg-transparent border border-white/10 rounded px-2 py-1 text-sm">
-            <option value="all" data-i18n="stats.guestsChoose"></option>
-          </select>
+      <!-- Summary boxes -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4 mb-6">
+        <div class="flex flex-col justify-center items-center bg-cyan-900/30 border border-cyan-400/20 backdrop-blur-md rounded-xl p-4 hover:bg-cyan-800/40 hover:shadow-cyan-400/10 hover:shadow-lg transition">
+          <span class="text-sm font-medium text-cyan-300 tracking-wider uppercase mb-1" data-i18n="stats.totalgames">Total Games</span>
+          <span id="stat-total" class="text-3xl font-extrabold text-cyan-400 drop-shadow-lg">—</span>
         </div>
-        <canvas id="guests-bar" class="w-full" height="220"></canvas>
-      </div>
-
-      <div class="bg-black/30 rounded-lg p-3">
-        <h3 class="font-semibold mb-2" data-i18n="stats.vsAI"></h3>
-        <canvas id="ai-difficulty" class="w-full" height="200"></canvas>
-        <div class="text-xs text-gray-300 mt-2" data-i18n="stats.aiExplanation"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Match detail modal area (hidden) -->
-  <!-- Match detail modal (overlay) -->
-  <div id="match-detail" class="fixed inset-0 z-50 flex items-start md:items-center justify-center p-6" style="display:none">
-    <div class="w-full max-w-4xl bg-black/60 rounded-lg p-4">
-    <div class="flex items-center justify-between mb-3">
-      <h3 class="font-semibold">Match detail</h3>
-      <button id="close-match-detail" class="px-2 py-1 bg-red-700 rounded">Close</button>
-    </div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div>
-          <h4 class="text-sm font-medium mb-2">Wall bounces</h4>
-          <canvas id="match-wall" height="140"></canvas>
+        <div class="flex flex-col justify-center items-center bg-green-900/30 border border-green-400/20 backdrop-blur-md rounded-xl p-4 hover:bg-green-800/40 hover:shadow-green-400/10 hover:shadow-lg transition">
+          <span class="text-sm font-medium text-green-300 tracking-wider uppercase mb-1" data-i18n="stats.wins">Wins</span>
+          <span id="stat-wins" class="text-3xl font-extrabold text-green-400 drop-shadow-lg">—</span>
         </div>
-        <div>
-          <h4 class="text-sm font-medium mb-2">Time top / bottom</h4>
-          <canvas id="match-time" height="140"></canvas>
+        <div class="flex flex-col justify-center items-center bg-red-900/30 border border-red-400/20 backdrop-blur-md rounded-xl p-4 hover:bg-red-800/40 hover:shadow-red-400/10 hover:shadow-lg transition">
+          <span class="text-sm font-medium text-red-300 tracking-wider uppercase mb-1" data-i18n="stats.losses">Losses</span>
+          <span id="stat-losses" class="text-3xl font-extrabold text-red-400 drop-shadow-lg">—</span>
+        </div>
+        <div class="flex flex-col justify-center items-center bg-purple-900/30 border border-purple-400/20 backdrop-blur-md rounded-xl p-4 hover:bg-purple-800/40 hover:shadow-purple-400/10 hover:shadow-lg transition">
+          <span class="text-sm font-medium text-purple-300 tracking-wider uppercase mb-1" data-i18n="stats.winratio">Winrate</span>
+          <span id="stat-winrate" class="text-3xl font-extrabold text-purple-400 drop-shadow-lg">—</span>
+        </div>
+        <div class="flex flex-col justify-center items-center bg-slate-900/30 border border-slate-400/20 backdrop-blur-md rounded-xl p-4 hover:bg-slate-800/40 hover:shadow-slate-400/10 hover:shadow-lg transition">
+          <span class="text-sm font-medium text-slate-300 tracking-wider uppercase mb-1" data-i18n="stats.longuestRally">Longest Rally</span>
+          <span id="stat-bounces" class="text-3xl font-extrabold text-slate-400 drop-shadow-lg">—</span>
+        </div>
+        <div class="flex flex-col justify-center items-center bg-yellow-900/30 border border-yellow-400/20 backdrop-blur-md rounded-xl p-4 hover:bg-yellow-800/40 hover:shadow-yellow-400/10 hover:shadow-lg transition">
+          <span class="text-sm font-medium text-yellow-300 tracking-wider uppercase mb-1" data-i18n="stats.avgGamelength">Avg Length</span>
+          <span id="stat-toptime" class="text-3xl font-extrabold text-yellow-400 drop-shadow-lg">—</span>
         </div>
       </div>
 
-      <div id="match-players" class="mt-4 overflow-auto">
-        <!-- players table injected here -->
+      <!-- Content area -->
+      <div class="flex flex-col md:flex-row gap-6 h-[calc(90vh-220px)] flex-1">
+        <!-- Match history -->
+        <div class="w-full md:w-1/2 bg-cyan-900/20 border border-cyan-400/20 backdrop-blur-md rounded-xl p-4 h-full flex flex-col hover:shadow-cyan-400/10 hover:shadow-lg transition">
+          <h3 class="font-semibold text-cyan-300 mb-3 text-lg tracking-wide" data-i18n="stats.lastMatches">Match History</h3>
+          <ul id="match-history" class="space-y-2 overflow-auto flex-1">
+            <!-- JS injects li elements here -->
+          </ul>
+        </div>
+
+        <!-- Right column -->
+        <div class="w-full md:w-1/2 space-y-4 h-full flex flex-col">
+          <div class="bg-cyan-900/20 border border-cyan-400/20 backdrop-blur-md rounded-xl p-3 hover:shadow-cyan-400/10 hover:shadow-lg transition">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="font-semibold text-cyan-300" data-i18n="stats.guestsMatchup">Guest Matchup</h3>
+              <select id="guest-select" class="bg-transparent border border-cyan-400/20 rounded px-2 py-1 text-sm focus:outline-none focus:ring focus:ring-cyan-500">
+                <option value="all" data-i18n="stats.guestsChoose">Select Player</option>
+              </select>
+            </div>
+            <canvas id="guests-bar" class="w-full" height="220"></canvas>
+          </div>
+
+          <div class="bg-cyan-900/20 border border-cyan-400/20 backdrop-blur-md rounded-xl p-3 hover:shadow-cyan-400/10 hover:shadow-lg transition">
+            <h3 class="font-semibold text-cyan-300 mb-2" data-i18n="stats.vsAI">vs AI</h3>
+            <canvas id="ai-difficulty" class="w-full" height="200"></canvas>
+            <div class="text-xs text-cyan-400 mt-2 opacity-80" data-i18n="stats.aiExplanation">Stats against AI opponents</div>
+          </div>
+        </div>
       </div>
+
     </div>
   </div>
-  </div>
-</div>
 
-<style>
-  .summary-box { backdrop-filter: blur(6px); }
-  .match-item { padding:8px; border-bottom:1px solid rgba(255,255,255,0.04); cursor:pointer; }
-  .match-item:hover { background: rgba(255,255,255,0.02); }
-</style>
+</body>
+</html>
