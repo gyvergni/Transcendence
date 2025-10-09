@@ -111,6 +111,18 @@ const translations: Record<Lang, Record<string, string>> =
 		"stats.vsAI": "Recap vs AI",
 		"stats.aiExplanation": "Win - Loss vs the 3 AI Difficulties",
 
+        //match-detail.html
+        "match.detail": "Match Detail",
+        "match.close": "match.close",
+        "match.game-settings": "Game Settings",
+        "match.settings-ballsize": "Ball Size: ",
+        "match.settings-ballspeed": "Ball Speed: ",
+        "match.settings-paddlesize": "Paddle Size: ",
+        "match.settings-paddlespeed": "Paddle Speed: ",
+        "match.settings-gamemode": "Game Mode: ",
+        "match.stats": "Match Stats",
+        
+
 		//tournament.html
 		"tournament.title": "Tournament",
 		"tournament.instructions": "Select 4 players or AI",
@@ -461,6 +473,9 @@ const translations: Record<Lang, Record<string, string>> =
 		"stats.guestsChoose": "Elegir invitado",
 		"stats.vsAI": "Resumen contra la IA",
 		"stats.aiExplanation": "Victorias - Derrotas contra las 3 dificultades de la IA",
+
+        //match-detail.html
+        "match.game-settings": "",
 
 		//tournament.html
 		"tournament.title": "Torneo",

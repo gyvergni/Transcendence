@@ -44,8 +44,8 @@
           <span id="stat-bounces" class="text-3xl font-extrabold text-slate-400 drop-shadow-lg">—</span>
         </div>
         <div class="flex flex-col justify-center items-center bg-yellow-900/30 border border-yellow-400/20 backdrop-blur-md rounded-xl p-4 hover:bg-yellow-800/40 hover:shadow-yellow-400/10 hover:shadow-lg transition">
-          <span class="text-sm font-medium text-yellow-300 tracking-wider uppercase mb-1" data-i18n="stats.avgGamelength">Avg Length</span>
-          <span id="stat-toptime" class="text-3xl font-extrabold text-yellow-400 drop-shadow-lg">—</span>
+          <span class="text-sm font-medium text-yellow-300 tracking-wider uppercase mb-1" data-i18n="stats.totalInputs">Total Inputs</span>
+          <span id="stat-inputs" class="text-3xl font-extrabold text-yellow-400 drop-shadow-lg">—</span>
         </div>
       </div>
 
@@ -71,11 +71,22 @@
             <canvas id="guests-bar" class="w-full" height="220"></canvas>
           </div>
 
-          <div class="bg-cyan-900/20 border border-cyan-400/20 backdrop-blur-md rounded-xl p-3 hover:shadow-cyan-400/10 hover:shadow-lg transition">
-            <h3 class="font-semibold text-cyan-300 mb-2" data-i18n="stats.vsAI">vs AI</h3>
-            <canvas id="ai-difficulty" class="w-full" height="200"></canvas>
-            <div class="text-xs text-cyan-400 mt-2 opacity-80" data-i18n="stats.aiExplanation">Stats against AI opponents</div>
-          </div>
+        <div class="bg-cyan-900/20 border border-cyan-400/20 backdrop-blur-md rounded-xl p-3 hover:shadow-cyan-400/10 hover:shadow-lg transition">
+            <h3 class="font-semibold text-cyan-300 mb-2">Game averages</h3>
+            <div class="flex justify-between text-sm mb-1">
+                <span>Average Inputs</span>
+                <span id="avg-inputs" class="font-semibold">—</span>
+            </div>
+            <div class="flex justify-between text-sm mb-1">
+                <span>Average Game Length</span>
+                <span id="avg-length" class="font-semibold">—</span>
+            </div>
+            <div class="flex justify-between text-sm mb-1">
+                <span>Average WallBounces</span>
+                <span id="avg-wallBounces" class="font-semibold">—</span>
+            </div>
+        </div>
+
         </div>
       </div>
 

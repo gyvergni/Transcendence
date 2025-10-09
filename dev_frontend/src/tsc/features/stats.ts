@@ -31,9 +31,11 @@ type MatchStatsResponse = {
             timeOrder: number[];
             wallBounce1: number;
             wallBounce2: number;
+            totalInputs1: number;
+            totalInputs2: number;
         };
     }[];
-};
+}; 
 
 // -------------------- API --------------------
 async function fetchStats(accountUsername: string, guest?: string): Promise<MatchStatsResponse | null> {
@@ -58,16 +60,23 @@ async function fetchStats(accountUsername: string, guest?: string): Promise<Matc
 }
 
 // -------------------- RENDERERS --------------------
-function renderSummary(data: MatchStatsResponse) {
+function renderSummary(data: MatchStatsResponse, currentMainGuest: string) {
     const totalGames = data.wins + data.losses;
     const winRate = totalGames > 0 ? Math.round((data.wins / totalGames) * 100) : 0;
-
+    let totalInputs = 0;
+    for (const match of data.matchHistory)
+    {
+        if (match.player1Username == currentMainGuest)
+            totalInputs += match.matchStats.totalInputs1;
+        else if (match.player2Username == currentMainGuest)
+            totalInputs += match.matchStats.totalInputs2;
+    }
     const summaryMap = {
         "#stat-total": totalGames,
         "#stat-wins": data.wins,
         "#stat-losses": data.losses,
         "#stat-winrate": `${winRate}%`,
-        "#stat-toptime": `${Math.round(data.matchHistory.reduce((sum, m) => sum + m.matchStats.timeDuration, 0) / (data.matchHistory.length || 1) / 1000)}s`,
+        "#stat-inputs": totalInputs,
         "#stat-bounces": data.matchHistory.reduce((max, m) => Math.max(max, m.matchStats.longestRallyHits), 0)
     };
 
@@ -77,62 +86,79 @@ function renderSummary(data: MatchStatsResponse) {
     }
 }
 
-function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0]) {
+function renderGameAverages(data: MatchStatsResponse) {
+    const totalMatches = data.matchHistory.length;
+    if (totalMatches === 0) {
+        document.getElementById("avg-inputs")!.textContent = "—";
+        document.getElementById("avg-length")!.textContent = "—";
+        document.getElementById("avg-wallBounces")!.textContent = "—";
+        return;
+    }
+
+    let totalInputs = 0;
+    let totalLength = 0;
+    let totalWallBounces = 0;
+
+    for (const match of data.matchHistory) {
+        totalInputs += (match.matchStats.totalInputs1 || 0) + (match.matchStats.totalInputs2 || 0);
+        totalLength += match.matchStats.timeDuration || 0;
+        totalWallBounces += match.matchStats.longestRallyHits || 0;
+    }
+
+    const avgInputs = Math.round(totalInputs / totalMatches);
+    const avgLengthSeconds = Math.round((totalLength / totalMatches) / 1000);
+    const avgWallBounces = Math.round(totalWallBounces / totalMatches);
+
+    document.getElementById("avg-inputs")!.textContent = String(avgInputs);
+    document.getElementById("avg-length")!.textContent = `${avgLengthSeconds}s`;
+    document.getElementById("avg-wallBounces")!.textContent = String(avgWallBounces);
+}
+
+
+export function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0]) {
   const modal = document.getElementById("match-detail")!;
   modal.style.display = "flex";
 
-  const title = document.getElementById("match-title")!;
-  title.textContent = `${match.player1Username} vs ${match.player2Username}`;
+  // Title
+  document.getElementById("match-title")!.textContent =
+    `${match.player1Username} vs ${match.player2Username}`;
 
+  // Close button
   document.getElementById("close-match-detail")!.onclick = () => {
     modal.style.display = "none";
     setContentView("../views/stats-dashboard.html");
   };
 
-  // SETTINGS RECAP
+  // ---------------- SETTINGS ----------------
   const s = match.matchSettings;
-  const settingsUl = document.querySelector("#match-settings ul")!;
-  settingsUl.innerHTML = `
-    <li>Ball Size: ${s.ballSize}</li>
-    <li>Ball Speed: ${s.ballSpeed}</li>
-    <li>Paddle Size: ${s.paddleSize}</li>
-    <li>Paddle Speed: ${s.paddleSpeed}</li>
-    <li>Mode: ${s.gameMode}</li>
-  `;
+  (document.getElementById("ball-size") as HTMLElement).textContent = String(s.ballSize);
+  (document.getElementById("ball-speed") as HTMLElement).textContent = String(s.ballSpeed);
+  (document.getElementById("paddle-size") as HTMLElement).textContent = String(s.paddleSize);
+  (document.getElementById("paddle-speed") as HTMLElement).textContent = String(s.paddleSpeed);
+  (document.getElementById("game-mode") as HTMLElement).textContent = s.gameMode;
 
-  // STATS RECAP
+  // ---------------- MATCH STATS ----------------
   const ms = match.matchStats;
-  const statsUl = document.querySelector("#match-stats-summary ul")!;
-  statsUl.innerHTML = `
-    <li>Total Hits: ${ms.totalHits}</li>
-    <li>Longest Rally Hits: ${ms.longestRallyHits}</li>
-    <li>Longest Rally Time: ${Math.round(ms.longestRallyTime / 1000)}s</li>
-    <li>Wall Bounce P1: ${ms.wallBounce1}</li>
-    <li>Wall Bounce P2: ${ms.wallBounce2}</li>
-  `;
+  (document.getElementById("total-hits") as HTMLElement).textContent = String(ms.totalHits);
+  (document.getElementById("longest-rally-hits") as HTMLElement).textContent = String(ms.longestRallyHits);
+  (document.getElementById("longest-rally-time") as HTMLElement).textContent = `${Math.round(ms.longestRallyTime / 1000)}s`;
+  (document.getElementById("wall-bounce-p1") as HTMLElement).textContent = String(ms.wallBounce1 ?? 0);
+  (document.getElementById("wall-bounce-p2") as HTMLElement).textContent = String(ms.wallBounce2 ?? 0);
 
-  // PLAYER TABLE
-  const tbody = document.getElementById("match-players-body")!;
-  tbody.innerHTML = "";
-  const players = [
-    { name: match.player1Username, score: match.player1Score, stats: ms },
-    { name: match.player2Username, score: match.player2Score, stats: ms }
-  ];
+  // ---------------- PLAYER ROWS ----------------
+  (document.getElementById("player1-name") as HTMLElement).textContent = match.player1Username;
+  (document.getElementById("player1-score") as HTMLElement).textContent = String(match.player1Score);
+  (document.getElementById("player1-hits") as HTMLElement).textContent = String(ms.totalHits);
+  (document.getElementById("player1-rally") as HTMLElement).textContent = String(ms.longestRallyHits);
+  (document.getElementById("player1-duration") as HTMLElement).textContent = `${Math.round(ms.timeDuration / 1000)}`;
 
-  players.forEach(p => {
-    const tr = document.createElement("tr");
-    tr.className = "match-player-row border-b border-cyan-400/20";
-    tr.innerHTML = `
-      <td class="px-3 py-2">${p.name}</td>
-      <td class="px-3 py-2 font-semibold">${p.score}</td>
-      <td class="px-3 py-2">${p.stats.totalHits}</td>
-      <td class="px-3 py-2">${p.stats.longestRallyHits}</td>
-      <td class="px-3 py-2">${Math.round(p.stats.timeDuration / 1000)}</td>
-    `;
-    tbody.appendChild(tr);
-  });
+  (document.getElementById("player2-name") as HTMLElement).textContent = match.player2Username;
+  (document.getElementById("player2-score") as HTMLElement).textContent = String(match.player2Score);
+  (document.getElementById("player2-hits") as HTMLElement).textContent = String(ms.totalHits);
+  (document.getElementById("player2-rally") as HTMLElement).textContent = String(ms.longestRallyHits);
+  (document.getElementById("player2-duration") as HTMLElement).textContent = `${Math.round(ms.timeDuration / 1000)}`;
 
-  // TIMELINE CHART
+  // ---------------- TIMELINE CHART ----------------
   const canvas = document.getElementById("match-points-timeline") as HTMLCanvasElement;
   if ((canvas as any)._chart) (canvas as any)._chart.destroy();
 
@@ -161,6 +187,7 @@ function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0]) {
     }
   });
 }
+
 
 
 
@@ -223,18 +250,18 @@ function renderMatchupChart(mainGuest: string, opponentGuest: string, matchHisto
 }
 
 // -------------------- DROPDOWN HANDLERS --------------------
-async function handleMainGuestChange(accountUsername: string, guest: string | undefined, matchupSelect: HTMLSelectElement) {
-    const stats = await fetchStats(accountUsername, guest);
+async function handleMainGuestChange(accountUsername: string, currentMainGuest: string | undefined, matchupSelect: HTMLSelectElement) {
+    const stats = await fetchStats(accountUsername, currentMainGuest);
     if (!stats)
         return;
-
-    renderSummary(stats);
+    renderSummary(stats, currentMainGuest!);
     renderHistory(stats.matchHistory);
+    renderGameAverages(stats);
 
     // Update matchup chart if right-hand guest is selected
     const opponent = matchupSelect.value;
     if (opponent)
-        renderMatchupChart(guest || accountUsername, opponent, stats.matchHistory);
+        renderMatchupChart(currentMainGuest || accountUsername, opponent, stats.matchHistory);
 }
 
 function populateDropdown(select: HTMLSelectElement, options: string[], defaultText: string) {

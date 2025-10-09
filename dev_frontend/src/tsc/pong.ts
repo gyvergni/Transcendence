@@ -53,6 +53,7 @@ interface PlayerType {
 	config: PlayerConfig;
 	opponent: PlayerType | null;
 	paddle: Paddle;
+    totalInputs: number;
 }
 
 // ################ Classes ####################
@@ -385,6 +386,7 @@ class Player implements PlayerType {
 	paddle: Paddle;
 	config: PlayerConfig;
 	opponent: PlayerType | null = null;
+    totalInputs: number = 0;
 
 	constructor(paddle: Paddle, upKey: string, downKey: string, config: PlayerConfig) {
 		this.paddle = paddle;
@@ -395,8 +397,20 @@ class Player implements PlayerType {
 
 		window.addEventListener("keydown", e => {
 			const key = e.key.toLowerCase();
-			if (key === this.upKey) this.keys[this.upKey] = true;
-			if (key === this.downKey) this.keys[this.downKey] = true;
+			if (key === this.upKey)
+            {
+                if (this.keys[this.upKey] != true)
+                    this.totalInputs++;
+                this.keys[this.upKey] = true;
+            }
+            else if (key === this.downKey)
+            {
+                if (this.keys[this.downKey] != true)
+                    this.totalInputs++;
+                this.keys[this.downKey] = true;
+            }
+            else
+                return ;
 		});
 		window.addEventListener("keyup", e => {
 			const key = e.key.toLowerCase();
@@ -425,6 +439,7 @@ class AIPlayer implements PlayerType {
 	opponent: PlayerType | null = null;
 	ballDirZIntercept: number = 0;
 	ballDirXIntercept: number = 0;
+    totalInputs: number = 0;
 
 	constructor(paddle: Paddle, ball: Ball, side: "left" | "right", config: PlayerConfig) {
 		this.paddle = paddle;
@@ -451,14 +466,20 @@ class AIPlayer implements PlayerType {
 		const diff = this.padTargetZ - currentZ;
 		const eps = 0.15; // deadzone to avoid flicker
 		if (diff > eps) {
+            if (this.movement_up != true)
+                this.totalInputs++;
 			this.movement_up = true;
 			this.movement_down = false;
 			this.paddle.move(true, false);
-		} else if (diff < -eps) {
+		}
+        else if (diff < -eps) {
+            if (this.movement_down != true)
+                this.totalInputs++;
 			this.movement_up = false;
 			this.movement_down = true;
 			this.paddle.move(false, true);
-		} else {
+		}
+        else {
 			// close enough
 			this.movement_up = false;
 			this.movement_down = false;
@@ -917,6 +938,8 @@ export class Game {
         console.log("wallBounce1: " + this.ball.wallBounce1);
         console.log("wallBounce2: " + this.ball.wallBounce2);
         console.log("timeOrder: " + this.ball.timeOrder);
+        console.log("player1 inputs: " + this.player1.totalInputs);
+        console.log("player2 inputs: " + this.player2.totalInputs);
         this.resolveEnd(this.match);
 	}
 }
@@ -949,6 +972,8 @@ async function postMatchStats(match: MatchSetup) {
                 pointTimeOrder: match.game?.ball.timeOrder,
                 wallBounce1: match.game?.ball.wallBounce1,
                 wallBounce2: match.game?.ball.wallBounce2,
+                totalInputs1: match.game?.player1.totalInputs,
+                totalInputs2: match.game?.player2.totalInputs,
 			},
 		},
 	};
