@@ -56,6 +56,11 @@ model matchHistory {
   longestRallyTime                            Int
   timeDuration                                Int
   pointsOrder                                 String
+  timeOrder                                   String  
+  wallBounce1                                 Int
+  wallBounce2                                 Int
+  totalInputs1                                Int
+  totalInputs2                                Int
   identities_matchHistory_player2Toidentities identities @relation("matchHistory_player2Toidentities", fields: [player2_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   identities_matchHistory_player1Toidentities identities @relation("matchHistory_player1Toidentities", fields: [player1_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

@@ -7,7 +7,6 @@ import { formatDate } from "../utils/formatDate";
 export async function addMatch(input: AddMatchBody, winnerId: number, loserId: number, winnerScore: number, loserScore: number) {
     console.log("Adding match with input:", input);
     return await prisma.$transaction(async (tx: any) => {
-        console.log("0");
         const match = await tx.matchHistory.create({
             data: {
                 player1_id: winnerId,
@@ -24,23 +23,25 @@ export async function addMatch(input: AddMatchBody, winnerId: number, loserId: n
                 longestRallyTime: input.match.matchStats.longestRallyTime,
                 timeDuration: input.match.matchStats.timeDuration,
                 pointsOrder: input.match.matchStats.pointsOrder,
+                timeOrder: input.match.matchStats.timeOrder,
+                wallBounce1: input.match.matchStats.wallBounce1,
+                wallBounce2: input.match.matchStats.wallBounce2,
+                totalInputs1: input.match.matchStats.totalInputs1,
+                totalInputs2: input.match.matchStats.totalInputs2,
             },
         });
-        console.log("1");
         await tx.stats.update({
             where: { id: winnerId },
             data: {
                 wins: { increment: 1 },
             },
         });
-        console.log("2");
         await tx.stats.update({
             where: { id: loserId },
             data: {
                 losses: { increment: 1 },
             },
         });
-        console.log("3");
         return match;
     });
 }
@@ -166,16 +167,26 @@ export async function getStats2(player: { id: number, game_username: string }) {
 
             const player1Id = isPlayer1 ? match.player1_id : match.player2_id;
             const player2Id = isPlayer1 ? match.player2_id : match.player1_id
-            const player1Score = isPlayer1 ? match.player1_score : match.player2_score;
-            const player2Score = isPlayer1 ? match.player2_score : match.player1_score;
 
             const player1Pseudo = await findPseudoWithId(player1Id);
             const player2Pseudo = await findPseudoWithId(player2Id);
-
             if (!player1Pseudo || !player2Pseudo) {
                 throw new Error("Pseudo not found for player ID: " + (player1Pseudo ? player2Id : player1Id));
             }
+
+            const player1Score = isPlayer1 ? match.player1_score : match.player2_score;
+            const player2Score = isPlayer1 ? match.player2_score : match.player1_score;
+
             const result = player1Score > player2Score ? 'win' : 'lose';
+            const wallBounce1 = isPlayer1 ? match.wallBounce1 : match.wallBounce2;
+            const wallBounce2 = isPlayer1 ? match.wallBounce2 : match.wallBounce1;
+            const totalInputs1 = isPlayer1 ? match.totalInputs1 : match.totalInputs2;
+            const totalInputs2 = isPlayer1 ? match.totalInputs2 : match.totalInputs1;
+
+            let pointsOrder = match.pointsOrder;
+            if (!isPlayer1)
+                pointsOrder = pointsOrder.replace(/[12]/g, (digit) => digit === '1' ? '2' : '1');
+
             return {
                 matchId: match.id,
                 player1Username: player1Pseudo,
@@ -196,7 +207,12 @@ export async function getStats2(player: { id: number, game_username: string }) {
                     longestRallyHits: match.longestRallyHits,
                     longestRallyTime: match.longestRallyTime,
                     timeDuration: match.timeDuration,
-                    pointsOrder: match.pointsOrder,
+                    pointsOrder: pointsOrder,
+                    timeOrder: match.timeOrder,
+                    wallBounce1: wallBounce1,
+                    wallBounce2: wallBounce2,
+                    totalInputs1: totalInputs1,
+                    totalInputs2: totalInputs2,
                 }
             };
         })
