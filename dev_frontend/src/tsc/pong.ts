@@ -161,7 +161,7 @@ class Ball {
 	rebound: number = 0;
 	initialSpeed: number = BallSpeed;
 	pointOrder:string = "";
-    timeOrder:number[]=[];
+    timeOrder:string = "";
 	rallyBounce: number = 0;
 	maxRallyBounce: number = 0;
 
@@ -315,7 +315,7 @@ class Ball {
     }
 
     reset() {
-        this.timeOrder.push(new Date().getTime() - this.clock.pointTimerStart + this.clock.pointCurrentTime);
+        this.timeOrder += (new Date().getTime() - this.clock.pointTimerStart + this.clock.pointCurrentTime) + ",";
         console.log("Point time: " + (new Date().getTime() - this.clock.pointTimerStart + this.clock.pointCurrentTime));
 		this.clock.updateGameTimer();
 		this.clock.updatePointTimer();
@@ -930,6 +930,7 @@ export class Game {
 		this.match.players[0].score = this.ball.score1;
 		this.match.players[1].score = this.ball.score2;
 		//resetSettings();
+        this.ball.timeOrder.slice(0, -1);
 		console.log("max time: ", this.clock.pointMaxTime/1000);
 		console.log("Total game time: ", this.clock.gameTime/1000);
 		console.log("longuest rally = ", this.ball.maxRallyBounce);
@@ -969,7 +970,7 @@ async function postMatchStats(match: MatchSetup) {
 				longestRallyTime: match.game?.clock?.pointMaxTime,
 				timeDuration: match.game?.clock?.gameTime,
 				pointsOrder: match.game?.ball.pointOrder,
-                pointTimeOrder: match.game?.ball.timeOrder,
+                timeOrder: match.game?.ball.timeOrder,
                 wallBounce1: match.game?.ball.wallBounce1,
                 wallBounce2: match.game?.ball.wallBounce2,
                 totalInputs1: match.game?.player1.totalInputs,

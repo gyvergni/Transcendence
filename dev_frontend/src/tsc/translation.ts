@@ -103,7 +103,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"stats.wins": "Wins",
 		"stats.losses": "Losses",
 		"stats.winratio": "Win Ratio",
-		"stats.longuestRally": "Longuest Rally",
+		"stats.longestRally": "Longuest Rally",
 		"stats.avgGameLength": "Avgerage Game length",
 		"stats.lastMatches": "Match History",
 		"stats.guestsMatchup": "Individual matchup stats",
@@ -120,6 +120,9 @@ const translations: Record<Lang, Record<string, string>> =
         "match.settings-paddlesize": "Paddle Size: ",
         "match.settings-paddlespeed": "Paddle Speed: ",
         "match.settings-gamemode": "Game Mode: ",
+        "match.totalhits": "Total Hits: ",
+        "match.totaltime": "Total Time: ",
+        "match.longestrally": "Longest Rally: ",
         "match.stats": "Match Stats",
         
 
