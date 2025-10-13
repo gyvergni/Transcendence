@@ -10,14 +10,18 @@
   <body class="flex flex-col min-h-screen m-0 overflow-hidden">
     <main id="main" class="flex-grow flex items-center justify-center p-4 relative overflow-hidden">
       
+      <img src="assets/window_frame2.png"
+        	class="absolute inset-0 w-full h-full object-fill z-40 pointer-events-none"
+				alt="window frame" />
+
       <!-- Doors -->
-      <img id="door-left" src="assets/door_left.png"
+      <img id="door-left" src="assets/Left_Door.png"
            class="select-none absolute w-1/2 h-full left-0 top-0 z-30 object-fill transition-transform duration-1000"
-           alt="Left door"
+           alt="Left door"  
 		   draggable="false"
 		   oncontextmenu="return false;"/>
 
-      <img id="door-right" src="assets/door_right.png"
+      <img id="door-right" src="assets/Right_Door.png"
            class="select-none absolute w-1/2 h-full right-0 top-0 z-30 object-fill transition-transform duration-1000"
            alt="Right door"
 		   draggable="false"
@@ -36,9 +40,6 @@
 				box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 				z-index: 10;"
 		></canvas>
-        <img src="assets/window_frame.png"
-        	class="absolute inset-0 w-full h-full object-fill z-20 pointer-events-none"
-				alt="window frame" />
       </div>
 
       <!-- Content Box -->
