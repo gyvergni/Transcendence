@@ -4,8 +4,17 @@ import { findUsers } from "../user/user.service";
 import { getAllGuests, getInactiveGuests } from "../guest/guest.service";
 import { formatDate } from "../utils/formatDate";
 
-export async function addMatch(input: AddMatchBody, winnerId: number, loserId: number, winnerScore: number, loserScore: number) {
+export async function addMatch(input: AddMatchBody, winnerId: number, loserId: number, winnerScore: number, loserScore: number, isPlayer1: boolean) {
     console.log("Adding match with input:", input);
+	const wallBounce1 = isPlayer1 ? input.match.matchStats.wallBounce1 : input.match.matchStats.wallBounce2;
+    const wallBounce2 = isPlayer1 ? input.match.matchStats.wallBounce2 : input.match.matchStats.wallBounce1;
+    const totalInputs1 = isPlayer1 ? input.match.matchStats.totalInputs1 : input.match.matchStats.totalInputs2;
+    const totalInputs2 = isPlayer1 ? input.match.matchStats.totalInputs2 : input.match.matchStats.totalInputs1;
+	let pointsOrder = input.match.matchStats.pointsOrder;
+	if (!isPlayer1) {
+		pointsOrder = pointsOrder.replace(/[12]/g, (digit) => digit === '1' ? '2' : '1');
+	}
+
     return await prisma.$transaction(async (tx: any) => {
         const match = await tx.matchHistory.create({
             data: {
@@ -22,12 +31,12 @@ export async function addMatch(input: AddMatchBody, winnerId: number, loserId: n
                 longestRallyHits: input.match.matchStats.longestRallyHits,
                 longestRallyTime: input.match.matchStats.longestRallyTime,
                 timeDuration: input.match.matchStats.timeDuration,
-                pointsOrder: input.match.matchStats.pointsOrder,
+                pointsOrder: pointsOrder,
                 timeOrder: input.match.matchStats.timeOrder,
-                wallBounce1: input.match.matchStats.wallBounce1,
-                wallBounce2: input.match.matchStats.wallBounce2,
-                totalInputs1: input.match.matchStats.totalInputs1,
-                totalInputs2: input.match.matchStats.totalInputs2,
+                wallBounce1: wallBounce1,
+                wallBounce2: wallBounce2,
+                totalInputs1: totalInputs1,
+                totalInputs2: totalInputs2,
             },
         });
         await tx.stats.update({
@@ -70,62 +79,62 @@ export async function findPseudoWithId(playerId: number) {
     return null;
 }
 
-export async function getStats(playerId: number, displayMatchHistory: boolean, sizeMatchHistory: number) {
-    if (sizeMatchHistory < 0) {
-        sizeMatchHistory = 0;
-    }
-    const stats = await prisma.stats.findUnique({
-        where: { id: playerId },
-    });
-    if (!stats) {
-        throw new Error("Stats not found for player ID: " + playerId);
-    }
-    if (displayMatchHistory === true) {
-        const matchHistoryList = await getMatchs(playerId);
-        //console.log("Match history list fetched:", matchHistoryList);
-        const matchHistory = await Promise.all(
-            matchHistoryList.map(async match => {
-                const isPlayer1 = match.player1_id === playerId;
+// export async function getStats(playerId: number, displayMatchHistory: boolean, sizeMatchHistory: number) {
+//     if (sizeMatchHistory < 0) {
+//         sizeMatchHistory = 0;
+//     }
+//     const stats = await prisma.stats.findUnique({
+//         where: { id: playerId },
+//     });
+//     if (!stats) {
+//         throw new Error("Stats not found for player ID: " + playerId);
+//     }
+//     if (displayMatchHistory === true) {
+//         const matchHistoryList = await getMatchs(playerId);
+//         //console.log("Match history list fetched:", matchHistoryList);
+//         const matchHistory = await Promise.all(
+//             matchHistoryList.map(async match => {
+//                 const isPlayer1 = match.player1_id === playerId;
 
-                const player1Id = isPlayer1 ? match.player1_id : match.player2_id;
-                const player2Id = isPlayer1 ? match.player2_id : match.player1_id
-                const player1Score = isPlayer1 ? match.player1_score : match.player2_score;
-                const player2Score = isPlayer1 ? match.player2_score : match.player1_score
+//                 const player1Id = isPlayer1 ? match.player1_id : match.player2_id;
+//                 const player2Id = isPlayer1 ? match.player2_id : match.player1_id
+//                 const player1Score = isPlayer1 ? match.player1_score : match.player2_score;
+//                 const player2Score = isPlayer1 ? match.player2_score : match.player1_score
 
-                const player1Pseudo = await findPseudoWithId(player1Id);
-                const player2Pseudo = await findPseudoWithId(player2Id);
-                // console.log("Player 1 Pseudo:", player1Pseudo, "Player 2 Pseudo:", player2Pseudo);
+//                 const player1Pseudo = await findPseudoWithId(player1Id);
+//                 const player2Pseudo = await findPseudoWithId(player2Id);
+//                 // console.log("Player 1 Pseudo:", player1Pseudo, "Player 2 Pseudo:", player2Pseudo);
 
-                const result = player1Score > player2Score ? 'win' : 'lose';
-                return  {
-                    matchId: match.id,
-                    player1: player1Pseudo,
-                    player2: player2Pseudo,
-                    player1Score: player1Score,
-                    player2Score: player2Score,
-                    result: result,
-                    date: formatDate(match.date), // Convert to ISO string for consistency
-                };
-            })
-        );
-        // console.log("Match history processed:", matchHistory);
-        const result = {
-            id: stats.id,
-            win: stats.wins,
-            lose: stats.losses,
-            pseudo: await findPseudoWithId(playerId),
-            matchHistory: matchHistory,
-        }
-        //console.log("Match history fetched:", result.matchHistory);
-        return result;
-    }
-    return {
-        id : stats.id,
-        win: stats.wins,
-        lose: stats.losses,
-        pseudo: await findPseudoWithId(playerId),
-    }
-}
+//                 const result = player1Score > player2Score ? 'win' : 'lose';
+//                 return  {
+//                     matchId: match.id,
+//                     player1: player1Pseudo,
+//                     player2: player2Pseudo,
+//                     player1Score: player1Score,
+//                     player2Score: player2Score,
+//                     result: result,
+//                     date: formatDate(match.date), // Convert to ISO string for consistency
+//                 };
+//             })
+//         );
+//         // console.log("Match history processed:", matchHistory);
+//         const result = {
+//             id: stats.id,
+//             win: stats.wins,
+//             lose: stats.losses,
+//             pseudo: await findPseudoWithId(playerId),
+//             matchHistory: matchHistory,
+//         }
+//         //console.log("Match history fetched:", result.matchHistory);
+//         return result;
+//     }
+//     return {
+//         id : stats.id,
+//         win: stats.wins,
+//         lose: stats.losses,
+//         pseudo: await findPseudoWithId(playerId),
+//     }
+// }
 
 export async function getMatchs(playerId: number) {
     return await prisma.matchHistory.findMany({
@@ -184,9 +193,16 @@ export async function getStats2(player: { id: number, game_username: string }) {
             const totalInputs2 = isPlayer1 ? match.totalInputs2 : match.totalInputs1;
 
             let pointsOrder = match.pointsOrder;
-            if (!isPlayer1)
+			console.log("Match ID:", match.id);
+			console.log("isPlayer1:", isPlayer1);
+            if (!isPlayer1) {
+				console.log("Swapping points order");
+				console.log("Original points order:", pointsOrder);
                 pointsOrder = pointsOrder.replace(/[12]/g, (digit) => digit === '1' ? '2' : '1');
+				console.log("Swapped points order:", pointsOrder);
+			}
 
+			console.log("\n\n");
             return {
                 matchId: match.id,
                 player1Username: player1Pseudo,

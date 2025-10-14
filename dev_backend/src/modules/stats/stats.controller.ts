@@ -7,7 +7,7 @@ import { PrismaClient, Prisma } from "../../generated/prisma";
 import { getGuestListByPseudoHandler } from "../guest/guest.controller";
 import { getGuestList } from "../guest/guest.service";
 import { addMatchSchema } from "./stats.schema";
-import { addMatch, checkIdentityExists, getStats, getStats2 } from "./stats.service";
+import { addMatch, checkIdentityExists, getStats2 } from "./stats.service";
 import { size } from "zod/v4";
 import { ca } from "zod/v4/locales";
 import { findUserByPseudo } from "../user/user.service";
@@ -69,6 +69,7 @@ export async function addMatchHandler(req: FastifyRequest, reply: FastifyReply )
         const loserUsername = body.player1Score < body.player2Score ? body.player1Username : body.player2Username;
         const winnerScore = Math.max(body.player1Score, body.player2Score);
         const loserScore = Math.min(body.player1Score, body.player2Score);
+		const isPlayer1 = body.player1Score > body.player2Score;
 
         const aiPlayers = ["ai-easy", "ai-medium", "ai-hard"];
 
@@ -120,7 +121,7 @@ export async function addMatchHandler(req: FastifyRequest, reply: FastifyReply )
     
         console.log("Body to add match:", body);
         console.log("Winner ID:", winnerId, "Loser ID:", loserId);
-        const match = await addMatch(body, winnerId, loserId, winnerScore, loserScore);
+        const match = await addMatch(body, winnerId, loserId, winnerScore, loserScore, isPlayer1);
 
         return reply.status(StatusCodes.CREATED).send({message: "Match added successfully"});
     } catch (e) {
