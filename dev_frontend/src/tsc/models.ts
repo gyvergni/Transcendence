@@ -1,6 +1,6 @@
 // models.ts
 
-import {startMatch, Game} from "./pong.js"
+import {matchStatsSend, Game} from "./pong.js"
 import {animateContentBoxOut, animateContentBoxIn, toggleIsAnimation} from "./animations.js";
 import {setContentView, setGameView, setupPause} from "./views.js";
 import uiManager from "./main.js";
@@ -67,6 +67,7 @@ export class MatchSetup implements GameTypeManager {
 	guestsManager: GuestsManager;
 	rm: boolean | boolean = false;
 	gameMode: "tournament first round" | "tournament final" | "quickMatch" = "quickMatch";
+    stats: matchStatsSend | null = null;
 	private keydownHandler?: (e: KeyboardEvent) => void;
 
 	constructor() {

@@ -22,6 +22,34 @@ let BallColor: string;
 let BallSpeed: number;
 let BallShape: string;
 
+export type matchStatsSend = {
+    player1Username: string | null,
+		player2Username: string | null,
+		player1Score: number,
+		player2Score: number,
+		match: {
+			matchSettings: {
+				ballSize: number,
+				ballSpeed:number,
+				paddleSize: number,
+				paddleSpeed: number,
+				gameMode: string,
+			},
+			matchStats: {
+				totalHits: number | undefined,
+				longestRallyHits: number | undefined,
+				longestRallyTime: number | undefined,
+				timeDuration: number | undefined,
+				pointsOrder: string | undefined,
+                timeOrder: string | undefined,
+                wallBounce1: number | undefined,
+                wallBounce2: number | undefined,
+                totalInputs1: number | undefined,
+                totalInputs2: number | undefined,
+			},
+    }
+}
+
 
 function setUpSettings() {
 	const gameSettings = getSettings(); 
@@ -935,7 +963,7 @@ export class Game {
 		console.log("Total game time: ", this.clock.gameTime/1000);
 		console.log("longuest rally = ", this.ball.maxRallyBounce);
 		if (this.pause === false)
-			postMatchStats(this.match);
+			getMatchStats(this.match);
         console.log("wallBounce1: " + this.ball.wallBounce1);
         console.log("wallBounce2: " + this.ball.wallBounce2);
         console.log("timeOrder: " + this.ball.timeOrder);
@@ -945,13 +973,14 @@ export class Game {
 	}
 }
 
-
-async function postMatchStats(match: MatchSetup) {
-	const gameSettings = getSettings();
+function getMatchStats(match: MatchSetup)
+{
+    const gameSettings = getSettings();
 	console.log("player 1 " + match.players[0].name);
 	console.log("player 2 " + match.players[1].name);
 	// Build the clean payload
-	let stats = {
+	let stats: matchStatsSend;
+    stats = {
 		player1Username: match.players[0].name,
 		player2Username: match.players[1].name,
 		player1Score: match.players[0].score,
@@ -978,6 +1007,11 @@ async function postMatchStats(match: MatchSetup) {
 			},
 		},
 	};
+    match.stats = stats;
+}
+
+export async function postMatchStats(stats: matchStatsSend) {
+	
 
 	console.log("📤 Preparing to send match stats:", stats);
 
@@ -1031,7 +1065,9 @@ export async function startTournament(tournament: TournamentManager): Promise<vo
 {
 	console.log("started tournament with", tournament.firstRound[0].players[0].name);
     await startMatch(tournament.firstRound[0], 1);
-	console.log(tournament.firstRound[0].winner!.name);
+    if (tournament.firstRound[0].winner)
+        return;
+    console.log(tournament.firstRound[0].winner!.name);
 	await setupTournamentWaitingRoom(tournament);
 	await startMatch(tournament.firstRound[1], 1);
 	console.log(tournament.firstRound[1].winner!.name);
@@ -1047,6 +1083,11 @@ export async function startTournament(tournament: TournamentManager): Promise<vo
 		await startMatch(tournament.final, 2);
 		console.log("Tournament winner:", tournament.final.winner!.name);
 		if (tournament.final?.game?.pause === false)
-			await setupTournamentEndScreen(tournament);
+        {
+            postMatchStats(tournament.firstRound[0].stats!);
+            postMatchStats(tournament.firstRound[1].stats!);
+			postMatchStats(tournament.final.stats!);
+            await setupTournamentEndScreen(tournament);
+        }
     }
 }
