@@ -3,6 +3,7 @@ import { GuestsManager } from "../models";
 import { setContentView } from "../views";
 import Chart from "chart.js/auto";
 import { getApiErrorText } from "./utils-api.js";
+import { text } from "stream/consumers";
 
 type MatchStatsResponse = {
     id: number;
@@ -77,7 +78,7 @@ function renderSummary(data: MatchStatsResponse, currentMainGuest: string) {
         "#stat-losses": data.losses,
         "#stat-winrate": `${winRate}%`,
         "#stat-inputs": totalInputs,
-        "#stat-bounces": data.matchHistory.reduce((max, m) => Math.max(max, m.matchStats.longestRallyHits), 0)
+        "#stat-longestrally": data.matchHistory.reduce((max, m) => Math.max(max, m.matchStats.longestRallyHits), 0)
     };
 
     for (const selector in summaryMap) {
@@ -86,7 +87,7 @@ function renderSummary(data: MatchStatsResponse, currentMainGuest: string) {
     }
 }
 
-function renderGameAverages(data: MatchStatsResponse) {
+function renderGameAverages(data: MatchStatsResponse, currentMainGuest: string) {
     const totalMatches = data.matchHistory.length;
     if (totalMatches === 0) {
         document.getElementById("avg-inputs")!.textContent = "—";
@@ -98,20 +99,49 @@ function renderGameAverages(data: MatchStatsResponse) {
     let totalInputs = 0;
     let totalLength = 0;
     let totalWallBounces = 0;
+    let totalHits = 0;
+    let totalPointsWon = 0;
+    let totalPointsLost = 0;
+    let totalTournaments = 0;
+    let tournamentFinals = 0;
+    let tournamentsWon = 0;
 
     for (const match of data.matchHistory) {
-        totalInputs += (match.matchStats.totalInputs1 || 0) + (match.matchStats.totalInputs2 || 0);
+        totalInputs += match.player1Username == currentMainGuest? (match.matchStats.totalInputs1) : (match.matchStats.totalInputs2);
         totalLength += match.matchStats.timeDuration || 0;
         totalWallBounces += match.matchStats.longestRallyHits || 0;
+        totalHits += match.matchStats.totalHits / 2;
+        totalPointsWon += match.player1Username == currentMainGuest? match.player1Score : match.player2Score;
+        totalPointsLost += match.player1Username == currentMainGuest? match.player2Score : match.player1Score;
+        totalTournaments += match.matchSettings.gameMode.includes("tournament first") ? 1 : 0;
+        tournamentFinals += match.matchSettings.gameMode === "tournament final" ? 1 : 0;
+        tournamentsWon += (match.matchSettings.gameMode === "tournament final" && ((match.player1Username == currentMainGuest && match.player1Score > match.player2Score) || (match.player2Username == currentMainGuest && match.player2Score > match.player1Score))) ? 1 : 0;
     }
 
     const avgInputs = Math.round(totalInputs / totalMatches);
     const avgLengthSeconds = Math.round((totalLength / totalMatches) / 1000);
     const avgWallBounces = Math.round(totalWallBounces / totalMatches);
 
+    //Game averages
     document.getElementById("avg-inputs")!.textContent = String(avgInputs);
     document.getElementById("avg-length")!.textContent = `${avgLengthSeconds}s`;
     document.getElementById("avg-wallBounces")!.textContent = String(avgWallBounces);
+    
+    //General Stats
+    const totalTimeSeconds = Math.round(totalLength / 1000);
+    if (totalTimeSeconds < 60)
+        document.getElementById("total-time")!.textContent = String(Math.round(totalLength/1000)) + "s";
+    else if (totalTimeSeconds < 3600)
+        document.getElementById("total-time")!.textContent = String(Math.floor(totalTimeSeconds/60)) + "m " + String(totalTimeSeconds%60) + "s";
+
+    document.getElementById("total-inputs")!.textContent = String(totalInputs);
+    document.getElementById("total-wallBounces")!.textContent = String(totalWallBounces);
+    document.getElementById("total-hits")!.textContent = String(totalHits);
+    document.getElementById("total-pointswon")!.textContent = String(totalPointsWon);
+    document.getElementById("total-pointslost")!.textContent = String(totalPointsLost);
+    document.getElementById("tournaments-played")!.textContent = String(totalTournaments);
+    document.getElementById("tournaments-finals")!.textContent = String(tournamentFinals);
+    document.getElementById("tournaments-won")!.textContent = String(tournamentsWon);
 }
 
 function renderHistory(matchHistory: MatchStatsResponse["matchHistory"], currentMainGuest: string) {
@@ -124,10 +154,11 @@ function renderHistory(matchHistory: MatchStatsResponse["matchHistory"], current
                     (m.player2Username === currentMainGuest && m.player2Score > m.player1Score);
 
         const borderColor = won ? 'border-green-500' : 'border-red-500';
+        const hoverColor = won ? 'hover:bg-green-500/30' : 'hover:bg-red-500/30';
         const li = document.createElement("li");
         li.className = `
             match-item
-            bg-black/30 hover:bg-black/50
+            bg-black/30 ${hoverColor}
             border-l-4 ${borderColor}
             rounded-lg p-3 mb-2
             cursor-pointer transition-colors
@@ -177,10 +208,31 @@ function renderMatchupChart(mainGuest: string, opponentGuest: string, matchHisto
             datasets: [{
                 label: `${mainGuest} vs ${opponentGuest}`,
                 data: [wins, losses],
-                backgroundColor: ["#22c55e", "#ef4444"]
+                backgroundColor: ["#22c55e", "#ef4444"],
             }]
         },
-        options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, precision: 0 } } }
+        options:
+        {
+            maintainAspectRatio:false,
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                x: {
+                    ticks: { color: "#ffffff" },
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0,
+                        stepSize: 1,
+                        color: "#ffffff"
+                    },
+                    suggestedMax: Math.max(1, wins + losses),
+                }
+            }
+        }
     });
 }
 
@@ -214,7 +266,6 @@ async function updateMatchupDropdown(accountData: any, mainGuest: string, matchu
 
 export function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0]) {
     const modal = document.getElementById("match-detail")!;
-    modal.style.display = "flex";
 
     // Title
     document.getElementById("match-title")!.textContent =
@@ -270,6 +321,7 @@ export function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0]) 
             label: "Rally Duration (s)",
             data: durations,
             backgroundColor: colors,
+            
         }]
     },
     options: {
@@ -280,27 +332,33 @@ export function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0]) 
             legend: { display: false },
             title: {
                 display: true,
-                color: "#a5f3fc",
+                color: "#ffffffff",
                 font: { size: 14, weight: "bold" }
             },
         },
         scales: {
             x: {
-                title: { display: true, text: "Point Winner", color: "#a5f3fc" },
+                title: { display: true, text: "Point Winner", color: "#ffffffff", font: { weight: "bold", size: 14 },},
                 ticks: { color: (ctx) => {
                         const index = ctx.index;
                         return pointsOrderSplit[index] === "1" ? "#eb69e2ff" : "#05c9b8ff";
                     },
                     callback: (value, index) => {
                         return labels[index]; // Show player name directly
-                    }
+                    },
+                    font: { size: 20 },
                 },
             },
             y: {
                 beginAtZero: true,
-                title: { display: true, text: "Rally Duration (s)", color: "#a5f3fc" },
-                ticks: { color: "#a5f3fc" },
+                title: { display: true, text: "Rally Duration (s)", color: "#ffffffff",
+                    font: { weight: "bold", size: 20 },
+                },
+                ticks: { color: "#ffffffff",
+                    font: { weight: "bold", size: 20 },
+                },
                 grid: { color: "rgba(165,243,252,0.2)" },
+                
             },
         },
     },
@@ -315,7 +373,7 @@ async function handleMainGuestChange(accountData: any , currentMainGuest: string
         return;
     renderSummary(stats, currentMainGuest!);
     renderHistory(stats.matchHistory, currentMainGuest);
-    renderGameAverages(stats);
+    renderGameAverages(stats, currentMainGuest);
 
     // Update matchup chart if right-hand guest is selected
     const opponent = matchupSelect.value;

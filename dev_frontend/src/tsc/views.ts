@@ -279,10 +279,10 @@ function setupProfileEvents() {
 		console.log("Show stats view");
 		// Expand the content box to act as a near-fullscreen dashboard
 		uiManager.contentBox.classList.remove("rounded-xl");
-		uiManager.contentBox.classList.add("max-w-7xl", "w-full", "h-[95vh]", "p-6", "rounded-none");
+		uiManager.contentBox.classList.add("max-w-7xl", "w-full", "p-6", "rounded-none");
 		// Set back button to revert layout back to profile when closing stats
 		toggleBackButton(true, async () => {
-			uiManager.contentBox.classList.remove("max-w-7xl", "w-full", "h-[95vh]", "p-6", "rounded-none");
+			uiManager.contentBox.classList.remove("max-w-7xl", "w-full", "p-6", "rounded-none");
 			uiManager.contentBox.classList.add("rounded-xl");
 			await setContentView("views/profile.html");
 		});

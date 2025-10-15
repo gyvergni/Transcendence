@@ -52,6 +52,7 @@ export function animateContentBoxOut() {
 	setTimeout(() => {
     uiManager.contentBox.classList.add("hidden");
 	openDoors();
+    
 	toggleIsAnimation(false);
 
 	}, 1000); // Match transition duration
