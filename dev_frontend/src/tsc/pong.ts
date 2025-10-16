@@ -1066,17 +1066,11 @@ export async function startTournament(tournament: TournamentManager): Promise<vo
 	console.log("started tournament with", tournament.firstRound[0].players[0].name);
     await startMatch(tournament.firstRound[0], 1);
     if (!tournament.firstRound[0].winner)
-    {
         return ;
-    }
-   console.log("fist round winner: ", tournament.firstRound[0].winner!.name);
 	await setupTournamentWaitingRoom(tournament);
 	await startMatch(tournament.firstRound[1], 1);
     if (!tournament.firstRound[1].winner)
-    {
         return ;
-    }
-   console.log(tournament.firstRound[1].winner!.name);
 	tournament.currentRound = 1;
     tournament.final = new MatchSetup;
     if (tournament.firstRound[0].winner && tournament.firstRound[1].winner)

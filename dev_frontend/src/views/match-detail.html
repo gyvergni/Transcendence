@@ -1,97 +1,107 @@
-<h2 class="text-2xl mb-7 font-bold text-center text-purple-300 drop-shadow-lg" data-i18n="match.title">
+<h2 class="text-[clamp(1rem,2vw,1.5rem)] mb-3 font-bold text-center text-purple-300 drop-shadow-lg" data-i18n="match.title">
   Match Detail
 </h2>
 
-<div id="match-detail" class="flex flex-1 flex-col w-full h-[75vh] rounded-xl p-6 overflow-hidden">
-    <!-- Header -->
-    <div class="flex flex-row justify-between items-center mb-6">
-      <h3 id="match-title" class="text-2xl font-bold tracking-wide text-cyan-300" data-i18n="match.detail"></h3>
-      <button id="close-match-detail" class="px-3 py-1 rounded bg-red-600 hover:bg-red-700 transition" data-i18n="match.close">Close</button>
+<div id="match-detail" class="flex flex-col w-full h-[75vh] rounded-xl p-2 overflow-hidden text-[clamp(0.6rem,1vw,0.9rem)]">
+
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-2 flex-none text-sm">
+    <h3 id="match-title" class="font-bold tracking-wide text-cyan-300" data-i18n="match.detail"></h3>
+    <button id="close-match-detail" class="px-2 py-1 rounded bg-red-600 hover:bg-red-700 transition text-xs" data-i18n="match.close">Close</button>
+  </div>
+
+  <!-- Top: Settings & Stats -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-1 mb-2 flex-none">
+    <div id="match-settings" class="bg-cyan-900/20 rounded-md p-1 border border-cyan-400/30 backdrop-blur-md">
+      <h4 class="font-semibold mb-1 text-cyan-300" data-i18n="match.game-settings"></h4>
+      <ul id="settings-list" class="space-y-0.5">
+        <li><span data-i18n="match.settings-gamemode"></span> <span id="game-mode"></span></li>
+        <li><span data-i18n="match.settings-ballsize"></span> <span id="ball-size"></span></li>
+        <li><span data-i18n="match.settings-ballspeed"></span> <span id="ball-speed"></span></li>
+        <li><span data-i18n="match.settings-paddlesize"></span> <span id="paddle-size"></span></li>
+        <li><span data-i18n="match.settings-paddlespeed"></span> <span id="paddle-speed"></span></li>
+      </ul>
+    </div>
+    <div id="match-stats-summary" class="bg-cyan-900/20 rounded-md p-1 border border-cyan-400/30 backdrop-blur-md">
+      <h4 class="font-semibold mb-1 text-cyan-300" data-i18n="match.stats"></h4>
+      <ul id="stats-list" class="space-y-0.5">
+        <li><span data-i18n="match.totalhits"></span> <span id="total-hits"></span></li>
+        <li><span data-i18n="match.totaltime"></span> <span id="total-time"></span></li>
+        <li><span data-i18n="match.longestrally"></span> <span id="longest-rally"></span></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Player stats -->
+  <div id="match-player-stats" class="mb-2 flex-none">
+    <h4 class="font-semibold mb-1 text-cyan-300" data-i18n="match.player-stats"></h4>
+    <table class="table-auto w-full text-[clamp(0.6rem,0.9vw,0.8rem)] border border-cyan-400/30 backdrop-blur-md bg-cyan-900/20">
+      <thead>
+        <tr class="border-b border-cyan-400/30 text-cyan-300">
+          <th class="px-1 py-0.5">Player</th>
+          <th class="px-1 py-0.5">Score</th>
+          <th class="px-1 py-0.5">Wall bounces</th>
+          <th class="px-1 py-0.5">Inputs</th>
+        </tr>
+      </thead>
+      <tbody id="table.entries" class="text-center">
+        <tr>
+          <td id="player1.name"></td>
+          <td id="player1.score"></td>
+          <td id="player1.wallbounces"></td>
+          <td id="player1.inputs"></td>
+        </tr>
+        <tr>
+          <td id="player2.name"></td>
+          <td id="player2.score"></td>
+          <td id="player2.wallbounces"></td>
+          <td id="player2.inputs"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Main content area: Timeline & boxes -->
+  <div class="grid grid-rows-[2fr_1fr] flex-1 gap-2 min-h-0">
+
+    <!-- Timeline chart -->
+    <div class="bg-cyan-900/20 border border-cyan-400/30 rounded-md p-1 flex flex-col backdrop-blur-md min-h-0">
+      <h4 class="font-semibold mb-1 text-cyan-300 flex-none">Point Timeline</h4>
+      <div class="flex-1 relative min-h-0">
+        <canvas id="match-points-timeline" class="w-full h-full"></canvas>
+      </div>
     </div>
 
-    <!-- Top row: settings & stats -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <!-- Settings recap -->
-        <div id="match-settings" class="bg-cyan-900/20 rounded-lg p-4 border border-cyan-400/30 backdrop-blur-md">
-            <h4 class="text-lg font-semibold mb-3 text-cyan-300" data-i18n="match.game-settings"></h4>
-            <ul id="settings-list" class="space-y-1 text-sm leading-relaxed">
-                <li> 
-                    <span data-i18n="match.settings-gamemode"></span>
-                    <span id="game-mode"></span>
-                </li>
-                <li> 
-                    <span data-i18n="match.settings-ballsize"></span>
-                    <span id="ball-size"></span>
-                </li>
-                <li> 
-                    <span data-i18n="match.settings-ballspeed"></span>
-                    <span id="ball-speed"></span>
-                </li>
-                <li> 
-                    <span data-i18n="match.settings-paddlesize"></span>
-                    <span id="paddle-size"></span>
-                </li>
-                <li> 
-                    <span data-i18n="match.settings-paddlespeed"></span>
-                    <span id="paddle-speed"></span>
-                </li>
-            </ul>
+    <!-- Three boxes below the timeline -->
+    <div class="grid grid-cols-3 gap-2 flex-1 min-h-0 text-[clamp(0.6rem,0.9vw,0.8rem)]">
+      <div class="bg-cyan-900/20 border border-cyan-400/20 rounded-md p-1">
+        <h4 class="font-semibold mb-1 text-purple-300">Tournaments</h4>
+        <div class="flex flex-col space-y-0.5">
+          <div class="flex justify-between"><span>Played</span><span id="tournaments-played" class="font-semibold">—</span></div>
+          <div class="flex justify-between"><span>Finals</span><span id="tournaments-finals" class="font-semibold">—</span></div>
+          <div class="flex justify-between"><span>Won</span><span id="tournaments-won" class="font-semibold">—</span></div>
         </div>
+      </div>
+      <div class="bg-cyan-900/20 border border-cyan-400/20 rounded-md p-1">
+        <h4 class="font-semibold mb-1 text-purple-300">Averages</h4>
+        <div class="flex flex-col space-y-0.5">
+          <div class="flex justify-between"><span>Inputs</span><span id="avg-inputs" class="font-semibold">—</span></div>
+          <div class="flex justify-between"><span>Length</span><span id="avg-length" class="font-semibold">—</span></div>
+          <div class="flex justify-between"><span>Wall Bounces</span><span id="avg-wallBounces" class="font-semibold">—</span></div>
+        </div>
+      </div>
+      <div class="bg-cyan-900/20 border border-cyan-400/20 rounded-md p-1">
+        <h4 class="font-semibold mb-1 text-purple-300">General</h4>
+        <div class="flex flex-col space-y-0.5">
+          <div class="flex justify-between"><span>Time</span><span id="total-time" class="font-semibold">—</span></div>
+          <div class="flex justify-between"><span>Inputs</span><span id="total-inputs" class="font-semibold">—</span></div>
+          <div class="flex justify-between"><span>Wall</span><span id="total-wallBounces" class="font-semibold">—</span></div>
+          <div class="flex justify-between"><span>Hits</span><span id="total-hits" class="font-semibold">—</span></div>
+          <div class="flex justify-between"><span>Pts Won</span><span id="total-pointswon" class="font-semibold">—</span></div>
+          <div class="flex justify-between"><span>Pts Lost</span><span id="total-pointslost" class="font-semibold">—</span></div>
+        </div>
+      </div>
+    </div>
 
-        <!-- Stats recap -->
-        <div id="match-stats-summary" class="bg-cyan-900/20 rounded-lg p-4 border border-cyan-400/30 backdrop-blur-md">
-            <h4 class="text-lg font-semibold mb-3 text-cyan-300" data-i18n="match.stats"></h4>
-            <ul id="stats-list" class="space-y-1 text-sm leading-relaxed">
-                <li>
-                    <span data-i18n="match.totalhits"></span>
-                    <span id="total-hits"></span>
-                </li>
-                <li> 
-                    <span data-i18n="match.totaltime"></span>
-                    <span id="total-time"></span>
-                </li>
-                <li> 
-                    <span data-i18n="match.longestrally"></span>
-                    <span id="longest-rally"></span>
-                </li>
-            </ul>
-        </div>
-    </div>
-    <!-- Player stats recap -->
-    <div class ="mb-6" id="match-player-stats">
-        <h4 class="text-lg font-semibold mb-3 text-cyan-300" data-i18n="match.player-stats"> </h4>
-            <table class="table-auto w-full border border-cyan-400/30 backdrop-blur-md bg-cyan-900/20">
-                <thead>
-                    <tr class="border border-cyan-400/30 text-cyan-300 w-1/4 px-4 py-2">
-                        <th>Player</th>
-                        <th>Score</th>
-                        <th>Wall bounces</th>
-                        <th>Inputs</th>
-                    </tr>
-                </thead>
-                <tbody id="table.entries" class="text-center">
-                    <tr>
-                        <td id="player1.name"></td>
-                        <td id="player1.score"></td>
-                        <td id="player1.wallbounces"></td>
-                        <td id="player1.inputs"></td>
-                    </tr>
-                    <tr>
-                        <td id="player2.name"></td>
-                        <td id="player2.score"></td>
-                        <td id="player2.wallbounces"></td>
-                        <td id="player2.inputs"></td>
-                    </tr>
-                </tbody>
-            </table>
-    </div>
-    
-
-    <!-- Timeline chart (full width bottom) -->
-    <div class="bg-cyan-900/20 border border-cyan-400/30 rounded-lg p-4 flex-1 flex flex-col backdrop-blur-md">
-        <h4 class="text-lg font-semibold mb-3 text-cyan-300 flex-none">Point Timeline</h4>
-        <div class="flex-1 relative">
-            <canvas id="match-points-timeline" class="w-full h-full"></canvas>
-        </div>
-    </div>
+  </div>
 </div>

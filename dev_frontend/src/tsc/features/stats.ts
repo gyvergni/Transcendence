@@ -12,6 +12,7 @@ type MatchStatsResponse = {
     losses: number;
     matchHistory: {
         id: number;
+        date: Date;
         player1Username: string;
         player2Username: string;
         player1Score: number;
@@ -269,7 +270,7 @@ export function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0]) 
 
     // Title
     document.getElementById("match-title")!.textContent =
-        `${match.player1Username} vs ${match.player2Username}`;
+        `${match.player1Username} vs ${match.player2Username} - ${match.date}`;
 
     // Close button
     document.getElementById("close-match-detail")!.onclick = () => {
