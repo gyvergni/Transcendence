@@ -949,9 +949,9 @@ export class Game {
 
 	endGame()
 	{
-		if (this.ball.score1 > this.ball.score2)
+		if (this.ball.score1 == 2)
 			this.match.winner = this.player1.config;
-		else
+		else if (this.ball.score2 == 2)
 			this.match.winner = this.player2.config;
 		this.match.rm = true;
         this.engine.stopRenderLoop();
@@ -1065,12 +1065,18 @@ export async function startTournament(tournament: TournamentManager): Promise<vo
 {
 	console.log("started tournament with", tournament.firstRound[0].players[0].name);
     await startMatch(tournament.firstRound[0], 1);
-    if (tournament.firstRound[0].winner)
-        return;
-    console.log(tournament.firstRound[0].winner!.name);
+    if (!tournament.firstRound[0].winner)
+    {
+        return ;
+    }
+   console.log("fist round winner: ", tournament.firstRound[0].winner!.name);
 	await setupTournamentWaitingRoom(tournament);
 	await startMatch(tournament.firstRound[1], 1);
-	console.log(tournament.firstRound[1].winner!.name);
+    if (!tournament.firstRound[1].winner)
+    {
+        return ;
+    }
+   console.log(tournament.firstRound[1].winner!.name);
 	tournament.currentRound = 1;
     tournament.final = new MatchSetup;
     if (tournament.firstRound[0].winner && tournament.firstRound[1].winner)
