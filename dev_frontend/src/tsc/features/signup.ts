@@ -1,5 +1,5 @@
 import { setContentView } from "../views.js";
-import { API_BASE_URL, getApiErrorText } from "./utils-api.js";
+import { API_BASE_URL, getApiErrorText, parseApiErrorMessage } from "./utils-api.js";
 import { loginWithWebSocket } from "./auth.js";
 
 const temp = false;
@@ -55,7 +55,8 @@ export async function signupUser(e: Event, form: HTMLFormElement) {
 			const errorDiv = document.querySelector("#login-error-message") as HTMLDivElement;
 			try {
 				const err = await signupResponse.json();
-				errorDiv.textContent = getApiErrorText(err);
+				console.log(err);
+				errorDiv.textContent = getApiErrorText(parseApiErrorMessage(err.message));
 			} catch {
 				errorDiv.textContent = "Internal Error";
 			}

@@ -27,8 +27,7 @@
 	</div>
 	<button type="submit"
         class=" border border-cyan-300 backdrop-blur-md p-10 animate-hologram-pulse
-			w-full px-4 py-2 mb-4 bg-blue-500 text-white rounded-md hover:bg-blue-700 transition">
-    		Login
+			w-full px-4 py-2 mb-4 bg-blue-500 text-white rounded-md hover:bg-blue-700 transition" data-i18n="login.btn">
 	</button>
 
 	<div>
@@ -37,6 +36,15 @@
         	p-10 animate-hologram-pulse w-full px-2 py-3 mb-2 bg-indigo-700/50 text-white rounded-md hover:bg-indigo-900 transition" data-i18n="login.create-acc">
 		</button>
 	</div>
+
+	<div class="mt-4">
+        <!-- <h2 class="text-lg font-semibold mb-2 text-center" data-i18n="settings.language"></h2> -->
+        <div class="flex justify-center space-x-4">
+            <img src="https://flagcdn.com/w40/gb.png" alt="English" class="w-10 h-7 rounded-md cursor-pointer border-2 border-transparent hover:ring-2 hover:ring-white" data-lang="en">
+            <img src="https://flagcdn.com/w40/fr.png" alt="Français" class="w-10 h-7 rounded-md cursor-pointer border-2 border-transparent hover:ring-2 hover:ring-white" data-lang="fr">
+            <img src="https://flagcdn.com/w40/es.png" alt="Español" class="w-10 h-7 rounded-md cursor-pointer border-2 border-transparent hover:ring-2 hover:ring-white" data-lang="es">
+        </div>
+    </div>
 </form>
 
 <div id="login-2fa-div" class="fixed inset-0 flex items-center justify-center bg-black/40 rounded-xl z-50 hidden">
@@ -59,3 +67,4 @@
         </div>
     </form>
 </div>
+

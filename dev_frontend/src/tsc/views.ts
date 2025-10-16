@@ -10,7 +10,7 @@ import { loginUser, submitLogin2FA } from "./features/login.js";
 import { logoutUser } from "./features/logout.js";
 import { signupUser } from "./features/signup.js";
 import { account2FAHandler, accountEditAvatar, editIgUsername, editPassword, setup2FA, loadAccountAvatar, loadAccountInfo, enable2FA, disable2FA } from "./features/account.js";
-import { getSettings } from "./settings.js";
+import { getSettings, loadSettings } from "./settings.js";
 import { setLang, currentLang } from "./translation.js";
 import { addFriend, deleteFriend, friendsCache, loadFriends, renderFriends } from "./features/friends.js";
 import { setupGameEndScreen, setupTournamentWaitingRoom } from "./t-waitingscreen.js";
@@ -90,6 +90,7 @@ export function setGameView() {
 function setupLoginEvents() {
 	const contentBox = document.querySelector("#content-box")! as HTMLElement;
 	contentBox.classList.add("w-[430px]");
+	loadSettings();
 	uiManager.setCurrentView("login");
 	toggleBackButton(false);
 	const form = document.querySelector("#login-form") as HTMLFormElement;

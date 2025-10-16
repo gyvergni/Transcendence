@@ -25,7 +25,7 @@ const defaultSettings: GameSettings = {
 };
 
 // Load from localStorage (or defaults if empty) right now only doing default
-function loadSettings(): GameSettings {
+export function loadSettings(): GameSettings {
 
 	PaddleSizeSetting();
 		PaddleColorSetting();
@@ -214,6 +214,18 @@ export function LanguageSetting() {
 			}
 		});
 	});
+	const settingsVar = localStorage.getItem(STORAGE_KEY);
+	const lang = settingsVar ? JSON.parse(settingsVar).language : "en";
+
+	if (lang && (lang === "en" || lang === "fr" || lang === "es")) {
+		setLang(lang as Lang);
+	} else {
+		setLang("en");
+		if (settings && settings.language) {
+			settings.language = "en";
+			saveSettings(settings);
+		}
+	}
 }
 
 

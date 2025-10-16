@@ -1,6 +1,7 @@
 import {animateContentBoxOut, animateContentBoxIn} from "./animations.js";
 import {setContentView} from "./views.js";
 import {MatchSetup} from "./models.js";
+import { LanguageSetting, loadSettings } from "./settings.js";
 
 
 export class UIManager {
@@ -17,6 +18,7 @@ export class UIManager {
 
 	async setCurrentView(view: string): Promise<void> {
 		currentView = view;
+		loadSettings();
 	}
 
 	public getIsAnimating() {
