@@ -7,14 +7,13 @@
   <!-- Header -->
   <div class="flex justify-between items-center mb-2 flex-none text-sm">
     <h3 id="match-title" class="font-bold tracking-wide text-cyan-300" data-i18n="match.detail"></h3>
-    <button id="close-match-detail" class="px-2 py-1 rounded bg-red-600 hover:bg-red-700 transition text-xs" data-i18n="match.close">Close</button>
   </div>
 
   <!-- Top: Settings & Stats -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-1 mb-2 flex-none">
-    <div id="match-settings" class="bg-cyan-900/20 rounded-md p-1 border border-cyan-400/30 backdrop-blur-md">
+    <div id="match-settings" class="bg-cyan-900/20 rounded-md p-1 border border-cyan-400/30 backdrop-blur-md justify-center">
       <h4 class="font-semibold mb-1 text-cyan-300" data-i18n="match.game-settings"></h4>
-      <ul id="settings-list" class="space-y-0.5">
+      <ul id="settings-list" class="space-y-0.5 justify-center">
         <li><span data-i18n="match.settings-gamemode"></span> <span id="game-mode"></span></li>
         <li><span data-i18n="match.settings-ballsize"></span> <span id="ball-size"></span></li>
         <li><span data-i18n="match.settings-ballspeed"></span> <span id="ball-speed"></span></li>
@@ -62,44 +61,13 @@
   </div>
 
   <!-- Main content area: Timeline & boxes -->
-  <div class="grid grid-rows-[2fr_1fr] flex-1 gap-2 min-h-0">
+  <div class="grid flex-1 gap-2 min-h-0">
 
     <!-- Timeline chart -->
     <div class="bg-cyan-900/20 border border-cyan-400/30 rounded-md p-1 flex flex-col backdrop-blur-md min-h-0">
       <h4 class="font-semibold mb-1 text-cyan-300 flex-none">Point Timeline</h4>
       <div class="flex-1 relative min-h-0">
         <canvas id="match-points-timeline" class="w-full h-full"></canvas>
-      </div>
-    </div>
-
-    <!-- Three boxes below the timeline -->
-    <div class="grid grid-cols-3 gap-2 flex-1 min-h-0 text-[clamp(0.6rem,0.9vw,0.8rem)]">
-      <div class="bg-cyan-900/20 border border-cyan-400/20 rounded-md p-1">
-        <h4 class="font-semibold mb-1 text-purple-300">Tournaments</h4>
-        <div class="flex flex-col space-y-0.5">
-          <div class="flex justify-between"><span>Played</span><span id="tournaments-played" class="font-semibold">—</span></div>
-          <div class="flex justify-between"><span>Finals</span><span id="tournaments-finals" class="font-semibold">—</span></div>
-          <div class="flex justify-between"><span>Won</span><span id="tournaments-won" class="font-semibold">—</span></div>
-        </div>
-      </div>
-      <div class="bg-cyan-900/20 border border-cyan-400/20 rounded-md p-1">
-        <h4 class="font-semibold mb-1 text-purple-300">Averages</h4>
-        <div class="flex flex-col space-y-0.5">
-          <div class="flex justify-between"><span>Inputs</span><span id="avg-inputs" class="font-semibold">—</span></div>
-          <div class="flex justify-between"><span>Length</span><span id="avg-length" class="font-semibold">—</span></div>
-          <div class="flex justify-between"><span>Wall Bounces</span><span id="avg-wallBounces" class="font-semibold">—</span></div>
-        </div>
-      </div>
-      <div class="bg-cyan-900/20 border border-cyan-400/20 rounded-md p-1">
-        <h4 class="font-semibold mb-1 text-purple-300">General</h4>
-        <div class="flex flex-col space-y-0.5">
-          <div class="flex justify-between"><span>Time</span><span id="total-time" class="font-semibold">—</span></div>
-          <div class="flex justify-between"><span>Inputs</span><span id="total-inputs" class="font-semibold">—</span></div>
-          <div class="flex justify-between"><span>Wall</span><span id="total-wallBounces" class="font-semibold">—</span></div>
-          <div class="flex justify-between"><span>Hits</span><span id="total-hits" class="font-semibold">—</span></div>
-          <div class="flex justify-between"><span>Pts Won</span><span id="total-pointswon" class="font-semibold">—</span></div>
-          <div class="flex justify-between"><span>Pts Lost</span><span id="total-pointslost" class="font-semibold">—</span></div>
-        </div>
       </div>
     </div>
 

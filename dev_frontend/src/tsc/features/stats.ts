@@ -4,6 +4,8 @@ import { setContentView } from "../views";
 import Chart from "chart.js/auto";
 import { getApiErrorText } from "./utils-api.js";
 import { text } from "stream/consumers";
+import { toggleBackButton } from "../animations";
+import uiManager from "../main";
 
 type MatchStatsResponse = {
     id: number;
@@ -171,7 +173,7 @@ function renderHistory(matchHistory: MatchStatsResponse["matchHistory"], current
                 <span class="font-semibold">${m.player1Score} - ${m.player2Score}</span>
             </div>
             <div class="text-xs text-gray-300 mt-1">
-                Mode: ${m.matchSettings.gameMode} | Hits: ${m.matchStats.totalHits}
+                Mode: ${m.matchSettings.gameMode} | ${m.date}
             </div>
         `;
 
@@ -273,7 +275,7 @@ export function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0]) 
         `${match.player1Username} vs ${match.player2Username} - ${match.date}`;
 
     // Close button
-    document.getElementById("close-match-detail")!.onclick = () => {
+    document.getElementById("back-btn")!.onclick = () => {
         modal.style.display = "none";
         setContentView("../views/stats-dashboard.html");
     };
@@ -347,16 +349,16 @@ export function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0]) 
                     callback: (value, index) => {
                         return labels[index]; // Show player name directly
                     },
-                    font: { size: 20 },
+                    font: { size: 14 },
                 },
             },
             y: {
                 beginAtZero: true,
                 title: { display: true, text: "Rally Duration (s)", color: "#ffffffff",
-                    font: { weight: "bold", size: 20 },
+                    font: { weight: "bold", size: 12 },
                 },
                 ticks: { color: "#ffffffff",
-                    font: { weight: "bold", size: 20 },
+                    font: { weight: "bold", size: 12 },
                 },
                 grid: { color: "rgba(165,243,252,0.2)" },
                 
@@ -364,6 +366,7 @@ export function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0]) 
         },
     },
     });
+    
 }
 
 
@@ -398,13 +401,22 @@ function populateDropdown(select: HTMLSelectElement, options: string[], defaultT
 }
 
 // -------------------- INIT --------------------
-export async function initStatsView() {
-    const accountRes = await fetch(`${API_BASE_URL}/users/me`, { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } });
+export async function initStatsView(friendPseudo: string | null = null) {
+    let accountRes;
+    if (friendPseudo)
+        accountRes = await fetch(`${API_BASE_URL}/users/friendPseudo`, { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } });
+    else
+        accountRes = await fetch(`${API_BASE_URL}/users/me`, { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } });
     if (!accountRes.ok) return console.error("Failed to get account info");
     const accountData = await accountRes.json();
     const accountIngame = accountData.game_username;
     let currentMainGuest = accountIngame;
 
+    toggleBackButton(true, async () => {
+		uiManager.contentBox.classList.remove("max-w-7xl", "w-full", "p-6", "rounded-none");
+		uiManager.contentBox.classList.add("rounded-xl");
+		await setContentView("views/profile.html");
+	});
     const gm = new GuestsManager();
     await gm.fetchGuests();
 

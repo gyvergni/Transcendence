@@ -401,7 +401,7 @@ function setupFriendsEvents() {
 				const friendPseudo = friendBtn.getAttribute("data-pseudo");
 				if (!friendPseudo) return;
 				console.log("View friend stats:", friendPseudo);
-				// Implement logic to view friend's stats //friend-dashboard
+				initStatsView(friendPseudo);
 			}
 		}
 	});
