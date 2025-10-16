@@ -1,7 +1,8 @@
 import { freemem } from "os";
-import { toggleBackButton } from "../animations";
+import { animateContentBoxIn, toggleBackButton } from "../animations";
 import { setContentView } from "../views";
 import { API_BASE_URL, getApiErrorText } from "./utils-api";
+import uiManager from "../main";
 
 type Friend = {
 	id: number;
@@ -84,6 +85,8 @@ export async function renderFriends(root: HTMLElement, tpl: HTMLTemplateElement,
 
 		const gameUsername = node.querySelector(".friend-game-username")! as HTMLElement;
 		gameUsername.textContent = f.game_username;
+		
+		node.setAttribute("data-pseudo", f.pseudo);
 
 		const removeBtn = node.querySelector(".remove-friend-btn")! as HTMLButtonElement;
 		removeBtn.setAttribute("data-pseudo", f.pseudo);
@@ -146,6 +149,7 @@ export async function addFriend(e: Event, form: HTMLFormElement) {
 export async function deleteFriend(e:Event, root: HTMLElement, tpl: HTMLTemplateElement, search: HTMLInputElement) {
 	const removeBtn = (e.target as HTMLElement).closest(".remove-friend-btn") as HTMLButtonElement;
 	if (!removeBtn) {
+	
 		console.error("Remove button not found.");
 		return;
 	} 

@@ -10,9 +10,9 @@ import { loginUser, submitLogin2FA } from "./features/login.js";
 import { logoutUser } from "./features/logout.js";
 import { signupUser } from "./features/signup.js";
 import { account2FAHandler, accountEditAvatar, editIgUsername, editPassword, setup2FA, loadAccountAvatar, loadAccountInfo, enable2FA, disable2FA } from "./features/account.js";
-import { getSettings, loadSettings } from "./settings.js";
+import { getSettings } from "./settings.js";
 import { setLang, currentLang } from "./translation.js";
-import { addFriend, deleteFriend, friendsCache, loadFriends, renderFriends } from "./features/friends.js";
+import { addFriend, deleteFriend, friendsCache, renderFriends } from "./features/friends.js";
 import { setupGameEndScreen, setupTournamentWaitingRoom } from "./t-waitingscreen.js";
 import { initStatsView } from "./features/stats.js";
 
@@ -90,7 +90,6 @@ export function setGameView() {
 function setupLoginEvents() {
 	const contentBox = document.querySelector("#content-box")! as HTMLElement;
 	contentBox.classList.add("w-[430px]");
-	loadSettings();
 	uiManager.setCurrentView("login");
 	toggleBackButton(false);
 	const form = document.querySelector("#login-form") as HTMLFormElement;
@@ -391,7 +390,20 @@ function setupFriendsEvents() {
 	search.addEventListener("input", () => renderFriends(root, tpl, search.value, true));
 
 	root.addEventListener("click", async (e) => {
-		await deleteFriend(e, root, tpl, search);
+		const removeBtn = (e.target as HTMLElement).closest(".remove-friend-btn") as HTMLButtonElement;
+		if (removeBtn) {
+			console.log("Delete friend btn clicked");
+			await deleteFriend(e, root, tpl, search);
+			return ;
+		} else {
+			const friendBtn = (e.target as HTMLElement).closest("li") as HTMLLIElement;
+			if (friendBtn) {
+				const friendPseudo = friendBtn.getAttribute("data-pseudo");
+				if (!friendPseudo) return;
+				console.log("View friend stats:", friendPseudo);
+				// Implement logic to view friend's stats //friend-dashboard
+			}
+		}
 	});
 
 	addBtn?.addEventListener("click", () => {
