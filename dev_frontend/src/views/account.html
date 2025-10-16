@@ -53,7 +53,7 @@
 	</div>
 	<div class="flex items-center justify-between mt-4 -mb-1 gap-1">
 		<div>
-			<button type="button" id="account-edit-password" class="w-32 px-4 py-1 rounded bg-amber-500 text-white hover:bg-amber-700 transition" data-i18n="account.change.pw"> </button>
+			<button type="button" id="account-edit-password" class="w-40 h-15 px-4 py-1 rounded bg-amber-500 text-white hover:bg-amber-700 transition" data-i18n="account.change.pw"> </button>
 			<div id="edit-password-form-container" class="fixed inset-y-0 -inset-x-0.5 items-center justify-center bg-black/40 rounded-xl z-50 hidden">
 				<form id="edit-password-form" class="w-[500px] p-6 h-auto bg-slate-900 rounded-xl shadow-xl gap-4 flex flex-col border border-cyan-300">
 					<h3 class="text-xl font-semibold text-center mt-2 text-white" data-i18n="account.change.pw"></h3>
@@ -81,7 +81,7 @@
 			</div>
 		</div>
 		<div>
-			<button type="button" id="toggle-2fa" class="w-32 px-4 py-1 rounded text-white transition" data-i18n="account.butt.2FA"></button>
+			<button type="button" id="toggle-2fa" class="w-40 h-15 px-4 py-1 rounded text-white transition" data-i18n="account.butt.2FA"></button>
 			<div id="edit-2fa-setup-form-container" class="fixed inset-0 flex items-center justify-center bg-black/40 rounded-xl z-50 hidden">
 				<form id="edit-2fa-form" class="w-[100vw] max-w-none -mx-[10vw] p-6 bg-slate-900 rounded-xl shadow-xl flex flex-col gap-4 border border-green-400 items-center">
 					<h3 class="text-2xl font-bold text-center text-green-400 mb-2" data-i18n="account.enable"></h3>
@@ -120,7 +120,7 @@
                             class="w-full px-4 py-2 rounded bg-slate-700 text-white border border-slate-600 focus:outline-none focus:ring-2 focus:ring-red-400"
                             placeholder="Enter the generated code" autocomplete="one-time-code" required>
                     </div>
-                    <div id="div-disable-2fa-error" class="text-red-500 text-center text-[1.1rem]"></div>
+                    <div id="div-disable-2fa-error" class="text-red-500 text-center text-[1.1rem]" data-i18n="accoun"></div>
                     <div id="div-disable-2fa-success" class="text-green-500 text-center text-[1.1rem]"></div>
                     <div class="flex justify-center gap-2 mt-2">
                         <button type="submit" id="disable-2fa-validate-btn" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 transition" data-i18n="account.butt.d2FA"></button>

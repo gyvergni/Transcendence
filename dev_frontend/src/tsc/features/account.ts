@@ -2,6 +2,7 @@ import { API_BASE_URL, getApiErrorText, parseApiErrorMessage } from "./utils-api
 import { toggleBackButton } from "../animations.js";
 import { setContentView } from "../views.js";
 import { a2fStatus, checkTokenValidity } from "./auth.js";
+import { currentLang, getTranslatedKey, setLang } from "../translation.js";
 
 export async function accountEditAvatar() {
 	const fileInput = document.querySelector("#account-avatar-file") as HTMLInputElement | null;
@@ -88,13 +89,16 @@ export async function loadAccountInfo() {
 			return ;
 		}
 		if (A2fStatus === true) {
-			toggle2FA.textContent = "Disable 2FA";
+			toggle2FA.setAttribute("data-i18n", "account.butt.2FA.disable");
+			toggle2FA.textContent = getTranslatedKey("account.butt.2FA.disable");
 			toggle2FA.classList.remove("bg-green-500");
 			toggle2FA.classList.remove("hover:bg-green-700");
 			toggle2FA.classList.add("bg-red-500");
 			toggle2FA.classList.add("hover:bg-red-700");
 		} else {
-			toggle2FA.textContent = "Enable 2FA";
+			toggle2FA.setAttribute("data-i18n", "account.butt.2FA.enable");
+			toggle2FA.textContent = getTranslatedKey("account.butt.2FA.enable");
+			// toggle2FA.dataset.i18n = 'account.butt.2FA.enable';
 			toggle2FA.classList.remove("bg-red-500");
 			toggle2FA.classList.remove("hover:bg-red-700");
 			toggle2FA.classList.add("bg-green-500");
