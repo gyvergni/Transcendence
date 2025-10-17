@@ -41,12 +41,20 @@ type MatchStatsResponse = {
     }[];
 }; 
 
+type DashboardContext = {
+    accountPseudo: string;
+    accountIngame: string;
+    currentMainGuest: string;
+    friendPseudo: string | null;
+    selectedMatchup: string | null;
+};
+
 // -------------------- API --------------------
-async function fetchStats(accountPseudo: string, accountIngame: string, currentMainGuest: string): Promise<MatchStatsResponse | null> {
+async function fetchStats(info: DashboardContext): Promise<MatchStatsResponse | null> {
     try {
-        const url = new URL(`${API_BASE_URL}/stats/${encodeURIComponent(accountPseudo)}`);
-        if (currentMainGuest != accountIngame)
-            url.searchParams.set("guest", currentMainGuest);
+        const url = new URL(`${API_BASE_URL}/stats/${encodeURIComponent(info.accountPseudo)}`);
+        if (info.currentMainGuest != info.accountIngame)
+            url.searchParams.set("guest", info.currentMainGuest);
 
         const res = await fetch(url.toString(), {
             headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` },
@@ -64,15 +72,15 @@ async function fetchStats(accountPseudo: string, accountIngame: string, currentM
 }
 
 // -------------------- RENDERERS --------------------
-function renderSummary(data: MatchStatsResponse, currentMainGuest: string) {
+function renderSummary(data: MatchStatsResponse, info: DashboardContext) {
     const totalGames = data.wins + data.losses;
     const winRate = totalGames > 0 ? Math.round((data.wins / totalGames) * 100) : 0;
     let totalInputs = 0;
     for (const match of data.matchHistory)
     {
-        if (match.player1Username == currentMainGuest)
+        if (match.player1Username == info.currentMainGuest)
             totalInputs += match.matchStats.totalInputs1;
-        else if (match.player2Username == currentMainGuest)
+        else if (match.player2Username == info.currentMainGuest)
             totalInputs += match.matchStats.totalInputs2;
     }
     const summaryMap = {
@@ -90,7 +98,7 @@ function renderSummary(data: MatchStatsResponse, currentMainGuest: string) {
     }
 }
 
-function renderGameAverages(data: MatchStatsResponse, currentMainGuest: string) {
+function renderGameAverages(data: MatchStatsResponse, info: DashboardContext) {
     const totalMatches = data.matchHistory.length;
     if (totalMatches === 0) {
         document.getElementById("avg-inputs")!.textContent = "—";
@@ -110,15 +118,15 @@ function renderGameAverages(data: MatchStatsResponse, currentMainGuest: string) 
     let tournamentsWon = 0;
 
     for (const match of data.matchHistory) {
-        totalInputs += match.player1Username == currentMainGuest? (match.matchStats.totalInputs1) : (match.matchStats.totalInputs2);
+        totalInputs += match.player1Username == info.currentMainGuest? (match.matchStats.totalInputs1) : (match.matchStats.totalInputs2);
         totalLength += match.matchStats.timeDuration || 0;
         totalWallBounces += match.matchStats.longestRallyHits || 0;
         totalHits += match.matchStats.totalHits / 2;
-        totalPointsWon += match.player1Username == currentMainGuest? match.player1Score : match.player2Score;
-        totalPointsLost += match.player1Username == currentMainGuest? match.player2Score : match.player1Score;
+        totalPointsWon += match.player1Username == info.currentMainGuest? match.player1Score : match.player2Score;
+        totalPointsLost += match.player1Username == info.currentMainGuest? match.player2Score : match.player1Score;
         totalTournaments += match.matchSettings.gameMode.includes("tournament first") ? 1 : 0;
         tournamentFinals += match.matchSettings.gameMode === "tournament final" ? 1 : 0;
-        tournamentsWon += (match.matchSettings.gameMode === "tournament final" && ((match.player1Username == currentMainGuest && match.player1Score > match.player2Score) || (match.player2Username == currentMainGuest && match.player2Score > match.player1Score))) ? 1 : 0;
+        tournamentsWon += (match.matchSettings.gameMode === "tournament final" && ((match.player1Username == info.currentMainGuest && match.player1Score > match.player2Score) || (match.player2Username == info.currentMainGuest && match.player2Score > match.player1Score))) ? 1 : 0;
     }
 
     const avgInputs = Math.round(totalInputs / totalMatches);
@@ -147,14 +155,14 @@ function renderGameAverages(data: MatchStatsResponse, currentMainGuest: string) 
     document.getElementById("tournaments-won")!.textContent = String(tournamentsWon);
 }
 
-function renderHistory(matchHistory: MatchStatsResponse["matchHistory"], currentMainGuest: string) {
+function renderHistory(matchHistory: MatchStatsResponse["matchHistory"], info: DashboardContext) {
     const container = document.getElementById("match-history")!;
     container.innerHTML = "";
 
     matchHistory.slice(0, 10).forEach(m => {
-        console.log("m.player1Username:", m.player1Username, "m.player2Username:", m.player2Username, "currentMainGuest:", currentMainGuest);
-        const won = (m.player1Username === currentMainGuest && m.player1Score > m.player2Score) ||
-                    (m.player2Username === currentMainGuest && m.player2Score > m.player1Score);
+        console.log("m.player1Username:", m.player1Username, "m.player2Username:", m.player2Username, "currentMainGuest:", info.currentMainGuest);
+        const won = (m.player1Username === info.currentMainGuest && m.player1Score > m.player2Score) ||
+                    (m.player2Username === info.currentMainGuest && m.player2Score > m.player1Score);
 
         const borderColor = won ? 'border-green-500' : 'border-red-500';
         const hoverColor = won ? 'hover:bg-green-500/30' : 'hover:bg-red-500/30';
@@ -180,25 +188,25 @@ function renderHistory(matchHistory: MatchStatsResponse["matchHistory"], current
         li.addEventListener("click", async () => {
             console.log("clicked on match");
             await setContentView("../views/match-detail.html");
-            handleMatchDetail(m);
+            handleMatchDetail(m, info);
         });
 
         container.appendChild(li);
     });
 }
 
-function renderMatchupChart(mainGuest: string, opponentGuest: string, matchHistory: MatchStatsResponse["matchHistory"]) {
+function renderMatchupChart(info: DashboardContext, opponentGuest: string, matchHistory: MatchStatsResponse["matchHistory"]) {
     const canvas = document.getElementById("guests-bar") as HTMLCanvasElement;
     if (!canvas) return;
 
     const matches = matchHistory.filter(m =>
-        (m.player1Username === mainGuest && m.player2Username === opponentGuest) ||
-        (m.player1Username === opponentGuest && m.player2Username === mainGuest)
+        (m.player1Username === info.currentMainGuest && m.player2Username === opponentGuest) ||
+        (m.player1Username === opponentGuest && m.player2Username === info.currentMainGuest)
     );
 
     const wins = matches.filter(m =>
-        (m.player1Username === mainGuest && m.player1Score > m.player2Score) ||
-        (m.player2Username === mainGuest && m.player2Score > m.player1Score)
+        (m.player1Username === info.currentMainGuest && m.player1Score > m.player2Score) ||
+        (m.player2Username === info.currentMainGuest && m.player2Score > m.player1Score)
     ).length;
     const losses = matches.length - wins;
 
@@ -209,7 +217,7 @@ function renderMatchupChart(mainGuest: string, opponentGuest: string, matchHisto
         data: {
             labels: ["Wins", "Losses"],
             datasets: [{
-                label: `${mainGuest} vs ${opponentGuest}`,
+                label: `${info.currentMainGuest} vs ${opponentGuest}`,
                 data: [wins, losses],
                 backgroundColor: ["#22c55e", "#ef4444"],
             }]
@@ -241,33 +249,79 @@ function renderMatchupChart(mainGuest: string, opponentGuest: string, matchHisto
 
 
 // -------------------- DROPDOWN HANDLERS --------------------
-function getPlayedOpponents(matchHistory: MatchStatsResponse["matchHistory"], mainGuest: string): string[] {
+function getPlayedOpponents(matchHistory: MatchStatsResponse["matchHistory"], info: DashboardContext): string[] {
     const playedOpponents = new Set<string>();
     for (const match of matchHistory) {
-        if (match.player1Username === mainGuest)
+        if (match.player1Username === info.currentMainGuest)
             playedOpponents.add(match.player2Username);
-        else if (match.player2Username === mainGuest)
+        else if (match.player2Username === info.currentMainGuest)
             playedOpponents.add(match.player1Username);
     }
     return Array.from(playedOpponents);
 }
 
-async function updateMatchupDropdown(accountPseudo: string, accountIngame: string, mainGuest: string, matchupSelect: HTMLSelectElement) {
-    const stats = await fetchStats(accountPseudo, accountIngame, mainGuest);
+async function updateMatchupDropdown(info: DashboardContext, matchupSelect: HTMLSelectElement) {
+    const stats = await fetchStats(info);
+    
     if (!stats) return;
 
     // Get real opponents played against
-    const opponents = getPlayedOpponents(stats.matchHistory, mainGuest);
+    const opponents = getPlayedOpponents(stats.matchHistory, info);
 
     // Add AI options
     const options = [...opponents];
 
     populateDropdown(matchupSelect, options, "Select Player");
-
+    
     return stats;
 }
 
-export function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0]) {
+async function loadDashboard(info: DashboardContext)
+{
+    console.log("Account username: ", info.accountPseudo);
+    console.log("AccountIngame: ", info.accountIngame);
+
+    toggleBackButton(true, async () => {
+        uiManager.contentBox.classList.remove("max-w-7xl", "w-full", "p-6", "rounded-none");
+        uiManager.contentBox.classList.add("rounded-xl");
+        if (info.friendPseudo)
+            await setContentView("views/friends.html");
+        else
+            await setContentView("views/profile.html");
+    });
+    const gm = new GuestsManager();
+    await gm.fetchGuests(info.accountPseudo);
+
+    const mainSelect = document.getElementById("main-user-select") as HTMLSelectElement;
+    const matchupSelect = document.getElementById("guest-select") as HTMLSelectElement;
+
+    // Populate main guest select with all guests
+    populateDropdown(mainSelect, gm.guests.map(g => g.pseudo), `${info.accountIngame} (Default)`);
+    if (info.currentMainGuest !== info.accountIngame) {
+        mainSelect.value = info.currentMainGuest;
+    }
+    // Initial load of matchup dropdown and stats
+    await handleMainGuestChange(info, matchupSelect);
+
+    // Main guest change handler
+    mainSelect.addEventListener("change", async () => {
+        info.currentMainGuest = mainSelect.value || info.accountIngame;
+        await handleMainGuestChange(info, matchupSelect);
+    });
+
+    // Matchup select change handler
+    matchupSelect.addEventListener("change", async () => {
+        const opponent = matchupSelect.value;
+        if (!opponent) return;
+
+        const stats = await fetchStats(info);
+        if (!stats) return;
+        info.selectedMatchup = opponent;
+        renderMatchupChart(info, opponent, stats.matchHistory);
+    });
+}
+
+export function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0], info: DashboardContext) {
     const modal = document.getElementById("match-detail")!;
 
     // Title
@@ -278,8 +332,8 @@ export function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0]) 
     document.getElementById("back-btn")!.onclick = () => {
         modal.style.display = "none";
         setContentView("../views/stats-dashboard.html");
-        initStatsView(null);
-    };
+        loadDashboard(info);
+    }
 
     // ---------------- SETTINGS ----------------
     const s = match.matchSettings;
@@ -370,20 +424,31 @@ export function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0]) 
     
 }
 
+function resetMatchupChart() {
+    const canvas = document.getElementById("guests-bar") as HTMLCanvasElement;
+    if (!canvas) return;
+
+    if ((canvas as any)._chart) {
+        (canvas as any)._chart.destroy();
+        (canvas as any)._chart = null;
+    }
+}
+
 
 // -------------------- DROPDOWN HANDLERS --------------------
-async function handleMainGuestChange(accountPseudo: string, accountIngame: string,  currentMainGuest: string, matchupSelect: HTMLSelectElement) {
-    const stats = await updateMatchupDropdown(accountPseudo, accountIngame, currentMainGuest, matchupSelect);
+async function handleMainGuestChange(info: DashboardContext, matchupSelect: HTMLSelectElement) {
+    const stats = await updateMatchupDropdown(info, matchupSelect);
     if (!stats)
         return;
-    renderSummary(stats, currentMainGuest!);
-    renderHistory(stats.matchHistory, currentMainGuest);
-    renderGameAverages(stats, currentMainGuest);
-
-    // Update matchup chart if right-hand guest is selected
-    const opponent = matchupSelect.value;
-    if (opponent)
-        renderMatchupChart(currentMainGuest || accountIngame, opponent, stats.matchHistory);
+    renderSummary(stats, info);
+    renderHistory(stats.matchHistory, info);
+    renderGameAverages(stats, info);
+    if (info.selectedMatchup) {
+        matchupSelect.value = info.selectedMatchup;
+        renderMatchupChart(info, info.selectedMatchup, stats.matchHistory);
+    } else {
+        resetMatchupChart();
+    }
 }
 
 function populateDropdown(select: HTMLSelectElement, options: string[], defaultText: string) {
@@ -411,48 +476,18 @@ export async function initStatsView(friendPseudo: string | null = null) {
     if (!accountRes.ok)
         return console.error("Failed to get account info");
     let accountData = await accountRes.json();
-    let accountPseudo = accountData.pseudo;
-    let accountIngame = accountData.game_username;
-    if (friendPseudo)
-    {
-        accountPseudo = accountData[0].pseudo;
-        accountIngame = accountData[0].game_username;
+    let info: DashboardContext = {
+        accountPseudo: accountData.pseudo,
+        accountIngame: accountData.game_username,
+        currentMainGuest: accountData.game_username,
+        friendPseudo: friendPseudo,
+        selectedMatchup: null,
     }
-    console.log("Account username: ", accountPseudo);
-    console.log("AccountIngame: ", accountIngame);
-    let currentMainGuest = accountIngame;
-
-    toggleBackButton(true, async () => {
-		uiManager.contentBox.classList.remove("max-w-7xl", "w-full", "p-6", "rounded-none");
-		uiManager.contentBox.classList.add("rounded-xl");
-		await setContentView("views/profile.html");
-	});
-    const gm = new GuestsManager();
-    await gm.fetchGuests(accountPseudo);
-
-    const mainSelect = document.getElementById("main-user-select") as HTMLSelectElement;
-    const matchupSelect = document.getElementById("guest-select") as HTMLSelectElement;
-
-    // Populate main guest select with all guests
-    populateDropdown(mainSelect, gm.guests.map(g => g.pseudo), `${accountIngame} (Default)`);
-
-    // Initial load of matchup dropdown and stats
-    await handleMainGuestChange(accountPseudo, accountIngame, currentMainGuest, matchupSelect);
-
-    // Main guest change handler
-    mainSelect.addEventListener("change", async () => {
-        currentMainGuest = mainSelect.value || accountIngame;
-        await handleMainGuestChange(accountPseudo, accountIngame, currentMainGuest, matchupSelect);
-    });
-
-    // Matchup select change handler
-    matchupSelect.addEventListener("change", async () => {
-        const opponent = matchupSelect.value;
-        if (!opponent) return;
-
-        const stats = await fetchStats(accountPseudo, accountIngame, currentMainGuest);
-        if (!stats) return;
-
-        renderMatchupChart(currentMainGuest, opponent, stats.matchHistory);
-    });
+    if (info.friendPseudo)
+    {
+        info.accountPseudo = accountData[0].pseudo;
+        info.accountIngame = accountData[0].game_username;
+        info.currentMainGuest = info.accountIngame;
+    }
+    loadDashboard(info);
 }
