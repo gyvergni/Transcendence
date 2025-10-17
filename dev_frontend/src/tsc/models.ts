@@ -180,10 +180,15 @@ export class GuestsManager {
 	host: string = "";
 	guests: Guest[] = [];
 
-	async fetchGuests() {
+	async fetchGuests(accountPseudo: string | null = null) {
 		guests: null;
 		try {
-			const response = await fetch(API_BASE_URL + "/guests", {
+            let fetchPath: string;
+            if (accountPseudo)
+                fetchPath = API_BASE_URL + "/guests" + `/${accountPseudo}`;
+            else
+                fetchPath = API_BASE_URL + "/guests";
+			const response = await fetch(fetchPath, {
 				method: "GET",
 				headers: {
 					'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
@@ -230,7 +235,7 @@ export class GuestsManager {
 				console.error("Failed to add guest, server error.");
 				return { succes: false, message: getApiErrorText(data) };
 			}
-			await this.fetchGuests();
+			await this.fetchGuests(null);
 			return { succes: true, message: "Guest added successfully" };
 		} catch (error) {
 			console.error("Error adding guest:", error);
@@ -256,7 +261,7 @@ export class GuestsManager {
 				console.error("Failed to delete guest, server error.");
 				return { succes: false, message: getApiErrorText(data) };
 			}
-			await this.fetchGuests();
+			await this.fetchGuests(null);
 			return { succes: true, message: "Guest deleted successfully" };
 		} catch (error) {
 			console.error("Error deleting guest:", error);

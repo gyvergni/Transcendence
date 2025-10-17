@@ -42,10 +42,10 @@ type MatchStatsResponse = {
 }; 
 
 // -------------------- API --------------------
-async function fetchStats(accountData: any, currentMainGuest: string): Promise<MatchStatsResponse | null> {
+async function fetchStats(accountPseudo: string, accountIngame: string, currentMainGuest: string): Promise<MatchStatsResponse | null> {
     try {
-        const url = new URL(`${API_BASE_URL}/stats/${encodeURIComponent(accountData.pseudo)}`);
-        if (currentMainGuest != accountData.game_username)
+        const url = new URL(`${API_BASE_URL}/stats/${encodeURIComponent(accountPseudo)}`);
+        if (currentMainGuest != accountIngame)
             url.searchParams.set("guest", currentMainGuest);
 
         const res = await fetch(url.toString(), {
@@ -252,8 +252,8 @@ function getPlayedOpponents(matchHistory: MatchStatsResponse["matchHistory"], ma
     return Array.from(playedOpponents);
 }
 
-async function updateMatchupDropdown(accountData: any, mainGuest: string, matchupSelect: HTMLSelectElement) {
-    const stats = await fetchStats(accountData, mainGuest);
+async function updateMatchupDropdown(accountPseudo: string, accountIngame: string, mainGuest: string, matchupSelect: HTMLSelectElement) {
+    const stats = await fetchStats(accountPseudo, accountIngame, mainGuest);
     if (!stats) return;
 
     // Get real opponents played against
@@ -278,6 +278,7 @@ export function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0]) 
     document.getElementById("back-btn")!.onclick = () => {
         modal.style.display = "none";
         setContentView("../views/stats-dashboard.html");
+        initStatsView(null);
     };
 
     // ---------------- SETTINGS ----------------
@@ -371,8 +372,8 @@ export function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0]) 
 
 
 // -------------------- DROPDOWN HANDLERS --------------------
-async function handleMainGuestChange(accountData: any , currentMainGuest: string, matchupSelect: HTMLSelectElement) {
-    const stats = await updateMatchupDropdown(accountData, currentMainGuest, matchupSelect);
+async function handleMainGuestChange(accountPseudo: string, accountIngame: string,  currentMainGuest: string, matchupSelect: HTMLSelectElement) {
+    const stats = await updateMatchupDropdown(accountPseudo, accountIngame, currentMainGuest, matchupSelect);
     if (!stats)
         return;
     renderSummary(stats, currentMainGuest!);
@@ -382,7 +383,7 @@ async function handleMainGuestChange(accountData: any , currentMainGuest: string
     // Update matchup chart if right-hand guest is selected
     const opponent = matchupSelect.value;
     if (opponent)
-        renderMatchupChart(currentMainGuest || accountData.game_username, opponent, stats.matchHistory);
+        renderMatchupChart(currentMainGuest || accountIngame, opponent, stats.matchHistory);
 }
 
 function populateDropdown(select: HTMLSelectElement, options: string[], defaultText: string) {
@@ -404,12 +405,21 @@ function populateDropdown(select: HTMLSelectElement, options: string[], defaultT
 export async function initStatsView(friendPseudo: string | null = null) {
     let accountRes;
     if (friendPseudo)
-        accountRes = await fetch(`${API_BASE_URL}/users/friendPseudo`, { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } });
+        accountRes = await fetch(`${API_BASE_URL}/users/${friendPseudo}`, { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } }); 
     else
         accountRes = await fetch(`${API_BASE_URL}/users/me`, { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } });
-    if (!accountRes.ok) return console.error("Failed to get account info");
-    const accountData = await accountRes.json();
-    const accountIngame = accountData.game_username;
+    if (!accountRes.ok)
+        return console.error("Failed to get account info");
+    let accountData = await accountRes.json();
+    let accountPseudo = accountData.pseudo;
+    let accountIngame = accountData.game_username;
+    if (friendPseudo)
+    {
+        accountPseudo = accountData[0].pseudo;
+        accountIngame = accountData[0].game_username;
+    }
+    console.log("Account username: ", accountPseudo);
+    console.log("AccountIngame: ", accountIngame);
     let currentMainGuest = accountIngame;
 
     toggleBackButton(true, async () => {
@@ -418,7 +428,7 @@ export async function initStatsView(friendPseudo: string | null = null) {
 		await setContentView("views/profile.html");
 	});
     const gm = new GuestsManager();
-    await gm.fetchGuests();
+    await gm.fetchGuests(accountPseudo);
 
     const mainSelect = document.getElementById("main-user-select") as HTMLSelectElement;
     const matchupSelect = document.getElementById("guest-select") as HTMLSelectElement;
@@ -427,12 +437,12 @@ export async function initStatsView(friendPseudo: string | null = null) {
     populateDropdown(mainSelect, gm.guests.map(g => g.pseudo), `${accountIngame} (Default)`);
 
     // Initial load of matchup dropdown and stats
-    await handleMainGuestChange(accountData, currentMainGuest, matchupSelect);
+    await handleMainGuestChange(accountPseudo, accountIngame, currentMainGuest, matchupSelect);
 
     // Main guest change handler
     mainSelect.addEventListener("change", async () => {
         currentMainGuest = mainSelect.value || accountIngame;
-        await handleMainGuestChange(accountData, currentMainGuest, matchupSelect);
+        await handleMainGuestChange(accountPseudo, accountIngame, currentMainGuest, matchupSelect);
     });
 
     // Matchup select change handler
@@ -440,7 +450,7 @@ export async function initStatsView(friendPseudo: string | null = null) {
         const opponent = matchupSelect.value;
         if (!opponent) return;
 
-        const stats = await fetchStats(accountData, currentMainGuest);
+        const stats = await fetchStats(accountPseudo, accountIngame, currentMainGuest);
         if (!stats) return;
 
         renderMatchupChart(currentMainGuest, opponent, stats.matchHistory);

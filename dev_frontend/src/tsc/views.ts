@@ -43,7 +43,6 @@ export async function setContentView(viewPath: string): Promise<void> {
 	else if (viewPath.includes("tournament")) setupTournament();
 	else if (viewPath.includes("account")) setupAccountEvents();
 	else if (viewPath.includes("friends")) setupFriendsEvents();
-	else if (viewPath.includes("stats")) initStatsView();
 	// allow views to attach feature-specific logic (e.g. stats scripts)
 }
 
@@ -289,6 +288,7 @@ function setupProfileEvents() {
 		// animate the content box into view (it was expanded above)
 		animateContentBoxIn();
 		await setContentView("views/stats-dashboard.html");
+        initStatsView(null);
 	});
 
 	// Note: `setContentView` already calls `attachStatsIfViewPresent()` after injecting HTML.
@@ -399,9 +399,11 @@ function setupFriendsEvents() {
 			const friendBtn = (e.target as HTMLElement).closest("li") as HTMLLIElement;
 			if (friendBtn) {
 				const friendPseudo = friendBtn.getAttribute("data-pseudo");
-				if (!friendPseudo) return;
+				if (!friendPseudo)
+                    return;
 				console.log("View friend stats:", friendPseudo);
-				initStatsView(friendPseudo);
+                await setContentView("views/stats-dashboard.html");
+			    initStatsView(friendPseudo);
 			}
 		}
 	});

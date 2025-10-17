@@ -21,7 +21,7 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
   const match = gameType as MatchSetup;
   const guestsManager = match.getGuestsManager();
 
-  await guestsManager.fetchGuests();
+  await guestsManager.fetchGuests(null);
 
   const selectionBox = temp.querySelector(".player-select") as HTMLElement;
   if (!selectionBox) throw new Error("Could not find .player-select in template");
