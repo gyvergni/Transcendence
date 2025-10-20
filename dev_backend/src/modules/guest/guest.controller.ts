@@ -72,11 +72,11 @@ export async function getGuestListByPseudoHandler(req: FastifyRequest<{Params: {
 export async function createGuestHandler(req: FastifyRequest<{Body: CreateGuestBody}>, reply: FastifyReply) {
     const body = req.body;
 
-    if (body.pseudo === "Deleted Guest") {
+    if (body.pseudo === "Deleted Guest" || body.pseudo === "Invité Supprimé" || body.pseudo === "Invitado Eliminado") {
         return httpError({
             reply,
             code: StatusCodes.BAD_REQUEST,
-            message: "Username 'Deleted Guest' is reserved and cannot be used",
+            message: `Username ${body.pseudo} is reserved and cannot be used`,
 			errorKey: "error.guest.username_reserved"
         });
     }

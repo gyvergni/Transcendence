@@ -221,7 +221,7 @@ const translations: Record<Lang, Record<string, string>> =
 		// Error messages
 		"error.guest.not_found": "Guest not found",
 		"error.guest.fetch_failed": "Failed to fetch guests",
-		"error.guest.username_reserved": "Username ‘Deleted Guest‘ is reserved and cannot be used",
+		"error.guest.username_reserved": "This username is reserved and cannot be used",
 		"error.guest.add.already_exists": "Guest with this pseudo already exists",
 		"error.guest.create_failed": "Failed to create guest",
 		"error.guest.host_username_conflict": "Guest pseudo cannot be the same as your host in-game username",
@@ -487,7 +487,7 @@ const translations: Record<Lang, Record<string, string>> =
 		// Error messages
 		"error.guest.not_found": "Invite introuvable",
 		"error.guest.fetch_failed": "Echec de la recuperation des invites",
-		"error.guest.username_reserved": "Le pseudo 'Deleted Guest' est reserve et ne peut pas etre utilise",
+		"error.guest.username_reserved": "Ce pseudo est reserve et ne peut pas etre utilise",
 		"error.guest.add.already_exists": "Un invite avec ce pseudo existe deja",
 		"error.guest.create_failed": "Echec de la creation de l'invite",
 		"error.guest.host_username_conflict": "Le pseudo de l'invite ne peut pas etre le meme que votre pseudo in-game",
@@ -751,7 +751,7 @@ const translations: Record<Lang, Record<string, string>> =
 		// Error messages
 		"error.guest.not_found": "Invitado no encontrado",
 		"error.guest.fetch_failed": "Error al obtener invitados",
-		"error.guest.username_reserved": "El nombre 'Deleted Guest' esta reservado y no puede usarse",
+		"error.guest.username_reserved": "Este nombre esta reservado y no puede usarse",
 		"error.guest.add.already_exists": "Ya existe un invitado con este nombre",
 		"error.guest.create_failed": "Error al crear invitado",
 		"error.guest.host_username_conflict": "El nombre del invitado no puede ser el mismo que tu nombre en el juego",

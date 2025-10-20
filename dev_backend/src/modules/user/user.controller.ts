@@ -315,11 +315,11 @@ export async function changePasswordHandler(req: FastifyRequest<{Body: ChangePas
 
 export async function changeUsernameHandler(req: FastifyRequest<{Body: ChangeUsernameInput}>, reply: FastifyReply) {
     const body = req.body;
-    if (body.newPseudo === "Deleted Guest" || body.newPseudo === "Invité supprimé" || body.newPseudo === "Invitado") {// A suppr faire la trad espagnol
+    if (body.newPseudo === "Deleted Guest" || body.newPseudo === "Invité supprimé" || body.newPseudo === "Invitado eliminado") {// A suppr faire la trad espagnol
         return httpError({
             reply,
             code: StatusCodes.BAD_REQUEST,
-            message: "Pseudo 'Deleted Guest' is reserved and cannot be used",
+            message: `Pseudo ${body.newPseudo} is reserved and cannot be used`,
             errorKey: "error.user.username_reserved",
         });
     }
