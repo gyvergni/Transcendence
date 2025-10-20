@@ -125,7 +125,17 @@ const translations: Record<Lang, Record<string, string>> =
         "stats.total-hits": "Total hits",
         "stats.total-ptswon": "Points won",
         "stats.total-ptslost": "Points lost",
-
+        "stats.t-first": "Tournament First Round",
+        "stats.t-final": "Tournament Final",
+        "stats.mode": "Mode",
+        "stats.quickMatch": "Quick Match",
+                //Dynamic content in stats.ts
+                "stats.select_matchup": "Select opponent",
+                "stats.wins": "Wins",
+                "stats.losses": "Losses",
+                "stats.default": "(Main)",
+                "stats.matchup-ylabel": "Number of games",
+                
         //match-detail.html
         "match.title": "Match Detail",
         "match.game-settings": "Game Settings",
@@ -143,8 +153,10 @@ const translations: Record<Lang, Record<string, string>> =
         "match.wb": "Wall bounces",
         "match.inputs": "Inputs",
         "match.graph-title": "Point Timeline",
-        
-        
+            //Dynamic content in stats.ts
+            "match.timeline-ylabel": "Rally Duration (s)",
+            "match.timeline-xlabel": "Point",
+
 		//tournament.html
 		"tournament.title": "Tournament",
 		"tournament.instructions": "Select 4 players or AI",
@@ -154,8 +166,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"t-waiting.waitingTitle": "Tournament waiting room",
 		"t-waiting.prevWinnerLabel": "Previous Winner:",
 		"t-waiting.ready": "Ready",
-		"leftplayer": "Left Player",
-		"rightplayer": "Right Player",
+        "t-waiting.nextmatch": "Next Match",
 
 		//tournament-end.html
 		"tournament.endTitle": "🏆 Tournament Champion 🏆",
@@ -335,8 +346,18 @@ const translations: Record<Lang, Record<string, string>> =
         "stats.total-hits": "Coups totaux",
         "stats.total-ptswon": "Pts gagnés",
         "stats.total-ptslost": "Pts perdus",
+                //Dynamic content in stats.ts
+                "stats.select_matchup": "Sélectionner un adversaire",
+                "stats.wins": "Victoires",
+                "stats.losses": "Défaites",
+                "stats.t-first": "Tournoi Premier Tour",
+                "stats.t-final": "Tournoi Finale",
+                "stats.mode": "Mode",
+                "stats.quickMatch": "Partie Rapide",
+                "stats.default": "(Principal)",
+                "stats.matchup-ylabel": "Nombre de parties",
 
-		//match-detail.html
+        //match-detail.html
         "match.title": "Détail du match",
         "match.game-settings": "Paramètres du jeu",
         "match.settings-ballsize": "Taille de la balle : ",
@@ -353,6 +374,9 @@ const translations: Record<Lang, Record<string, string>> =
         "match.wb": "Rebonds muraux",
         "match.inputs": "Entrées",
         "match.graph-title": "Chronologie des points",
+            //Dynamic content in stats.ts
+            "match.timeline-ylabel": "Durée de l'échange (s)",
+            "match.timeline-xlabel": "Point",
 
 		//tournament.html
 		"tournament.title": "Tournoi",
@@ -363,8 +387,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"t-waiting.waitingTitle": "Salle d'attente du tournoi",
 		"t-waiting.prevWinnerLabel": "Vainqueur precedent:",
 		"t-waiting.ready": "Pret",
-		"leftplayer": "Joueur de gauche",
-		"rightplayer": "Joueur de droite",
+		"t-waiting.nextmatch": "Match suivant",
 
 		//tournament-end.html
 		"tournament.endTitle": "🏆 Champion du tournoi 🏆",
@@ -543,6 +566,17 @@ const translations: Record<Lang, Record<string, string>> =
         "stats.total-hits": "Golpes totales",
         "stats.total-ptswon": "Puntos ganados",
         "stats.total-ptslost": "Puntos perdidos",
+        
+                //Dynamic content in stats.ts
+                "stats.select_matchup": "Seleccionar oponente",
+                "stats.wins": "Victorias",
+                "stats.losses": "Derrotas",
+                "stats.t-first": "Torneo Primera Ronda",
+                "stats.t-final": "Torneo Final",
+                "stats.mode": "Modo",
+                "stats.quickMatch": "Partida Rapida",
+                "stats.default": "(Principal)",
+                "stats.matchup-ylabel": "Partidas",
 
         //match-detail.html
         "match.title": "Detalle del partido",
@@ -561,6 +595,9 @@ const translations: Record<Lang, Record<string, string>> =
         "match.wb": "Rebotes en pared",
         "match.inputs": "Entradas",
         "match.graph-title": "Cronologia de puntos",
+            //Dynamic content in stats.ts
+            "match.timeline-ylabel": "Duracion del rally (s)",
+            "match.timeline-xlabel": "Punto",
 
 		//tournament.html
 		"tournament.title": "Torneo",
@@ -571,8 +608,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"t-waiting.waitingTitle": "Espera del torneo",
 		"t-waiting.prevWinnerLabel": "Ganador anterior:",
 		"t-waiting.ready": "Listo",
-		"leftplayer": "Jugador izquierdo",
-		"rightplayer": "Jugador derecho",
+		"t-waiting.nextmatch": "Proximo partido",
 
 		//tournament-end.html
 		"tournament.endTitle": "🏆 Campeon del torneo 🏆",

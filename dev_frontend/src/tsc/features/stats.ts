@@ -6,6 +6,7 @@ import { getApiErrorText } from "./utils-api.js";
 import { text } from "stream/consumers";
 import { toggleBackButton } from "../animations";
 import uiManager from "../main";
+import {getTranslatedKey, setLang, currentLang} from "../translation";
 
 type MatchStatsResponse = {
     id: number;
@@ -124,9 +125,9 @@ function renderGameAverages(data: MatchStatsResponse, info: DashboardContext) {
         totalHits += match.matchStats.totalHits / 2;
         totalPointsWon += match.player1Username == info.currentMainGuest? match.player1Score : match.player2Score;
         totalPointsLost += match.player1Username == info.currentMainGuest? match.player2Score : match.player1Score;
-        totalTournaments += match.matchSettings.gameMode.includes("tournament first") ? 1 : 0;
-        tournamentFinals += match.matchSettings.gameMode === "tournament final" ? 1 : 0;
-        tournamentsWon += (match.matchSettings.gameMode === "tournament final" && ((match.player1Username == info.currentMainGuest && match.player1Score > match.player2Score) || (match.player2Username == info.currentMainGuest && match.player2Score > match.player1Score))) ? 1 : 0;
+        totalTournaments += match.matchSettings.gameMode.includes("t-first") ? 1 : 0;
+        tournamentFinals += match.matchSettings.gameMode === "t-final" ? 1 : 0;
+        tournamentsWon += (match.matchSettings.gameMode === "t-final" && ((match.player1Username == info.currentMainGuest && match.player1Score > match.player2Score) || (match.player2Username == info.currentMainGuest && match.player2Score > match.player1Score))) ? 1 : 0;
     }
 
     const avgInputs = Math.round(totalInputs / totalMatches);
@@ -181,7 +182,7 @@ function renderHistory(matchHistory: MatchStatsResponse["matchHistory"], info: D
                 <span class="font-semibold">${m.player1Score} - ${m.player2Score}</span>
             </div>
             <div class="text-xs text-gray-300 mt-1">
-                Mode: ${m.matchSettings.gameMode} | ${m.date}
+                ${getTranslatedKey("stats.mode")}: ${getTranslatedKey("stats." + m.matchSettings.gameMode)} | ${m.date}
             </div>
         `;
 
@@ -215,7 +216,7 @@ function renderMatchupChart(info: DashboardContext, opponentGuest: string, match
     (canvas as any)._chart = new (window as any).Chart(canvas, {
         type: "bar",
         data: {
-            labels: ["Wins", "Losses"],
+            labels: [getTranslatedKey("stats.wins"), getTranslatedKey("stats.losses")],
             datasets: [{
                 label: `${info.currentMainGuest} vs ${opponentGuest}`,
                 data: [wins, losses],
@@ -240,8 +241,11 @@ function renderMatchupChart(info: DashboardContext, opponentGuest: string, match
                         stepSize: 1,
                         color: "#ffffff"
                     },
+                    title: { display: true, text: getTranslatedKey("stats.matchup-ylabel"), color: "#ffffffff",
+                    font: {size: 12 },
+                    },
                     suggestedMax: Math.max(1, wins + losses),
-                }
+                },
             }
         }
     });
@@ -271,7 +275,7 @@ async function updateMatchupDropdown(info: DashboardContext, matchupSelect: HTML
     // Add AI options
     const options = [...opponents];
 
-    populateDropdown(matchupSelect, options, "Select Player");
+    populateDropdown(matchupSelect, options, getTranslatedKey("stats.select_matchup"));
     
     return stats;
 }
@@ -296,7 +300,7 @@ async function loadDashboard(info: DashboardContext)
     const matchupSelect = document.getElementById("guest-select") as HTMLSelectElement;
 
     // Populate main guest select with all guests
-    populateDropdown(mainSelect, gm.guests.map(g => g.pseudo), `${info.accountIngame} (Default)`);
+    populateDropdown(mainSelect, gm.guests.map(g => g.pseudo), `${info.accountIngame} ${(getTranslatedKey("stats.default"))}`);
     if (info.currentMainGuest !== info.accountIngame) {
         mainSelect.value = info.currentMainGuest;
     }
@@ -341,7 +345,7 @@ export function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0], 
     (document.getElementById("ball-speed") as HTMLElement).textContent = String(s.ballSpeed);
     (document.getElementById("paddle-size") as HTMLElement).textContent = String(s.paddleSize);
     (document.getElementById("paddle-speed") as HTMLElement).textContent = String(s.paddleSpeed);
-    (document.getElementById("game-mode") as HTMLElement).textContent = s.gameMode;
+    (document.getElementById("game-mode") as HTMLElement).textContent = getTranslatedKey("stats." + s.gameMode);
 
     // ---------------- MATCH STATS ----------------
     const ms = match.matchStats;
@@ -376,7 +380,7 @@ export function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0], 
     data: {
         labels,
         datasets: [{
-            label: "Rally Duration (s)",
+            label: getTranslatedKey("match.timeline-ylabel"),
             data: durations,
             backgroundColor: colors,
             
@@ -396,7 +400,7 @@ export function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0], 
         },
         scales: {
             x: {
-                title: { display: true, text: "Point Winner", color: "#ffffffff", font: { weight: "bold", size: 14 },},
+                title: { display: true, text: getTranslatedKey("match.timeline-xlabel"), color: "#ffffffff", font: { weight: "bold", size: 14 },},
                 ticks: { color: (ctx) => {
                         const index = ctx.index;
                         return pointsOrderSplit[index] === "1" ? "#eb69e2ff" : "#05c9b8ff";
@@ -409,7 +413,7 @@ export function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0], 
             },
             y: {
                 beginAtZero: true,
-                title: { display: true, text: "Rally Duration (s)", color: "#ffffffff",
+                title: { display: true, text: getTranslatedKey("match.timeline-ylabel"), color: "#ffffffff",
                     font: { weight: "bold", size: 12 },
                 },
                 ticks: { color: "#ffffffff",

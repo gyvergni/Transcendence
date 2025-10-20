@@ -66,7 +66,7 @@ export class MatchSetup implements GameTypeManager {
 	loser: PlayerConfig | null = null;
 	guestsManager: GuestsManager;
 	rm: boolean | boolean = false;
-	gameMode: "tournament first round" | "tournament final" | "quickMatch" = "quickMatch";
+	gameMode: "t-first" | "t-final" | "quickMatch" = "quickMatch";
     stats: matchStatsSend | null = null;
 	private keydownHandler?: (e: KeyboardEvent) => void;
 

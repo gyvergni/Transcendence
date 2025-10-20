@@ -1077,7 +1077,7 @@ export async function startTournament(tournament: TournamentManager): Promise<vo
     {
     	tournament.final.addPlayer(tournament.firstRound[0].winner);
     	tournament.final.addPlayer(tournament.firstRound[1].winner);
-		tournament.final.gameMode = "tournament final";
+		tournament.final.gameMode = "t-final";
 		await setupTournamentWaitingRoom(tournament);
     	tournament.currentRound = 2;
 		await startMatch(tournament.final, 2);
