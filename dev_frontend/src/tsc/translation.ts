@@ -617,6 +617,8 @@ const translations: Record<Lang, Record<string, string>> =
 		"player.login": "Bloquear",
 		"player.add-guest-btn": "Agregar invitado",
 		"player.del-guest-btn": "Eliminar invitado",
+                //player-selection dynamic content
+                "player.ready": "",
 
 		//player-slot-template.html
 		"player-slot.player": "Jugador",

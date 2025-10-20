@@ -144,7 +144,7 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
 
     const readyBox = document.createElement("div");
     readyBox.className = "text-green-400 text-center text-md font-semibold border border-green-400 p-4 rounded";
-    readyBox.textContent = `✅ Ready: ${name}`;
+    readyBox.textContent = `✅ ${getTranslatedKey("player.ready")}: ${name}`;
     selectionBox.replaceWith(readyBox);
   });
 
