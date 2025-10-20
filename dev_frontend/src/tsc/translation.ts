@@ -86,6 +86,12 @@ const translations: Record<Lang, Record<string, string>> =
 		"player.login": "Lock in",
 		"player.add-guest-btn": "Add Guest",
 		"player.del-guest-btn": "Delete Guest",
+                //player-selection dynamic content
+                "player.ready": "Ready",
+                "player.ai-easy": "AI easy",
+                "player.ai-medium": "AI medium",
+                "player.ai-hard": "AI hard",
+                "player.deleted": "Deleted Guest",
 
 		//player-slot-template.html
 		"player-slot.player": "Player",
@@ -266,7 +272,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"error.friend.add_failed": "Failed to add friend",
 		"error.friend.not_friends": "You are not friends with this user",
 		"error.friend.delete_failed": "Failed to delete friend",
-
+        "error.views.notlockedin": "Both Players must be locked in",
 	},
 
 	fr: {		
@@ -353,6 +359,12 @@ const translations: Record<Lang, Record<string, string>> =
 		"player.login": "Verrouiller",
 		"player.add-guest-btn": "Ajouter un invité",
 		"player.del-guest-btn": "Supprimer l'invité",
+                //player-selection dynamic content
+                "player.ready": "Prêt",
+                "player.ai-easy": "IA facile",
+                "player.ai-medium": "IA moyenne",
+                "player.ai-hard": "IA difficile",
+                "player.deleted": "Invité Supprimé",
 
 		//player-slot-template.html
 		"player-slot.player": "Joueur",
@@ -532,7 +544,8 @@ const translations: Record<Lang, Record<string, string>> =
 		"error.friend.add_failed": "Echec de l'ajout de l'ami",
 		"error.friend.not_friends": "Vous n'etes pas amis avec cet utilisateur",
 		"error.friend.delete_failed": "Echec de la suppression de l'ami",
-	},
+        "error.views.notlockedin": "Les deux joueurs doivent être prêts",
+    },
 	es: {
 		//
 		"error.internal": "Error interno",
@@ -618,7 +631,11 @@ const translations: Record<Lang, Record<string, string>> =
 		"player.add-guest-btn": "Agregar invitado",
 		"player.del-guest-btn": "Eliminar invitado",
                 //player-selection dynamic content
-                "player.ready": "",
+                "player.ready": "Listo",
+                "player.ai-easy": "IA fácil",
+                "player.ai-medium": "IA promedio",
+                "player.ai-hard": "IA difícil",
+                "player.deleted": "Invitado Eliminado",
 
 		//player-slot-template.html
 		"player-slot.player": "Jugador",
@@ -799,7 +816,8 @@ const translations: Record<Lang, Record<string, string>> =
 		"error.friend.add_failed": "Error al agregar amigo",
 		"error.friend.not_friends": "No eres amigo de este usuario",
 		"error.friend.delete_failed": "Error al eliminar amigo",
-	}
+        "error.views.notlockedin": "Ambos jugadores deben estar listos",
+    }
 };
 
 export let currentLang: Lang = "en";
@@ -830,4 +848,13 @@ export function setLang(lang: Lang) {
 export function getTranslatedKey(key: string): string {
 	const message = translations[currentLang][key];
 	return message ? message : key;
+}
+
+export function translateName(name: string): string {
+    if (name == "ai-easy" || name == "ai-medium" || name == "ai-hard")
+        return (getTranslatedKey("player." + name));
+    else if (name == "Deleted Guest")
+        return (getTranslatedKey("player.deleted"));
+    else
+        return name;
 }

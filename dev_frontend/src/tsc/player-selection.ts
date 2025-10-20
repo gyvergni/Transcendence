@@ -185,7 +185,7 @@ async function loadAISelect(id: string, config: PlayerConfig): Promise<HTMLEleme
 
     const readyBox = document.createElement("div");
     readyBox.className = "text-green-400 text-center text-md font-semibold border border-green-400 p-4 rounded";
-    readyBox.textContent = `Ready: AI (${selectedDifficulty})`;
+    readyBox.textContent = `${getTranslatedKey("player.ready")}: ${getTranslatedKey("player.ai-" + selectedDifficulty)}`;
     selector.replaceWith(readyBox);
   });
 

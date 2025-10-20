@@ -353,7 +353,7 @@ async function setQuickMatchView() {
 
   startBtn?.addEventListener("click", async () => {
     if (!match.isReady()) {
-      alert(getTranslatedKey("views.notlockedin"));
+      alert(getTranslatedKey("error.views.notlockedin"));
       return;
     }
 

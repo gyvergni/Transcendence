@@ -9,6 +9,7 @@ import {animateContentBoxIn} from "./animations.js";
 import {setContentView} from "./views.js";
 import {PlayerConfig, MatchSetup, TournamentManager, AIDifficulty} from "./models.js";
 import {setupTournamentEndScreen, setupTournamentWaitingRoom} from "./t-waitingscreen.js";
+import {getTranslatedKey, translateName} from "./translation";
 
 //################ customization variables ###########
 import { getSettings, resetSettings } from "./settings.js"
@@ -740,12 +741,18 @@ export class Game {
 
 		var name1 = null;
 		var name2 = null;
-		if (this.match.players[0].name)
-			name1 = BABYLON.MeshBuilder.CreateText("myText", this.match.players[0].name, fontData, { size: 1, resolution: 64, depth: 0.1 }, this.scene, (window as any).earcut.default);
-		if (this.match.players[1].name)
-			name2 = BABYLON.MeshBuilder.CreateText("myText", this.match.players[1].name, fontData, { size: 1, resolution: 64, depth: 0.1 }, this.scene, (window as any).earcut.default);
 
-		if (name1) {
+		if (this.match.players[0].name)
+        {
+            const player1name = translateName(this.match.players[0].name);
+			name1 = BABYLON.MeshBuilder.CreateText("myText", player1name, fontData, { size: 1, resolution: 64, depth: 0.1 }, this.scene, (window as any).earcut.default);
+        }
+        if (this.match.players[1].name)
+        {
+            const player2name = translateName(this.match.players[1].name);
+			name2 = BABYLON.MeshBuilder.CreateText("myText", player2name, fontData, { size: 1, resolution: 64, depth: 0.1 }, this.scene, (window as any).earcut.default);
+        }
+        if (name1) {
 			name1.position.y = 5;
 			name1.position.x = -5;
 		}

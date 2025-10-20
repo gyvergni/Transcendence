@@ -6,7 +6,7 @@ import { getApiErrorText } from "./utils-api.js";
 import { text } from "stream/consumers";
 import { toggleBackButton } from "../animations";
 import uiManager from "../main";
-import {getTranslatedKey, setLang, currentLang} from "../translation";
+import {getTranslatedKey, setLang, currentLang, translateName} from "../translation";
 
 type MatchStatsResponse = {
     id: number;
@@ -178,7 +178,7 @@ function renderHistory(matchHistory: MatchStatsResponse["matchHistory"], info: D
 
         li.innerHTML = `
             <div class="flex justify-between text-sm font-medium text-white">
-                <span>${m.player1Username} vs ${m.player2Username}</span>
+                <span>${translateName(m.player1Username)} vs ${translateName(m.player2Username)}</span>
                 <span class="font-semibold">${m.player1Score} - ${m.player2Score}</span>
             </div>
             <div class="text-xs text-gray-300 mt-1">
@@ -327,10 +327,12 @@ async function loadDashboard(info: DashboardContext)
 
 export function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0], info: DashboardContext) {
     const modal = document.getElementById("match-detail")!;
-
+    const p1name = translateName(match.player1Username);
+    const p2name = translateName(match.player2Username);
+    
     // Title
     document.getElementById("match-title")!.textContent =
-        `${match.player1Username} vs ${match.player2Username} - ${match.date}`;
+        `${p1name} vs ${p2name} - ${match.date}`;
 
     // Close button
     document.getElementById("back-btn")!.onclick = () => {
@@ -354,12 +356,12 @@ export function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0], 
     (document.getElementById("total-time") as HTMLElement).textContent = `${Math.round(ms.timeDuration / 1000)}s`;
 
     // ---------------- PLAYER ROWS ----------------
-    (document.getElementById("player1.name") as HTMLElement).textContent = match.player1Username;
+    (document.getElementById("player1.name") as HTMLElement).textContent = translateName(match.player1Username);
     (document.getElementById("player1.score") as HTMLElement).textContent = String(match.player1Score);
     (document.getElementById("player1.wallbounces") as HTMLElement).textContent = String(match.matchStats.wallBounce1);
     (document.getElementById("player1.inputs") as HTMLElement).textContent = String(match.matchStats.totalInputs1);
     
-    (document.getElementById("player2.name") as HTMLElement).textContent = match.player2Username;
+    (document.getElementById("player2.name") as HTMLElement).textContent = translateName(match.player2Username);
     (document.getElementById("player2.score") as HTMLElement).textContent = String(match.player2Score);
     (document.getElementById("player2.wallbounces") as HTMLElement).textContent = String(match.matchStats.wallBounce2);
     (document.getElementById("player2.inputs") as HTMLElement).textContent = String(match.matchStats.totalInputs2);
@@ -369,7 +371,7 @@ export function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0], 
     if ((canvas as any)._chart) (canvas as any)._chart.destroy();
 
     const pointsOrderSplit = ms.pointsOrder.split(""); // ['1','2','2']
-    const labels = pointsOrderSplit.map((winner, i) => winner === "1" ? i + 1 + ": " + match.player1Username : i  + 1 + ": " +  match.player2Username);
+    const labels = pointsOrderSplit.map((winner, i) => winner === "1" ? i + 1 + ": " + translateName(match.player1Username) : i  + 1 + ": " +  translateName(match.player2Username));
     const colors = pointsOrderSplit.map(winner => winner === "1" ? "#eb69e2ff" : "#05c9b8ff");
 
     const timeOrderSplit = ms.timeOrder.split(",");
@@ -465,7 +467,7 @@ function populateDropdown(select: HTMLSelectElement, options: string[], defaultT
     options.forEach(optText => {
         const opt = document.createElement("option");
         opt.value = optText;
-        opt.textContent = optText;
+        opt.textContent = translateName(optText);
         select.appendChild(opt);
     });
 }
