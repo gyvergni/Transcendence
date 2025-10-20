@@ -1,12 +1,17 @@
 import { setContentView } from "../views.js";
 import { API_BASE_URL, getApiErrorText, parseApiErrorMessage } from "./utils-api.js";
 import { loginWithWebSocket } from "./auth.js";
+import { getTranslatedKey } from "../translation.js";
 
 const temp = false;
 
-function verifySignupInputDatas(input: any) {
-	if (input.username === "a")
-		return "BAD USERNAME";
+export function verifySignupInputDatas(input: any) {
+	if (input.username && input.username.match(/[^a-zA-Z0-9_]/))
+		return getTranslatedKey("signup.username.invalid-chars");
+	if (input.username && input.username.length < 3 || input.username.length > 20)
+		return getTranslatedKey("signup.username.length");
+	if (input.password && input.password.length < 6)
+		return getTranslatedKey("signup.password.length");
 	return "true";
 }
 
@@ -27,11 +32,11 @@ export async function signupUser(e: Event, form: HTMLFormElement) {
 		const verifyPassword = formData.get("signup-verify-password");
 		const errorDiv = document.querySelector("#login-error-message") as HTMLDivElement;
 		if (!username || !password) {
-			errorDiv.textContent = "Username and password are required";
+			errorDiv.textContent = getTranslatedKey("login.username-password.required");
 			usernameDiv.classList.add("wrong-signup-input")
 			return ;
 		} else if (password !== verifyPassword) {
-			errorDiv.textContent = "Password and Verify Password didn't match";
+			errorDiv.textContent = getTranslatedKey("signup.pass-mismatch");
 			passwordDiv.classList.add("wrong-signup-input");
 			passwordVerifyDiv.classList.add("wrong-signup-input");
 			return ;
@@ -56,9 +61,9 @@ export async function signupUser(e: Event, form: HTMLFormElement) {
 			try {
 				const err = await signupResponse.json();
 				console.log(err);
-				errorDiv.textContent = getApiErrorText(parseApiErrorMessage(err.message));
+				errorDiv.textContent = getApiErrorText(err);
 			} catch {
-				errorDiv.textContent = "Internal Error";
+				errorDiv.textContent = getTranslatedKey("error.internal");
 			}
 			if (signupResponse.status === 409) {
 				const usernameDiv = document.querySelector('#signup-username')!;

@@ -1,3 +1,4 @@
+import { getTranslatedKey } from "../translation.js";
 import { setContentView } from "../views.js";
 import { a2fStatus, loginWithWebSocket } from "./auth.js";
 import { API_BASE_URL, getApiErrorText } from "./utils-api.js";
@@ -14,7 +15,7 @@ export async function loginUser(e: Event, form: HTMLFormElement) {
 		const errorDiv = document.querySelector("#login-error-message") as HTMLDivElement;
 		if (!username || !password) {
 			// console.error("Username and password are required");
-			errorDiv.textContent = "Username and password are required";
+			errorDiv.textContent = getTranslatedKey("login.username-password.required");
 			return;
 		}
 		const loginResponse = await fetch(API_BASE_URL + "/users/login", {
@@ -30,7 +31,7 @@ export async function loginUser(e: Event, form: HTMLFormElement) {
 				const err = await loginResponse.json();
 				errorDiv.textContent = getApiErrorText(err);
 			} catch {
-				errorDiv.textContent = "Internal Error";
+				errorDiv.textContent = getTranslatedKey("error.internal");
 			}
 			return;
 		}
@@ -40,7 +41,7 @@ export async function loginUser(e: Event, form: HTMLFormElement) {
 		if (await a2fStatus(data) === false) {
 			const success = await loginWithWebSocket(data.accessToken);
 			if (!success) {
-				errorDiv!.textContent = "Connection failed. WebSocket required for login.";
+				errorDiv!.textContent = getTranslatedKey("websocket.connection_failed");
 				return ;
 			} else {
 				errorDiv!.textContent = "";
@@ -116,14 +117,14 @@ export async function submitLogin2FA(e: Event, form: HTMLFormElement) {
 			setContentView("views/home.html");
 		} else {
 			const errorDiv = document.querySelector("#login-2fa-error") as HTMLDivElement;
-			errorDiv.textContent = "Connection failed. WebSocket required for login. Please try again.";
+			errorDiv.textContent = getTranslatedKey("websocket.connection_failed");
 			return;
 		}
 
 	} catch (error) {
 		console.error("2FA login failed:", error);
 		const errorDiv = document.querySelector("#login-2fa-error") as HTMLDivElement;
-		errorDiv.textContent = "2FA login failed. Please try again.";
+		errorDiv.textContent = getTranslatedKey("login.2FA_connect.error");
 		return;
 	}
 }

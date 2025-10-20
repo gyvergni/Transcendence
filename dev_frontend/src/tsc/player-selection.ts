@@ -76,14 +76,14 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
     if (!name) return;
 
     if (guestsManager.pseudoExists(name)) {
-      alert(`${name} is already registered.`);
+      alert(getTranslatedKey("error.guest.add.already_exists"));
     } else {
       const result = await guestsManager.addGuest(name);
       if (result.succes == true) {
         registeredUsers = guestsManager.guests.map(guest => guest.pseudo);
         updateDropdown("");
       } else {
-        alert(`Failed to add guest: ${result.message}`);
+        alert(getTranslatedKey(result.message));
       }
     }
     // if (registeredUsers.includes(name)) {
@@ -108,7 +108,7 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
       alert(getTranslatedKey("error.guest.delete.not_found"));
       return;
 	} else if (gameType.getPlayers().some(p => p && p.name === name)) {
-		alert("You cannot delete a player who is already locked in.");
+		alert(getTranslatedKey("error.guest.delete_locked_in"));
 		return;
 	} else {
       const result = await guestsManager.deleteGuest(name);
@@ -117,7 +117,7 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
         input.value = "";
         updateDropdown("");
       } else {
-        alert(`Failed to delete guest: ${result.message}`);
+        alert(getTranslatedKey("error.guest.delete.failed") + `: ${result.message}`);
       }
     }
   })
@@ -127,7 +127,7 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
 	registeredUsers.push(guestsManager.host);
     const name = input.value.trim();
     if (!registeredUsers.includes(name)) {
-      alert("Please select a valid registered player.");
+      alert(getTranslatedKey("error.guest.unregistered"));
       return;
     }
     let playerList = gameType.getPlayers();
@@ -135,7 +135,7 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
     {
       if (playerList[i] != null && name == playerList[i].name)
       {
-        alert(`${name} is already locked in`);
+        alert(getTranslatedKey("error.guest.already_locked_in"));
         return;
       }
     }
@@ -175,7 +175,7 @@ async function loadAISelect(id: string, config: PlayerConfig): Promise<HTMLEleme
   const lockBtn = selector.querySelector<HTMLButtonElement>(".lockin-btn");
   lockBtn?.addEventListener("click", () => {
     if (!selectedDifficulty) {
-      alert("Please select a difficulty first.");
+      alert(getTranslatedKey("ai.difficulty.null"));
       return;
     }
     config.setDifficulty(selectedDifficulty as any);

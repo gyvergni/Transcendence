@@ -3,6 +3,7 @@ import { toggleBackButton } from "../animations.js";
 import { setContentView } from "../views.js";
 import { a2fStatus, checkTokenValidity } from "./auth.js";
 import { currentLang, getTranslatedKey, setLang } from "../translation.js";
+import { verifySignupInputDatas } from "./signup.js";
 
 export async function accountEditAvatar() {
 	const fileInput = document.querySelector("#account-avatar-file") as HTMLInputElement | null;
@@ -123,6 +124,12 @@ export async function editIgUsername(e: Event, form: HTMLFormElement) {
 			console.error("Password is required");
 			return ;
 		}
+		const valid = verifySignupInputDatas({username: igUsername});
+		if (valid != "true") {
+			const errorDiv = document.querySelector("#edit-igUsername-error") as HTMLDivElement;
+			errorDiv.textContent = valid;
+			return ;
+		}
 		const response = await fetch(API_BASE_URL + '/users/change-username', {
 			method: 'PUT',
 			headers: {
@@ -165,8 +172,14 @@ export async function editPassword(e: Event, form: HTMLFormElement) {
 		}
 		const confirmPassword = formData.get("confirm-password") as string;
 		if (newPassword !== confirmPassword) {
-			errorDiv.textContent = "New password and confirm password do not match";
+			errorDiv.textContent = getTranslatedKey("account.change-password.mismatch");
 			console.error("New password and confirm password do not match");
+			return ;
+		}
+
+		const valid = verifySignupInputDatas({username: "validUsername", password: newPassword});
+		if (valid != "true") {
+			errorDiv.textContent = valid;
 			return ;
 		}
 		const response = await fetch(API_BASE_URL + '/users/change-password', {
@@ -205,6 +218,10 @@ export async function account2FAHandler() {
 	try {
 		if (A2fStatus === true) {
 			const form2faDisable = document.querySelector("#edit-2fa-disable-form-container")! as HTMLDivElement;
+			const passwordInput = form2faDisable.querySelector("#disable-2fa-password") as HTMLInputElement;
+			const tokenInput = form2faDisable.querySelector("#disable-2fa-token") as HTMLInputElement;
+			passwordInput.value = "";
+			tokenInput.value = "";
 			form2faDisable.classList.remove("hidden");
 			toggleBackButton(false);
 			const errorDiv = document.querySelector("#div-disable-2fa-error") as HTMLDivElement;
@@ -214,6 +231,8 @@ export async function account2FAHandler() {
 			// const res = await disable2FA();
 		} else {
 			const form2fa = document.querySelector("#edit-2fa-setup-form-container")! as HTMLDivElement;
+			const tokenInput = form2fa.querySelector("#input-2fa-token") as HTMLInputElement;
+			tokenInput.value = "";
 			form2fa.classList.remove("hidden")
 			toggleBackButton(false);
 			const res = await setup2FA();
@@ -284,7 +303,7 @@ export async function enable2FA(e: Event, form: HTMLFormElement) {
 	const errorDiv = document.querySelector("#div-2fa-error") as HTMLDivElement;
 
 	if (!tempSessionId) {
-		errorDiv.textContent = "No session ID found, cannot enable 2FA. Please try again.";
+		errorDiv.textContent = getTranslatedKey("account.2FA.nosession");
 		console.error("No session ID found, cannot enable 2FA");
 		return ;
 	}
@@ -292,7 +311,7 @@ export async function enable2FA(e: Event, form: HTMLFormElement) {
 		const formData = new FormData(form);
 		const token = formData.get("input-2fa-token") as string;
 		if (!token) {
-			errorDiv.textContent = "Token is required to enable 2FA";
+			errorDiv.textContent = getTranslatedKey("account.2FA.enable.token.required");
 			console.error("Token is required to enable 2FA");
 			return ;
 		}
@@ -307,7 +326,7 @@ export async function enable2FA(e: Event, form: HTMLFormElement) {
 
 		if (!response.ok) {
 			const errorData = await response.json();
-			errorDiv.textContent = errorData.error;
+			errorDiv.textContent = getApiErrorText(errorData);
 			console.error("Failed to enable 2FA:", response.statusText);
 			return ;
 		}
@@ -316,7 +335,7 @@ export async function enable2FA(e: Event, form: HTMLFormElement) {
 
 		errorDiv.textContent = "";
 		const successDiv = document.querySelector("#div-2fa-success") as HTMLDivElement;
-		successDiv.textContent = "2FA enabled successfully!";
+		successDiv.textContent = getTranslatedKey("account.2FA.enable.success");
 		console.log("2FA enabled successfully");
 		setTimeout(() => {
 			const form2fa = document.querySelector("#edit-2fa-setup-form-container") as HTMLDivElement;
@@ -345,12 +364,12 @@ export async function disable2FA(e: Event, form: HTMLFormElement) {
 		const password = formData.get("disable-2fa-password") as string;
         const token = formData.get("disable-2fa-token") as string;
 		if (!password) {
-            errorDiv.textContent = "Password is required to disable 2FA";
+            errorDiv.textContent = getTranslatedKey("account.2FA.disable.password.required");
             return;
         }
         
         if (!token) {
-            errorDiv.textContent = "2FA token is required to disable 2FA";
+            errorDiv.textContent = getTranslatedKey("account.2FA.disable.token.required");
             return;
         }
 
@@ -365,13 +384,13 @@ export async function disable2FA(e: Event, form: HTMLFormElement) {
 
 		if (!response.ok) {
 			const errorData = await response.json();
-			errorDiv.textContent = errorData.message || "Failed to disable 2FA";
+			errorDiv.textContent = getApiErrorText(errorData);
 			console.error("Failed to disable 2FA", getApiErrorText(errorData));
 			return ;
 		}
 
 		errorDiv.textContent = "";
-		successDiv.textContent = "2FA disabled successfully!";
+		successDiv.textContent = getTranslatedKey("account.2FA.disable.success");
 		console.log("2FA disabled successfully");
 		setTimeout(() => {
 			const form2faDisable = document.querySelector("#edit-2fa-disable-form-container") as HTMLDivElement;
