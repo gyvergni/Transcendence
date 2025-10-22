@@ -9,7 +9,7 @@ export const createUserSchema = {
             required_error: "Pseudo is required",
             invalid_type_error: "Pseudo must be a string"
         }).min(3, {
-            message: "Pseudo must be at least 3 characters"
+            message: "Pseudo must be at least 3 characters",
         }).max(20, {
             message: "Pseudo must not exceed 20 characters"
         }),
@@ -165,7 +165,8 @@ export const changeUsernameSchema = {
         }).min(3, {
             message: "New pseudo must be at least 3 characters"
         }).max(20, {
-            message: "New pseudo must not exceed 20 characters"
+            message: "New pseudo must not exceed 20 characters",
+			
         }),
     }),
     response: {

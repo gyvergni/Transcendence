@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 
 import { FastifyRequest, FastifyReply } from "fastify";
 import { TwoFactorAuthDisableInput, TwoFactorAuthEnableInput, TwoFactorAuthLoginVerifyInput, TwoFactorAuthVerifyInput } from "./user/user.schema";
+import { error } from "console";
 
 export class TwoFactorAuthService {
 	static async generateTempSecret(userId: number) {
@@ -47,7 +48,7 @@ export class TwoFactorAuthService {
 
 	static async enableTwoFactorAuth(userId: number, secret: string, token: string) {
 		if (!this.verifyToken(secret, token)) {
-			return { success: false, message: "Invalid token" };
+			return { success: false, message: "Invalid token", errorKey: "account.2FA.invalid_token"  };
 		}
 
 		await prisma.twoFactorAuth.update({
@@ -125,7 +126,7 @@ export async function enableTwoFactorAuthHandler(req: FastifyRequest<{Body: TwoF
 
 		const res = await TwoFactorAuthService.enableTwoFactorAuth(userId, storedData.secret, token);
 		if (!res.success) {
-			return reply.status(401).send({ error: res.message });
+			return reply.status(401).send({ error: res.message, errorKey: res.errorKey});
 		}
 		return reply.status(200).send({ success: true, message: "Two-factor authentication enabled successfully" });
 	} catch (error) {
@@ -154,11 +155,11 @@ export async function disableTwoFactorAuthHandler(req: FastifyRequest<{Body: Two
 
 		const isPasswordValid = await bcrypt.compare(password, user.password);
 		if (!isPasswordValid) {
-			return reply.status(401).send({ message: "Invalid password" });
+			return reply.status(401).send({ message: "Invalid password", errorKey: "account.2FA.invalid_password" });
 		}
 		const isTokenValid = await TwoFactorAuthService.verifyTwoFactorAuth(userId, token);
 		if (!isTokenValid) {
-			return reply.status(401).send({ message: "Invalid 2FA token" });
+			return reply.status(401).send({ message: "Invalid 2FA token", errorKey: "account.2FA.invalid_token" });
 		}
 
 		await TwoFactorAuthService.disableTwoFactorAuth(userId);

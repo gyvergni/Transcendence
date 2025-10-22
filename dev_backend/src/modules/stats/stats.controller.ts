@@ -74,6 +74,7 @@ export async function addMatchHandler(req: FastifyRequest, reply: FastifyReply )
         const aiPlayers = ["ai-easy", "ai-medium", "ai-hard"];
 
 		const currentUserDb = await findUserByPseudo(currentUser.pseudo);
+        console.log("Current User DB:", currentUserDb);
         let winner;
         let winnerId;
         if (aiPlayers.includes(winnerUsername)) {
@@ -82,11 +83,16 @@ export async function addMatchHandler(req: FastifyRequest, reply: FastifyReply )
 			if (currentUserDb && currentUserDb.game_username === winnerUsername) 
 				winnerId = currentUserDb.id;
 			else {
-            	winner = await findUserByPseudo(winnerUsername);
-				winnerId = winner ? winner.id : guestList.find(guest => guest.pseudo === winnerUsername)?.id;
+                const guestPlayer = guestList.find(guest => guest.pseudo === winnerUsername);
+                if (guestPlayer)
+                    winnerId = guestPlayer.id;
+                else {
+                    winner = await findUserByPseudo(winnerUsername);
+                    winnerId = winner ? winner.id : undefined;
+                }
 			}
 			console.log("WinnerId:", winnerId);
-        }
+        }   
 
         let loser;
         let loserId;
@@ -96,10 +102,15 @@ export async function addMatchHandler(req: FastifyRequest, reply: FastifyReply )
 			if (currentUserDb && currentUserDb.game_username === loserUsername)
 				loserId = currentUserDb.id;
 			else {
-            	loser = await findUserByPseudo(loserUsername);
-            	loserId = loser ? loser.id : guestList.find(guest => guest.pseudo === loserUsername)?.id;
+                const guestPlayer = guestList.find(guest => guest.pseudo === loserUsername);
+                if (guestPlayer)
+                    loserId = guestPlayer.id;
+                else {
+                    loser = await findUserByPseudo(loserUsername);
+                    loserId = loser ? loser.id : undefined;
+                }
 			}
-			console.log("WinnerId:", loserId);
+			console.log("LooserId:", loserId);
         }
 
         // if (!winner && !loser) {
@@ -119,8 +130,8 @@ export async function addMatchHandler(req: FastifyRequest, reply: FastifyReply )
             });
         }
     
-        console.log("Body to add match:", body);
-        console.log("Winner ID:", winnerId, "Loser ID:", loserId);
+        // console.log("Body to add match:", body);
+        // console.log("Winner ID:", winnerId, "Loser ID:", loserId);
         const match = await addMatch(body, winnerId, loserId, winnerScore, loserScore, isPlayer1);
 
         return reply.status(StatusCodes.CREATED).send({message: "Match added successfully"});

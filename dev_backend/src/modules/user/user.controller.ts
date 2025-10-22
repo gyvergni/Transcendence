@@ -5,7 +5,7 @@ import { StatusCodes } from "http-status-codes";
 import { PrismaClient, Prisma } from "../../generated/prisma";
 import bcrypt from "bcrypt";
 import { createUser, findUserByPseudo, loginUser, findUsers, addFriend, updatePassword, logoutUser, deleteFriend, updateUsername, updateAvatar, twoFactorAuthStatus, findFriends } from "./user.service";
-import { CreateUserBody, LoginUserInput, AddFriendInput, ChangePasswordInput, ChangeUsernameInput, ChangeAvatarInput } from "./user.schema";
+import { CreateUserBody, LoginUserInput, AddFriendInput, ChangePasswordInput, ChangeUsernameInput } from "./user.schema";
 import { getGuestList } from "../guest/guest.service";
 import { path } from "../../index"
 import { createPendingLoginSession } from "../a2f";
@@ -315,11 +315,11 @@ export async function changePasswordHandler(req: FastifyRequest<{Body: ChangePas
 
 export async function changeUsernameHandler(req: FastifyRequest<{Body: ChangeUsernameInput}>, reply: FastifyReply) {
     const body = req.body;
-    if (body.newPseudo === "Deleted Guest" || body.newPseudo === "Invité supprimé" || body.newPseudo === "Invitado") {// A suppr faire la trad espagnol
+    if (body.newPseudo === "Deleted Guest" || body.newPseudo === "Invité supprimé" || body.newPseudo === "Invitado eliminado") {// A suppr faire la trad espagnol
         return httpError({
             reply,
             code: StatusCodes.BAD_REQUEST,
-            message: "Pseudo 'Deleted Guest' is reserved and cannot be used",
+            message: `Pseudo ${body.newPseudo} is reserved and cannot be used`,
             errorKey: "error.user.username_reserved",
         });
     }
@@ -392,7 +392,7 @@ export async function logoutUserHandler(req: FastifyRequest, reply: FastifyReply
     }
 }
 
-export async function changeAvatarHandler(req: FastifyRequest<{Body: ChangeAvatarInput}>, reply: FastifyReply) {
+export async function changeAvatarHandler(req: FastifyRequest, reply: FastifyReply) {
     const currentUser = req.user;
 
 	

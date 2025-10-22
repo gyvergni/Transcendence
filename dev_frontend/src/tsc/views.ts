@@ -11,7 +11,7 @@ import { logoutUser } from "./features/logout.js";
 import { signupUser } from "./features/signup.js";
 import { account2FAHandler, accountEditAvatar, editIgUsername, editPassword, setup2FA, loadAccountAvatar, loadAccountInfo, enable2FA, disable2FA } from "./features/account.js";
 import { getSettings } from "./settings.js";
-import { setLang, currentLang } from "./translation.js";
+import { getTranslatedKey, setLang, currentLang } from "./translation.js";
 import { addFriend, deleteFriend, friendsCache, renderFriends } from "./features/friends.js";
 import { setupGameEndScreen, setupTournamentWaitingRoom } from "./t-waitingscreen.js";
 import { initStatsView } from "./features/stats.js";
@@ -353,7 +353,7 @@ async function setQuickMatchView() {
 
   startBtn?.addEventListener("click", async () => {
     if (!match.isReady()) {
-      alert("Both players must be locked in before starting!");
+      alert(getTranslatedKey("error.views.notlockedin"));
       return;
     }
 

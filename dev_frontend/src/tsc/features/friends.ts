@@ -3,6 +3,7 @@ import { animateContentBoxIn, toggleBackButton } from "../animations";
 import { setContentView } from "../views";
 import { API_BASE_URL, getApiErrorText } from "./utils-api";
 import uiManager from "../main";
+import { getTranslatedKey } from "../translation";
 
 type Friend = {
 	id: number;
@@ -97,7 +98,7 @@ export async function renderFriends(root: HTMLElement, tpl: HTMLTemplateElement,
 	if (filtered.length === 0) {
 		const empty = document.createElement("li");
 		empty.className = "p-3 text-sm text-slate-400";
-		empty.textContent = q ? "No friends match your search." : "You have no friends added.";
+		empty.textContent = q ? getTranslatedKey("friends.search.noMatch") : getTranslatedKey("friends.noFriends");
 		fragment.appendChild(empty);
 	}
 

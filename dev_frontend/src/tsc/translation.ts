@@ -3,6 +3,10 @@ export type Lang = "fr" | "en" | "es";
 const translations: Record<Lang, Record<string, string>> = 
 {
 	en: {
+		//
+		"error.internal": "Internal error",
+		"websocket.connection_failed": "Connection failed. WebSocket required for login. Try to login.",
+
 		//home.html
 		"home.menu": "Main Menu",
 		"home.qmatch": "Quick Match",
@@ -20,6 +24,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"account.oldpass": "Old password",
 		"account.newpass": "New password",
 		"account.conf.pass": "Confirm password",
+		"account.change-password.mismatch": "New password and confirm password do not match",
 		"account.save": "Save",
 		"account.butt.2FA": "2FA",
 		"account.butt.2FA.enable": "Enable 2FA",
@@ -28,11 +33,21 @@ const translations: Record<Lang, Record<string, string>> =
 		"account.qr.mess": "Scan this QR code with your authentification app (Google Authentificator, ...)",
 		"account.validate": "Confirm",
 		"account.cancel": "Cancel",
+		"account.2FA.token.placeholder": "Enter the generated token",
+		"account.2FA.nosession" : "No session ID found, cannot enable 2FA. Please try again.",
+		"account.2FA.enable.token.required": "2FA token is required to enable 2FA",
+		"account.2FA.invalid_token": "Invalid 2FA token.",
+		"account.2FA.enable.success": "2FA has been successfully enabled.",
 		"account.2FA.title": "Desactivation two-factor authentification",
 		"account.disable2FA.message": "Enter your current password and a 2FA code to disable two-factor authentication.",
 		"account.current.pass": "Current password",
+		"account.2FA.password.placeholder": "Enter your current password",
+		"account.2FA.disable.password.required": "Password is required to disable 2FA",
+		"account.2FA.disable.token.required": "2FA token is required to disable 2FA",
+		"account.2FA.invalid_password": "Invalid password.",
 		"account.otc": "One-time code",
 		"account.butt.d2FA": "Disable 2FA",
+		"account.2FA.disable.success": "2FA has been successfully disabled.",
 
 		//ai-selection.html
 		"ai.easy-title": "For beginners. AI moves slowly and reacts late.",
@@ -42,6 +57,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"ai.hard-title": "Expert-level AI. Fast and accurate reactions.",
 		"ai.hard-btn": "Hard",
 		"lockin": "Lock In",
+		"ai.difficulty.null": "Select a difficulty first",
 
 		//login.html
 		"login.login": "Login",
@@ -51,10 +67,13 @@ const translations: Record<Lang, Record<string, string>> =
 		"login.noprofile-msg": " Don't have a profile ? ",
 		"login.create-acc": "Create Account",
 		"login.2FA-text": "Two-Factor Authentication",
+		"login.token_required": "2FA token is required",
+		"login.2FA_connect.error": "Failed to connect using 2FA token. Please try again.",
 		"login.code-msg": "Enter the 6-digit code from your authenticator app",
 		"login.auth-code": "Authentication Code",
 		"login.verify": "Verify",
 		"login.cancel": "Cancel",
+		"login.username-password.required": "Username and password are required",
 
 		//pause.html
 		"pause.title": "Pause Menu",
@@ -62,10 +81,17 @@ const translations: Record<Lang, Record<string, string>> =
 		"pause.quit": "Quit",
 
 		//player-selection.html
+		"player.search.placeholder": "Search",
 		"player.select": "Select Player",
 		"player.login": "Lock in",
 		"player.add-guest-btn": "Add Guest",
 		"player.del-guest-btn": "Delete Guest",
+                //player-selection dynamic content
+                "player.ready": "Ready",
+                "player.ai-easy": "AI easy",
+                "player.ai-medium": "AI medium",
+                "player.ai-hard": "AI hard",
+                "player.deleted": "Deleted Guest",
 
 		//player-slot-template.html
 		"player-slot.player": "Player",
@@ -99,24 +125,51 @@ const translations: Record<Lang, Record<string, string>> =
 		"signup.password": "Password",
 		"signup.verify-pw": "Verify Password",
 		"signup.signup-btn": "Sign Up",
+		"signup.pass-mismatch": "Password and verify password do not match",
+		"signup.username.length": "Username must be between 3 and 20 characters",
+		"signup.username.invalid-chars": "Username contains invalid characters",
+		"signup.password.length": "Password must be at least 6 characters long",
 
 		//stats-dashboard.html
 		"stats.statistics": "Statistics",
-		"stats.totalgames": "Total Games",
-		"stats.wins": "Wins",
-		"stats.losses": "Losses",
-		"stats.winratio": "Win Ratio",
-		"stats.longestRally": "Longuest Rally",
-		"stats.avgGameLength": "Avgerage Game length",
-		"stats.lastMatches": "Match History",
-		"stats.guestsMatchup": "Individual matchup stats",
-		"stats.guestsChoose": "Choose guest",
-		"stats.vsAI": "Recap vs AI",
-		"stats.aiExplanation": "Win - Loss vs the 3 AI Difficulties",
+        "stats.selectUser": "Select User",
+        "stats.summtotal": "Games played",
+        "stats.summwins": "Wins",
+        "stats.summlosses": "Losses",
+        "stats.summwinp": "Win %",
+        "stats.summlongrally": "Longest rally",
+        "stats.matchHistory": "Match History",
+        "stats.matchup": "Guest Matchup",
+        "stats.tournament": "Tournament Stats",
+        "stats.t-played": "Played",
+        "stats.t-finals": "Finals played",
+        "stats.t-won": "Won",
+        "stats.averages": "Game Averages",
+        "stats.avg-inputs": "Inputs",
+        "stats.avg-length": "Game length",
+        "stats.avg-wb": "Wall bounces",
+        "stats.general": "General Stats",
+        "stats.total-time": "Time played",
+        "stats.total-inputs": "Total inputs",
+        "stats.total-wallBounces": "Total wall bounces",
+        "stats.total-hits": "Total hits",
+        "stats.total-ptswon": "Points won",
+        "stats.total-ptslost": "Points lost",
+        "stats.t-first": "Tournament First Round",
+        "stats.t-final": "Tournament Final",
+        "stats.mode": "Mode",
+        "stats.quickMatch": "Quick Match",
+        
+                //Dynamic content in stats.ts
+                "stats.select_matchup": "Select opponent",
+                "stats.wins": "Wins",
+                "stats.losses": "Losses",
+                "stats.default": "(Main)",
+                "stats.matchup-ylabel": "Number of games",
+                
 
         //match-detail.html
-        "match.detail": "Match Detail",
-        "match.close": "match.close",
+        "match.title": "Match Detail",
         "match.game-settings": "Game Settings",
         "match.settings-ballsize": "Ball Size: ",
         "match.settings-ballspeed": "Ball Speed: ",
@@ -127,7 +180,15 @@ const translations: Record<Lang, Record<string, string>> =
         "match.totaltime": "Total Time: ",
         "match.longestrally": "Longest Rally: ",
         "match.stats": "Match Stats",
-        
+        "match.player": "Player",
+        "match.score": "Score",
+        "match.wb": "Wall bounces",
+        "match.inputs": "Inputs",
+        "match.graph-title": "Point Timeline",
+         
+            //Dynamic content in stats.ts
+            "match.timeline-ylabel": "Rally Duration (s)",
+            "match.timeline-xlabel": "Point",
 
 		//tournament.html
 		"tournament.title": "Tournament",
@@ -138,8 +199,9 @@ const translations: Record<Lang, Record<string, string>> =
 		"t-waiting.waitingTitle": "Tournament waiting room",
 		"t-waiting.prevWinnerLabel": "Previous Winner:",
 		"t-waiting.ready": "Ready",
-		"leftplayer": "Left Player",
-		"rightplayer": "Right Player",
+		// "leftplayer": "Left Player",
+		// "rightplayer": "Right Player",
+        "t-waiting.nextmatch": "Next Match",
 
 		//tournament-end.html
 		"tournament.endTitle": "🏆 Tournament Champion 🏆",
@@ -149,11 +211,24 @@ const translations: Record<Lang, Record<string, string>> =
 		"endgame.endTitle": "Winner",
 		"endgame.return": "Return Home",
 
+		//friends.html
+		"friends.title": "Friends",
+		"friends.add": "Add Friend",
+		"friends.reload": "Reload",
+		"friends.search.placeholder": "Search",
+		"friends.noFriends": "You have no friends yet.",
+		"friends.search.noMatch": "No friends match your search.",
+		"friends.add.title": "Add a friend",
+		"friends.add.label": "Friend username",
+		"friends.add.placeholder": "Enter username",
+		"friends.add.submit": "Add",
+		"friends.cancel": "Cancel",
 
 		// Error messages
 		"error.guest.not_found": "Guest not found",
 		"error.guest.fetch_failed": "Failed to fetch guests",
-		"error.guest.username_reserved": "Username ‘Deleted Guest‘ is reserved and cannot be used",
+		"error.guest.username_reserved": "This username is reserved and cannot be used",
+		"error.guest.add.already_exists": "Guest with this pseudo already exists",
 		"error.guest.create_failed": "Failed to create guest",
 		"error.guest.host_username_conflict": "Guest pseudo cannot be the same as your host in-game username",
 		"error.guest.list_full": "Guest list is full, you cannot create more than 10 guests",
@@ -161,6 +236,9 @@ const translations: Record<Lang, Record<string, string>> =
 		"error.guest.delete_failed": "An error occurred while deleting the guest",
 		"error.guest.delete.not_found": "You cannot delete a guest that does not exist",
 		"error.guest.delete_host": "You cannot delete the host player",
+		"error.guest.delete_locked_in": "You cannot delete a player who is already locked in.",
+		"error.guest.unregistered": "This player does not exist.",
+		"error.guest.already_locked_in": "This player is already locked in.",
 
 		"error.stats.player_not_found": "Player not found",
 		"error.stats.add_match_failed": "Failed to add match",
@@ -194,10 +272,15 @@ const translations: Record<Lang, Record<string, string>> =
 		"error.friend.add_failed": "Failed to add friend",
 		"error.friend.not_friends": "You are not friends with this user",
 		"error.friend.delete_failed": "Failed to delete friend",
-
+        "error.views.notlockedin": "Both Players must be locked in",
 	},
 
-	fr: {		//home.html
+	fr: {		
+		//
+		"error.internal": "Erreur interne",
+		"websocket.connection_failed": "Echec de la connexion. WebSocket requis pour la connexion. Essayez de vous reconnecter.",
+		
+		//home.html
 		"home.menu": "Menu Principal",
 		"home.qmatch": "Partie Rapide",
 		"home.tournament": "Tournoi",
@@ -214,6 +297,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"account.oldpass": "Ancien mot de passe",
 		"account.newpass": "Nouveau mot de passe",
 		"account.conf.pass": "Confirmez le mot de passe",
+		"account.change-password.mismatch": "Le nouveau mot de passe et la confirmation ne correspondent pas",
 		"account.save": "Enregistrer",
 		"account.butt.2FA": "A2F",
 		"account.butt.2FA.enable": "Activer A2F",
@@ -222,11 +306,21 @@ const translations: Record<Lang, Record<string, string>> =
 		"account.qr.mess": "Veuillez scanner ce QR code avec votre application d'authentification (Google Authentificator, ...)",
 		"account.validate": "Valider",
 		"account.cancel": "Annuler",
+		"account.2FA.token.placeholder": "Entrez le token genere",
+		"account.2FA.nosession" : "Aucun ID de session trouve, impossible d'activer l'A2F. Veuillez reessayer.",
+		"account.2FA.token.required": "Le token A2F est requis pour activer l'A2F",
+		"account.2FA.invalid_token": "Token A2F invalide.",
+		"account.2FA.enable.success": "L'A2F a ete activee avec succes.",
 		"account.2FA.title": "Desactiver la double authentification",
 		"account.disable2FA.message": "Veuillez saisir votre mot de passe actuel ainsi qu'un code 2FA pour desactiver la double authentification",
 		"account.current.pass": "Mot de passe actuel",
+		"account.2FA.password.placeholder": "Entrez votre mot de passe actuel",
+		"account.2FA.disable.password.required": "Le mot de passe est requis pour desactiver l'A2F",
+		"account.2FA.disable.token.required": "Le token A2F est requis pour desactiver l'A2F",
+		"account.2FA.invalid_password": "Mot de passe invalide.",
 		"account.otc": "Code a usage unique",
 		"account.butt.d2FA": "Desactiver l'A2F",
+		"account.2FA.disable.success": "L'A2F a ete desactivee avec succes.",
 
 		//ai-selection.html
 		"ai.easy-title": "Pour les debutants. L'IA se deplace lentement et reagit tard.",
@@ -236,6 +330,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"ai.hard-title": "IA de niveau expert. Reactions rapides et precises.",
 		"ai.hard-btn": "Difficile",
 		"lockin": "Verrouiller",
+		"ai.difficulty.null": "Selectionner d'abord une difficulte",
 		
 		//login.html
 		"login.login": "Connexion",
@@ -245,10 +340,13 @@ const translations: Record<Lang, Record<string, string>> =
 		"login.noprofile-msg": " Vous n'avez pas de compte ? ",
 		"login.create-acc": "Creer un compte",
 		"login.2FA-text": "Double authentification",
+		"login.token_required": "Le token 2FA est requis",
+		"login.2FA_connect.error": "Echec de la connexion avec le token 2FA. Veuillez reessayer.",
 		"login.code-msg": "Veuillez entrer le code a 6 chiffres de votre application d'authentification",
 		"login.auth-code": "Code d'authentification",
 		"login.verify": "Verifier",
 		"login.cancel": "Annuler",
+		"login.username-password.required": "Un pseudo et un mot de passe sont requis",
 		
 		//pause.html
 		"pause.title": "Menu Pause",
@@ -256,10 +354,17 @@ const translations: Record<Lang, Record<string, string>> =
 		"pause.quit": "Quitter",
 
 		//player-selection.html
+		"player.search.placeholder": "Rechercher",
 		"player.select": "Selectionner un joueur",
 		"player.login": "Verrouiller",
 		"player.add-guest-btn": "Ajouter un invité",
 		"player.del-guest-btn": "Supprimer l'invité",
+                //player-selection dynamic content
+                "player.ready": "Prêt",
+                "player.ai-easy": "IA facile",
+                "player.ai-medium": "IA moyenne",
+                "player.ai-hard": "IA difficile",
+                "player.deleted": "Invité Supprimé",
 
 		//player-slot-template.html
 		"player-slot.player": "Joueur",
@@ -293,21 +398,70 @@ const translations: Record<Lang, Record<string, string>> =
 		"signup.password": "Mot de passe",
 		"signup.verify-pw": "Verifier le mot de passe",
 		"signup.signup-btn": "S'inscrire",
+		"signup.pass-mismatch": "Le mot de passe et la verification ne correspondent pas",
+		"signup.username.length": "Le pseudo doit contenir entre 3 et 20 caracteres",
+		"signup.username.invalid-chars": "Le pseudo contient des caracteres invalides",
+		"signup.password.length": "Le mot de passe doit contenir au moins 6 caracteres",
 
 		//stats-dashboard.html
-		"stats.statistics": "Statistiques",
-		"stats.totalgames": "Parties totales",
-		"stats.wins": "Victoires",
-		"stats.losses": "Défaites",
-		"stats.winratio": "Ratio de victoires",
-		"stats.longuestRally": "Plus long échange",
-		"stats.avgGameLength": "Durée moyenne d'une partie",
-		"stats.lastMatches": "Historique des parties",
-		"stats.guestsMatchup": "Statistiques par invité",
-		"stats.guestsChoose": "Choisir un invité",
-		"stats.vsAI": "Résumé contre l'IA",
-		"stats.aiExplanation": "Victoires - Défaites contre les 3 niveaux de difficulté de l'IA",
-		
+        "stats.statistics": "Statistiques",
+        "stats.selectUser": "Sélectionner un utilisateur",
+        "stats.summtotal": "Parties jouées",
+        "stats.summwins": "Victoires",
+        "stats.summlosses": "Défaites",
+        "stats.summwinp": "Taux de victoire",
+        "stats.summlongrally": "Plus long échange",
+        "stats.matchHistory": "Historique des matchs",
+        "stats.matchup": "Statistiques par adversaire",
+        "stats.tournament": "Statistiques Tournoi",
+        "stats.t-played": "Joués",
+        "stats.t-finals": "Finales jouées",
+        "stats.t-won": "Gagnés",
+        "stats.averages": "Moyennes par partie",
+        "stats.avg-inputs": "Entrées",
+        "stats.avg-length": "Durée moyenne",
+        "stats.avg-wb": "Rebonds muraux",
+        "stats.general": "Statistiques générales",
+        "stats.total-time": "Temps",
+        "stats.total-inputs": "Entrées",
+        "stats.total-wallBounces": "Rebonds muraux",
+        "stats.total-hits": "Coups totaux",
+        "stats.total-ptswon": "Pts gagnés",
+        "stats.total-ptslost": "Pts perdus",
+
+                //Dynamic content in stats.ts
+                "stats.select_matchup": "Sélectionner un adversaire",
+                "stats.wins": "Victoires",
+                "stats.losses": "Défaites",
+                "stats.t-first": "Tournoi Premier Tour",
+                "stats.t-final": "Tournoi Finale",
+                "stats.mode": "Mode",
+                "stats.quickMatch": "Partie Rapide",
+                "stats.default": "(Principal)",
+                "stats.matchup-ylabel": "Nombre de parties",
+
+        //match-detail.html
+        "match.title": "Détail du match",
+        "match.game-settings": "Paramètres du jeu",
+        "match.settings-ballsize": "Taille de la balle : ",
+        "match.settings-ballspeed": "Vitesse de la balle : ",
+        "match.settings-paddlesize": "Taille de la raquette : ",
+        "match.settings-paddlespeed": "Vitesse de la raquette : ",
+        "match.settings-gamemode": "Mode de jeu : ",
+        "match.totalhits": "Coups totaux : ",
+        "match.totaltime": "Temps total : ",
+        "match.longestrally": "Plus long échange : ",
+        "match.stats": "Statistiques du match",
+        "match.player": "Joueur",
+        "match.score": "Score",
+        "match.wb": "Rebonds muraux",
+        "match.inputs": "Entrées",
+        "match.graph-title": "Chronologie des points",
+
+            //Dynamic content in stats.ts
+            "match.timeline-ylabel": "Durée de l'échange (s)",
+            "match.timeline-xlabel": "Point",
+
 		//tournament.html
 		"tournament.title": "Tournoi",
 		"tournament.instructions": "Selectionnez 4 joueurs ou IA",
@@ -317,8 +471,9 @@ const translations: Record<Lang, Record<string, string>> =
 		"t-waiting.waitingTitle": "Salle d'attente du tournoi",
 		"t-waiting.prevWinnerLabel": "Vainqueur precedent:",
 		"t-waiting.ready": "Pret",
-		"leftplayer": "Joueur de gauche",
-		"rightplayer": "Joueur de droite",
+		// "leftplayer": "Joueur de gauche",
+		// "rightplayer": "Joueur de droite",
+		"t-waiting.nextmatch": "Match suivant",
 
 		//tournament-end.html
 		"tournament.endTitle": "🏆 Champion du tournoi 🏆",
@@ -328,11 +483,24 @@ const translations: Record<Lang, Record<string, string>> =
 		"endgame.endTitle": "Gagnant",
 		"endgame.return": "Retour a l'accueil",
 
+		//friends.html
+		"friends.title": "Amis",
+		"friends.add": "Ajouter un ami",
+		"friends.reload": "Raffraichir",
+		"friends.search.placeholder": "Chercher",
+		"friends.noFriends": "Vous n'avez pas encore d'amis.",
+		"friends.search.noMatch": "Aucun ami ne correspond a votre recherche.",
+		"friends.add.title": "Ajouter un ami",
+		"friends.add.label": "Pseudo de l'ami",
+		"friends.add.placeholder": "Entrez le pseudo",
+		"friends.add.submit": "Ajouter",
+		"friends.cancel": "Annuler",
 
 		// Error messages
 		"error.guest.not_found": "Invite introuvable",
 		"error.guest.fetch_failed": "Echec de la recuperation des invites",
-		"error.guest.username_reserved": "Le pseudo 'Deleted Guest' est reserve et ne peut pas etre utilise",
+		"error.guest.username_reserved": "Ce pseudo est reserve et ne peut pas etre utilise",
+		"error.guest.add.already_exists": "Un invite avec ce pseudo existe deja",
 		"error.guest.create_failed": "Echec de la creation de l'invite",
 		"error.guest.host_username_conflict": "Le pseudo de l'invite ne peut pas etre le meme que votre pseudo in-game",
 		"error.guest.list_full": "La liste des invites est pleine (max 10)",
@@ -340,6 +508,9 @@ const translations: Record<Lang, Record<string, string>> =
 		"error.guest.delete_failed": "Une erreur est survenue lors de la suppression de l'invite",
 		"error.guest.delete.not_found": "Vous ne pouvez pas supprimer un invite qui n'existe pas",
 		"error.guest.delete_host": "Vous ne pouvez pas supprimer le joueur hote",
+		"error.guest.delete_locked_in": "Vous ne pouvez pas supprimer un joueur deja verrouille.",
+		"error.guest.unregistered": "Ce joueur n'existe pas.",
+		"error.guest.already_locked_in": "Ce joueur est deja verrouille.",
 
 		"error.stats.player_not_found": "Joueur introuvable",
 		"error.stats.add_match_failed": "Echec de l'ajout du match",
@@ -373,8 +544,13 @@ const translations: Record<Lang, Record<string, string>> =
 		"error.friend.add_failed": "Echec de l'ajout de l'ami",
 		"error.friend.not_friends": "Vous n'etes pas amis avec cet utilisateur",
 		"error.friend.delete_failed": "Echec de la suppression de l'ami",
-	},
+        "error.views.notlockedin": "Les deux joueurs doivent être prêts",
+    },
 	es: {
+		//
+		"error.internal": "Error interno",
+		"websocket.connection_failed": "Fallo de conexion. WebSocket requerido para iniciar sesion. Intente iniciar sesion.",
+
 		//home.html
 		"home.menu": "Menu Principal",
 		"home.qmatch": "Partida Rapida",
@@ -392,6 +568,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"account.oldpass": "Contrasena antigua",
 		"account.newpass": "Nueva contrasena",
 		"account.conf.pass": "Confirmar contrasena",
+		"account.change-password.mismatch": "La nueva contrasena y la confirmacion no coinciden",
 		"account.save": "Guardar",
 		"account.butt.2FA": "2FA",
 		"account.butt.2FA.enable": "Activar 2FA",
@@ -400,11 +577,21 @@ const translations: Record<Lang, Record<string, string>> =
 		"account.qr.mess": "Escanee este codigo QR con su aplicacion de autenticacion (Google Authentificator, ...)",
 		"account.validate": "Confirmar",
 		"account.cancel": "Cancelar",
+		"account.2FA.token.placeholder": "Ingrese el token generado",
+		"account.2FA.nosession" : "No se encontro ID de sesion, no se puede activar 2FA. Por favor, intente de nuevo.",
+		"account.2FA.token.required": "Se requiere el token 2FA para activar 2FA",
+		"account.2FA.invalid_token": "Token 2FA invalido.",
+		"account.2FA.enable.success": "2FA se ha activado con exito.",
 		"account.2FA.title": "Desactivacion de la autenticacion de dos factores",
 		"account.disable2FA.message": "Ingrese su contrasena actual y un codigo 2FA para desactivar la autenticacion de dos factores.",
 		"account.current.pass": "Contrasena actual",
+		"account.2FA.password.placeholder": "Ingrese su contrasena actual",
+		"account.2FA.disable.password.required": "Se requiere la contrasena para desactivar 2FA",
+		"account.2FA.disable.token.required": "Se requiere el token 2FA para desactivar 2FA",
+		"account.2FA.invalid_password": "Contrasena invalida.",
 		"account.otc": "Codigo de un solo uso",
 		"account.butt.d2FA": "Desactivar 2FA",
+		"account.2FA.disable.success": "2FA se ha desactivado con exito.",
 
 		//ai-selection.html
 		"ai.easy-title": "Para principiantes. La IA se mueve lentamente y reacciona tarde.",
@@ -414,6 +601,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"ai.hard-title": "IA de nivel experto. Reacciones rapidas y precisas.",
 		"ai.hard-btn": "Dificil",
 		"lockin": "Bloquear",
+		"ai.difficulty.null": "Seleccione una dificultad primero",
 
 		//login.html
 		"login.login": "Iniciar sesion",
@@ -423,10 +611,13 @@ const translations: Record<Lang, Record<string, string>> =
 		"login.noprofile-msg": " No tienes un perfil ? ",
 		"login.create-acc": "Crear cuenta",
 		"login.2FA-text": "Autenticacion de dos factores",
+		"login.token_required": "Se requiere el token 2FA",
+		"login.2FA_connect.error": "Fallo al conectar con el token 2FA. Por favor, intente de nuevo.",
 		"login.code-msg": "Ingrese el codigo de 6 digitos de su aplicacion de autenticacion",
 		"login.auth-code": "Codigo de autenticacion",
 		"login.verify": "Verificar",
 		"login.cancel": "Cancelar",
+		"login.username-password.required": "Se requieren nombre de usuario y contrasena",
 
 		//pause.html
 		"pause.title": "Menu de pausa",
@@ -434,10 +625,17 @@ const translations: Record<Lang, Record<string, string>> =
 		"pause.quit": "Salir",
 
 		//player-selection.html
+		"player.search.placeholder": "Buscar",
 		"player.select": "Seleccionar jugador",
 		"player.login": "Bloquear",
 		"player.add-guest-btn": "Agregar invitado",
 		"player.del-guest-btn": "Eliminar invitado",
+                //player-selection dynamic content
+                "player.ready": "Listo",
+                "player.ai-easy": "IA fácil",
+                "player.ai-medium": "IA promedio",
+                "player.ai-hard": "IA difícil",
+                "player.deleted": "Invitado Eliminado",
 
 		//player-slot-template.html
 		"player-slot.player": "Jugador",
@@ -471,23 +669,69 @@ const translations: Record<Lang, Record<string, string>> =
 		"signup.password": "Contrasena",
 		"signup.verify-pw": "Verificar contrasena",
 		"signup.signup-btn": "Registrarse",
+		"signup.pass-mismatch": "La contrasena y la verificacion no coinciden",
+		"signup.username.length": "El nombre de usuario debe tener entre 3 y 20 caracteres",
+		"signup.username.invalid-chars": "El nombre de usuario contiene caracteres invalidos",
+		"signup.password.length": "La contrasena debe tener al menos 6 caracteres",
 		
 		//stats-dashboard.html
 		"stats.statistics": "Estadísticas",
-		"stats.totalgames": "Partidas totales",
-		"stats.wins": "Victorias",
-		"stats.losses": "Derrotas",
-		"stats.winratio": "Ratio de victorias",
-		"stats.longuestRally": "Rally más largo",
-		"stats.avgGameLength": "Duración media de la partida",
-		"stats.lastMatches": "Historial de partidas",
-		"stats.guestsMatchup": "Estadísticas por invitado",
-		"stats.guestsChoose": "Elegir invitado",
-		"stats.vsAI": "Resumen contra la IA",
-		"stats.aiExplanation": "Victorias - Derrotas contra las 3 dificultades de la IA",
+        "stats.selectUser": "Seleccionar usuario",
+        "stats.summtotal": "Partidos jugados",
+        "stats.summwins": "Victorias",
+        "stats.summlosses": "Derrotas",
+        "stats.summwinp": "Porcentaje de victorias",
+        "stats.summlongrally": "Rally más largo",
+        "stats.matchHistory": "Historial de partidos",
+        "stats.matchup": "Enfrentamiento",
+        "stats.tournament": "Estadísticas de torneos",
+        "stats.t-played": "Jugados",
+        "stats.t-finals": "Finales jugadas",
+        "stats.t-won": "Ganados",
+        "stats.averages": "Promedios por partido",
+        "stats.avg-inputs": "Entradas",
+        "stats.avg-length": "Duración media",
+        "stats.avg-wb": "Rebotes en pared",
+        "stats.general": "Estadísticas generales",
+        "stats.total-time": "Tiempo total de juego",
+        "stats.total-inputs": "Entradas totales",
+        "stats.total-wallBounces": "Rebotes totales",
+        "stats.total-hits": "Golpes totales",
+        "stats.total-ptswon": "Puntos ganados",
+        "stats.total-ptslost": "Puntos perdidos",
+        
+                //Dynamic content in stats.ts
+                "stats.select_matchup": "Seleccionar oponente",
+                "stats.wins": "Victorias",
+                "stats.losses": "Derrotas",
+                "stats.t-first": "Torneo Primera Ronda",
+                "stats.t-final": "Torneo Final",
+                "stats.mode": "Modo",
+                "stats.quickMatch": "Partida Rapida",
+                "stats.default": "(Principal)",
+                "stats.matchup-ylabel": "Partidas",
 
         //match-detail.html
-        "match.game-settings": "",
+        "match.title": "Detalle del partido",
+        "match.game-settings": "Configuracion del juego",
+        "match.settings-ballsize": "Tamanio de la pelota: ",
+        "match.settings-ballspeed": "Velocidad de la pelota: ",
+        "match.settings-paddlesize": "Tamanio de la paleta: ",
+        "match.settings-paddlespeed": "Velocidad de la paleta: ",
+        "match.settings-gamemode": "Modo de juego: ",
+        "match.totalhits": "Golpes totales: ",
+        "match.totaltime": "Tiempo total: ",
+        "match.longestrally": "Rally mas largo: ",
+        "match.stats": "Estadisticas del partido",
+        "match.player": "Jugador",
+        "match.score": "Puntuacion",
+        "match.wb": "Rebotes en pared",
+        "match.inputs": "Entradas",
+        "match.graph-title": "Cronologia de puntos",
+
+            //Dynamic content in stats.ts
+            "match.timeline-ylabel": "Duracion del rally (s)",
+            "match.timeline-xlabel": "Punto",
 
 		//tournament.html
 		"tournament.title": "Torneo",
@@ -498,8 +742,9 @@ const translations: Record<Lang, Record<string, string>> =
 		"t-waiting.waitingTitle": "Espera del torneo",
 		"t-waiting.prevWinnerLabel": "Ganador anterior:",
 		"t-waiting.ready": "Listo",
-		"leftplayer": "Jugador izquierdo",
-		"rightplayer": "Jugador derecho",
+		// "leftplayer": "Jugador izquierdo",
+		// "rightplayer": "Jugador derecho",
+		"t-waiting.nextmatch": "Proximo partido",
 
 		//tournament-end.html
 		"tournament.endTitle": "🏆 Campeon del torneo 🏆",
@@ -509,17 +754,34 @@ const translations: Record<Lang, Record<string, string>> =
 		"endgame.endTitle": "Ganador",
 		"endgame.return": "Volver al inicio",
 
+		//friends.html
+		"friends.title": "Lista de amigos",
+		"friends.add": "Agregar amigo",
+		"friends.reload": "Recargar lista",
+		"friends.search.placeholder": "Buscar",
+		"friends.noFriends": "No tienes amigos.",
+		"friends.search.noMatch": "Ningun amigo coincide con tu busqueda.",
+		"friends.add.title": "Agregar amigo",
+		"friends.add.label": "Nombre de usuario del amigo",
+		"friends.add.placeholder": "Ingrese el nombre de usuario",
+		"friends.add.submit": "Agregar",
+		"friends.cancel": "Cancelar",
 
 		// Error messages
 		"error.guest.not_found": "Invitado no encontrado",
 		"error.guest.fetch_failed": "Error al obtener invitados",
-		"error.guest.username_reserved": "El nombre 'Deleted Guest' esta reservado y no puede usarse",
+		"error.guest.username_reserved": "Este nombre esta reservado y no puede usarse",
+		"error.guest.add.already_exists": "Ya existe un invitado con este nombre",
 		"error.guest.create_failed": "Error al crear invitado",
 		"error.guest.host_username_conflict": "El nombre del invitado no puede ser el mismo que tu nombre en el juego",
 		"error.guest.list_full": "La lista de invitados esta llena (max 10)",
 		"error.guest.duplicate_username": "Ya existe un invitado con este nombre",
 		"error.guest.delete_failed": "Ocurrio un error al eliminar el invitado",
 		"error.guest.delete.not_found": "No puedes eliminar un invitado que no existe",
+		"error.guest.delete_host": "No puedes eliminar al jugador anfitrion",
+		"error.guest.delete_locked_in": "No puedes eliminar a un jugador que ya esta bloqueado.",
+		"error.guest.unregistered": "Este jugador no existe.",
+		"error.guest.already_locked_in": "Este jugador ya esta bloqueado.",
 
 
 		"error.stats.player_not_found": "Jugador no encontrado",
@@ -554,7 +816,8 @@ const translations: Record<Lang, Record<string, string>> =
 		"error.friend.add_failed": "Error al agregar amigo",
 		"error.friend.not_friends": "No eres amigo de este usuario",
 		"error.friend.delete_failed": "Error al eliminar amigo",
-	}
+        "error.views.notlockedin": "Ambos jugadores deben estar listos",
+    }
 };
 
 export let currentLang: Lang = "en";
@@ -575,9 +838,23 @@ export function setLang(lang: Lang) {
 		const text = translations[currentLang][key];
 		if (text) el.setAttribute("title", text);
 	});
+
+	document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+  		const key = el.getAttribute("data-i18n-placeholder");
+  		if (key) el.setAttribute("placeholder", getTranslatedKey(key));
+	});
 }
 
 export function getTranslatedKey(key: string): string {
 	const message = translations[currentLang][key];
 	return message ? message : key;
+}
+
+export function translateName(name: string): string {
+    if (name == "ai-easy" || name == "ai-medium" || name == "ai-hard")
+        return (getTranslatedKey("player." + name));
+    else if (name == "Deleted Guest")
+        return (getTranslatedKey("player.deleted"));
+    else
+        return name;
 }

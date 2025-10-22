@@ -2,7 +2,7 @@
   Match Detail
 </h2>
 
-<div id="match-detail" class="flex flex-col w-full h-[75vh] rounded-xl p-2 overflow-hidden text-[clamp(0.6rem,1vw,0.9rem)]">
+<div id="match-detail" class="flex flex-col w-full h-[85vh] rounded-xl p-2 overflow-hidden text-[clamp(0.6rem,1vw,0.9rem)]">
 
   <!-- Header -->
   <div class="flex justify-between items-center mb-2 flex-none text-sm">
@@ -33,14 +33,13 @@
 
   <!-- Player stats -->
   <div id="match-player-stats" class="mb-2 flex-none">
-    <h4 class="font-semibold mb-1 text-cyan-300" data-i18n="match.player-stats"></h4>
     <table class="table-auto w-full text-[clamp(0.6rem,0.9vw,0.8rem)] border border-cyan-400/30 backdrop-blur-md bg-cyan-900/20">
       <thead>
         <tr class="border-b border-cyan-400/30 text-cyan-300">
-          <th class="px-1 py-0.5">Player</th>
-          <th class="px-1 py-0.5">Score</th>
-          <th class="px-1 py-0.5">Wall bounces</th>
-          <th class="px-1 py-0.5">Inputs</th>
+          <th class="px-1 py-0.5" data-i18n="match.player">Player</th>
+          <th class="px-1 py-0.5" data-i18n="match.score">Score</th>
+          <th class="px-1 py-0.5" data-i18n="match.wb">Wall bounces</th>
+          <th class="px-1 py-0.5" data-i18n="match.inputs">Inputs</th>
         </tr>
       </thead>
       <tbody id="table.entries" class="text-center">
@@ -65,7 +64,7 @@
 
     <!-- Timeline chart -->
     <div class="bg-cyan-900/20 border border-cyan-400/30 rounded-md p-1 flex flex-col backdrop-blur-md min-h-0">
-      <h4 class="font-semibold mb-1 text-cyan-300 flex-none">Point Timeline</h4>
+      <h4 class="font-semibold mb-1 text-cyan-300 flex-none" data-i18n="match.graph-title">Point Timeline</h4>
       <div class="flex-1 relative min-h-0">
         <canvas id="match-points-timeline" class="w-full h-full"></canvas>
       </div>
