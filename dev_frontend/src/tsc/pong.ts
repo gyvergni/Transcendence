@@ -181,9 +181,9 @@ class Ball {
 	particleSystem: any;
 	clock: Clock;
 
-	countDown3: BABYLON.Mesh;
-	countDown2: BABYLON.Mesh;
-	countDown1: BABYLON.Mesh;
+	countDown3: any;
+	countDown2: any;
+	countDown1: any;
 
 	//stat track
 	rebound: number = 0;

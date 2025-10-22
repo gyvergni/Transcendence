@@ -27,6 +27,9 @@ importers:
       '@types/chart.js':
         specifier: ^4.0.1
         version: 4.0.1
+      '@types/earcut':
+        specifier: ^3.0.0
+        version: 3.0.0
       '@types/node':
         specifier: ^24.0.14
         version: 24.0.14
@@ -404,6 +407,9 @@ packages:
   '@types/chart.js@4.0.1':
     resolution: {integrity: sha512-OwXJ6Eg14eFpCsTG6sljiGnvVpit5R9rapG7nwDnQlljsdplVIOYVuCSwy07IduCtihrOwvOnbhXKLyp3nvPcw==}
     deprecated: This is a stub types definition. chart.js provides its own type definitions, so you do not need this installed.
+
+  '@types/earcut@3.0.0':
+    resolution: {integrity: sha512-k/9fOUGO39yd2sCjrbAJvGDEQvRwRnQIZlBz43roGwUZo5SHAmyVvSFyaVVZkicRVCaDXPKlbxrUcBuJoSWunQ==}
 
   '@types/node@24.0.14':
     resolution: {integrity: sha512-4zXMWD91vBLGRtHK3YbIoFMia+1nqEz72coM42C5ETjnNCa/heoj7NT1G67iAfOqMmcfhuCZ4uNpyz8EjlAejw==}
@@ -942,6 +948,8 @@ snapshots:
   '@types/chart.js@4.0.1':
     dependencies:
       chart.js: 4.5.0
+
+  '@types/earcut@3.0.0': {}
 
   '@types/node@24.0.14':
     dependencies:

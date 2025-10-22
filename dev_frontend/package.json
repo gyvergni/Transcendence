@@ -14,6 +14,7 @@
 	},
 	"devDependencies": {
 		"@types/chart.js": "^4.0.1",
+		"@types/earcut": "^3.0.0",
 		"@types/node": "^24.0.14",
 		"concurrently": "^9.2.0",
 		"esbuild": "^0.25.9",
@@ -24,8 +25,8 @@
 		"@tailwindcss/aspect-ratio": "^0.4.2",
 		"@tailwindcss/cli": "^4.1.10",
 		"babylonjs": "^8.25.0",
-		"earcut": "^3.0.2",
-		"chart.js": "^4.5.0"
+		"chart.js": "^4.5.0",
+		"earcut": "^3.0.2"
 	},
 	"version": "1.0.0",
 	"main": "tailwind.config.js",
