@@ -3,7 +3,7 @@ import { animateContentBoxIn, animateContentBoxOut } from "./animations";
 import { setContentView } from "./views";
 import { MatchSetup, TournamentManager } from "./models";
 import { setGameView } from "./views";
-import { setLang, currentLang } from "./translation";
+import { setLang, currentLang, translateName } from "./translation";
 
 export async function setupTournamentWaitingRoom(tournament: TournamentManager): Promise<void> {
     animateContentBoxIn();
@@ -23,36 +23,24 @@ export async function setupTournamentWaitingRoom(tournament: TournamentManager):
         if (tournament.firstRound[1].winner == null)
         {
             if (tournament.firstRound[0]?.winner?.name && prevWinner)
-                prevWinner.textContent = tournament.firstRound[0].winner!.name;
-            else
-                prevWinner!.textContent = "AI";
+                prevWinner.textContent = translateName(tournament.firstRound[0].winner!.name);
 
             if (tournament.firstRound[1].players[0].name && leftplayer)
-                leftplayer.textContent = tournament.firstRound[1].players[0].name;
-            else
-                leftplayer!.textContent = "AI";
+                leftplayer.textContent = translateName(tournament.firstRound[1].players[0].name);
 
             if (tournament.firstRound[1].players[1].name && rightplayer)
-                rightplayer.textContent = tournament.firstRound[1].players[1].name;
-            else
-                rightplayer!.textContent = "AI";
+                rightplayer.textContent = translateName(tournament.firstRound[1].players[1].name);
         }
         else
         {
             if (tournament.firstRound[1].winner?.name && prevWinner)
-                prevWinner.textContent = tournament.firstRound[1].winner!.name;
-            else
-                prevWinner!.textContent = "AI";
+                prevWinner.textContent = translateName(tournament.firstRound[1].winner!.name);
 
             if ( tournament.final?.players[0].name && leftplayer)
-                leftplayer.textContent =  tournament.final!.players[0].name;
-            else
-                leftplayer!.textContent = "AI";
+                leftplayer.textContent =  translateName(tournament.final!.players[0].name);
 
             if (tournament.final?.players[1].name && rightplayer)
-                rightplayer.textContent = tournament.final!.players[1].name;
-            else
-                rightplayer!.textContent = "AI";
+                rightplayer.textContent = translateName(tournament.final!.players[1].name);
         }
         resumeBtn.addEventListener("click", () => {
         setGameView();
@@ -74,9 +62,7 @@ export async function setupTournamentEndScreen(tournament: TournamentManager): P
         }
         let champion = document.getElementById("champion-name");
         if (tournament.final?.winner?.name && champion)
-            champion.textContent = tournament.final.winner.name;
-        else
-            champion!.textContent = "AI";
+            champion.textContent = translateName(tournament.final.winner.name);
         setLang(currentLang);
         homeBtn.addEventListener("click", () => {
             setContentView("views/home.html");
@@ -98,9 +84,7 @@ export async function setupGameEndScreen(match: MatchSetup): Promise<void> {
         }
         let winner = document.getElementById("winner-name");
         if (match.winner?.name && winner)
-            winner.textContent = match.winner.name;
-        else
-            winner!.textContent = "AI";
+            winner.textContent = translateName(match.winner.name);
         setLang(currentLang);
         homeBtn.addEventListener("click", () => {
             setContentView("views/home.html");

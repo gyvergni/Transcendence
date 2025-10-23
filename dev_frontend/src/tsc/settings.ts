@@ -164,7 +164,7 @@ export function BallSpeedSetting() {
 		}
 
 		ballSpeedInput.addEventListener("input", () => {
-			settings.ballSpeed = parseInt(ballSpeedInput.value, 10);
+			settings.ballSpeed = parseInt(ballSpeedInput.value, 15);
 			saveSettings(settings);
 			if (ballSpeedValue) {
 				ballSpeedValue.textContent = settings.ballSpeed.toString();
