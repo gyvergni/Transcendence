@@ -1,0 +1,40 @@
+# Dockerfile de production pour le backend
+FROM node:18-alpine
+
+# Installer pnpm
+RUN npm install -g pnpm
+
+# Définir le répertoire de travail
+WORKDIR /app
+
+# Copier les fichiers de configuration des packages
+COPY package.json pnpm-lock.yaml ./
+
+# Installer les dépendances
+RUN pnpm install --frozen-lockfile
+
+# Copier seulement les fichiers nécessaires
+COPY src/ ./src/
+COPY prisma/ ./prisma/
+COPY tsconfig.json ./
+
+# Générer le client Prisma (sans migration)
+RUN pnpm prisma generate
+
+# Compiler le TypeScript
+RUN pnpm build
+
+# Copier le client Prisma généré dans dist pour que les imports relatifs fonctionnent
+RUN cp -r src/generated dist/
+
+# Supprimer les fichiers de développement non nécessaires
+RUN rm -rf src/ tsconfig.json
+
+# Créer le dossier pour la base de données
+RUN mkdir -p /app/data
+
+# Exposer le port
+EXPOSE 3000
+
+# Script de démarrage qui fait la migration puis lance l'app
+CMD ["sh", "-c", "pnpm prisma migrate deploy && node dist/index.js"]

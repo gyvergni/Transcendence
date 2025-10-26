@@ -25,7 +25,7 @@ dev_backend/prisma/db.sqlite
 
 # Prisma
 dev_backend/src/generated/
-dev_backend/prisma/migrations/
+# dev_backend/prisma/migrations/
 
 
 # Avatars

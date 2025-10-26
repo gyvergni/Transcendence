@@ -1,0 +1,49 @@
+networks:
+  transcendence:
+    driver: bridge
+
+services:
+  api:
+    container_name: api
+    build: 
+      context: ./dev_backend
+      dockerfile: Dockerfile.prod
+    image: image_prod_api
+    env_file:
+      - dev_backend/.env.prod
+    volumes:
+      - ./app/api:/app/data
+    expose:
+      - 3000
+    ports:
+      - "3000:3000"
+    networks:
+      - transcendence
+    restart: always
+  
+  # frontend:
+  #   container_name: frontend
+  #   build:
+  #     context: ./nginx
+  #     dockerfile: Dockerfile.prod
+  #   image: image_prod_frontend
+  #   volumes:
+  #     - frontend:/app
+  #   ports:
+  #     - "8443:443"
+  #   depends_on:
+  #     - api
+  #   networks:
+  #     - transcendence
+  #   restart: always
+  
+
+
+
+
+  # frontend:
+  #   driver: local
+  #   driver_opts:
+  #     type: none
+  #     device: ./app/frontend/
+  #     o: bind

@@ -42,7 +42,7 @@ server.register(require('@fastify/jwt'), {
 		algorithm: 'HS256',
         issuer: 'transcendence',
         audience: 'transcendence',
-        expiresIn: '365d', // m minutes / h hours /d days   
+        expiresIn: '7d', // m minutes / h hours /d days   
     },
     verify: {
 		algorithms: ['HS256'],
