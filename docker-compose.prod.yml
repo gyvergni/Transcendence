@@ -1,3 +1,5 @@
+version: "3.9"
+
 networks:
   transcendence:
     driver: bridge
@@ -12,38 +14,37 @@ services:
     env_file:
       - dev_backend/.env.prod
     volumes:
-      - ./app/api:/app/data
-    expose:
-      - 3000
-    ports:
-      - "3000:3000"
+      - ./app/api:/app/data   # persist database or uploaded files
+
     networks:
       - transcendence
     restart: always
-  
-  # frontend:
-  #   container_name: frontend
-  #   build:
-  #     context: ./nginx
-  #     dockerfile: Dockerfile.prod
-  #   image: image_prod_frontend
-  #   volumes:
-  #     - frontend:/app
-  #   ports:
-  #     - "8443:443"
-  #   depends_on:
-  #     - api
-  #   networks:
-  #     - transcendence
-  #   restart: always
-  
 
 
+  frontend:
+    build:
+      context: ./dev_frontend
+      dockerfile: Dockerfile.prod
+    networks:
+      - transcendence
+    volumes:
+      - frontend_dist:/usr/share/frontend
+    restart: always
 
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.prod
+    depends_on:
+      - frontend
+      - api
+    ports:
+      - "8443:443"
+    volumes:
+      - frontend_dist:/usr/share/nginx/html
+    networks:
+      - transcendence
+    restart: always
 
-  # frontend:
-  #   driver: local
-  #   driver_opts:
-  #     type: none
-  #     device: ./app/frontend/
-  #     o: bind
+volumes:
+  frontend_dist:

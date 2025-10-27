@@ -1,0 +1,18 @@
+# Stage 1: Build the frontend
+FROM node:20-alpine AS builder
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml ./
+RUN npm install -g pnpm && pnpm install
+
+COPY . .
+RUN pnpm build
+
+# Stage 2: Serve with Nginx
+FROM nginx:alpine
+
+# Copy compiled frontend build from builder stage
+COPY --from=builder /app/dist /usr/share/frontend
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

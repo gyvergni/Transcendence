@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev --poll --respawn --transpile-only --exit-child src/index.ts"
-  },
+    "dev": "ts-node-dev --poll --respawn --transpile-only --exit-child src/index.ts",
+    "build": "tsc"
+    },
+
   "keywords": [],
   "author": "",
   "license": "ISC",
