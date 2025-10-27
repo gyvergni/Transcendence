@@ -241,16 +241,13 @@ class Ball {
     update(p_left : Paddle, p_right : Paddle) {
         
 		// Bounce on walls
-        if (this.mesh.position.z >= 5 || this.mesh.position.z <= -5)
+        if ((this.mesh.position.z >= 5 && this.dirZ > 0 ) || (this.mesh.position.z <= -5 && this.dirZ < 0 ))
         {
             if (this.dirX > 0)
                 this.wallBounce1++;
             else
                 this.wallBounce2++;
             this.dirZ = -this.dirZ;
-            let offset = Math.abs(Math.random()/10);
-            offset = this.dirZ > 0 ? offset : -offset; //A MODIFIER BUG BALLE MUR
-            this.dirZ += offset;
             this.bounced = true;
         }
         // Paddle collision
