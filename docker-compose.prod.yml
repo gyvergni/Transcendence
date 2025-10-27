@@ -15,7 +15,8 @@ services:
       - dev_backend/.env.prod
     volumes:
       - ./app/api:/app/data   # persist database or uploaded files
-
+    expose:
+      - 3000
     networks:
       - transcendence
     restart: always
@@ -28,7 +29,7 @@ services:
     networks:
       - transcendence
     volumes:
-      - frontend_dist:/usr/share/frontend
+      - frontend_dist:/usr/share/nginx/html
     restart: always
 
   nginx:
