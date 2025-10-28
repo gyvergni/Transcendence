@@ -86,12 +86,12 @@ const translations: Record<Lang, Record<string, string>> =
 		"player.login": "Lock in",
 		"player.add-guest-btn": "Add Guest",
 		"player.del-guest-btn": "Delete Guest",
-                //player-selection dynamic content
-                "player.ready": "Ready",
-                "player.ai-easy": "AI easy",
-                "player.ai-medium": "AI medium",
-                "player.ai-hard": "AI hard",
-                "player.deleted": "Deleted Guest",
+        //player-selection dynamic content
+        "player.ready": "Ready",
+        "player.ai-easy": "AI easy",
+        "player.ai-medium": "AI medium",
+        "player.ai-hard": "AI hard",
+        "player.deleted": "Deleted Guest",
 
 		//player-slot-template.html
 		"player-slot.player": "Player",
@@ -160,12 +160,12 @@ const translations: Record<Lang, Record<string, string>> =
         "stats.mode": "Mode",
         "stats.quickMatch": "Quick Match",
         
-                //Dynamic content in stats.ts
-                "stats.select_matchup": "Select opponent",
-                "stats.wins": "Wins",
-                "stats.losses": "Losses",
-                "stats.default": "(Main)",
-                "stats.matchup-ylabel": "Number of games",
+        //Dynamic content in stats.ts
+        "stats.select_matchup": "Select opponent",
+        "stats.wins": "Wins",
+        "stats.losses": "Losses",
+        "stats.default": "(Main)",
+        "stats.matchup-ylabel": "Number of games",
                 
 
         //match-detail.html
@@ -186,9 +186,9 @@ const translations: Record<Lang, Record<string, string>> =
         "match.inputs": "Inputs",
         "match.graph-title": "Point Timeline",
          
-            //Dynamic content in stats.ts
-            "match.timeline-ylabel": "Rally Duration (s)",
-            "match.timeline-xlabel": "Point",
+        //Dynamic content in stats.ts
+        "match.timeline-ylabel": "Rally Duration (s)",
+        "match.timeline-xlabel": "Point",
 
 		//tournament.html
 		"tournament.title": "Tournament",
@@ -359,12 +359,12 @@ const translations: Record<Lang, Record<string, string>> =
 		"player.login": "Verrouiller",
 		"player.add-guest-btn": "Ajouter un invité",
 		"player.del-guest-btn": "Supprimer l'invité",
-                //player-selection dynamic content
-                "player.ready": "Prêt",
-                "player.ai-easy": "IA facile",
-                "player.ai-medium": "IA moyenne",
-                "player.ai-hard": "IA difficile",
-                "player.deleted": "Invité Supprimé",
+        //player-selection dynamic content
+        "player.ready": "Prêt",
+        "player.ai-easy": "IA facile",
+        "player.ai-medium": "IA moyenne",
+        "player.ai-hard": "IA difficile",
+        "player.deleted": "Invité Supprimé",
 
 		//player-slot-template.html
 		"player-slot.player": "Joueur",
@@ -429,16 +429,16 @@ const translations: Record<Lang, Record<string, string>> =
         "stats.total-ptswon": "Pts gagnés",
         "stats.total-ptslost": "Pts perdus",
 
-                //Dynamic content in stats.ts
-                "stats.select_matchup": "Sélectionner un adversaire",
-                "stats.wins": "Victoires",
-                "stats.losses": "Défaites",
-                "stats.t-first": "Tournoi Premier Tour",
-                "stats.t-final": "Tournoi Finale",
-                "stats.mode": "Mode",
-                "stats.quickMatch": "Partie Rapide",
-                "stats.default": "(Principal)",
-                "stats.matchup-ylabel": "Nombre de parties",
+        //Dynamic content in stats.ts
+        "stats.select_matchup": "Sélectionner un adversaire",
+        "stats.wins": "Victoires",
+        "stats.losses": "Défaites",
+        "stats.t-first": "Tournoi Premier Tour",
+        "stats.t-final": "Tournoi Finale",
+        "stats.mode": "Mode",
+        "stats.quickMatch": "Partie Rapide",
+        "stats.default": "(Principal)",
+        "stats.matchup-ylabel": "Nombre de parties",
 
         //match-detail.html
         "match.title": "Détail du match",
@@ -458,9 +458,9 @@ const translations: Record<Lang, Record<string, string>> =
         "match.inputs": "Entrées",
         "match.graph-title": "Chronologie des points",
 
-            //Dynamic content in stats.ts
-            "match.timeline-ylabel": "Durée de l'échange (s)",
-            "match.timeline-xlabel": "Point",
+        //Dynamic content in stats.ts
+        "match.timeline-ylabel": "Durée de l'échange (s)",
+        "match.timeline-xlabel": "Point",
 
 		//tournament.html
 		"tournament.title": "Tournoi",
@@ -630,12 +630,12 @@ const translations: Record<Lang, Record<string, string>> =
 		"player.login": "Bloquear",
 		"player.add-guest-btn": "Agregar invitado",
 		"player.del-guest-btn": "Eliminar invitado",
-                //player-selection dynamic content
-                "player.ready": "Listo",
-                "player.ai-easy": "IA fácil",
-                "player.ai-medium": "IA promedio",
-                "player.ai-hard": "IA difícil",
-                "player.deleted": "Invitado Eliminado",
+        //player-selection dynamic content
+        "player.ready": "Listo",
+        "player.ai-easy": "IA fácil",
+        "player.ai-medium": "IA promedio",
+        "player.ai-hard": "IA difícil",
+        "player.deleted": "Invitado Eliminado",
 
 		//player-slot-template.html
 		"player-slot.player": "Jugador",
@@ -700,16 +700,16 @@ const translations: Record<Lang, Record<string, string>> =
         "stats.total-ptswon": "Puntos ganados",
         "stats.total-ptslost": "Puntos perdidos",
         
-                //Dynamic content in stats.ts
-                "stats.select_matchup": "Seleccionar oponente",
-                "stats.wins": "Victorias",
-                "stats.losses": "Derrotas",
-                "stats.t-first": "Torneo Primera Ronda",
-                "stats.t-final": "Torneo Final",
-                "stats.mode": "Modo",
-                "stats.quickMatch": "Partida Rapida",
-                "stats.default": "(Principal)",
-                "stats.matchup-ylabel": "Partidas",
+        //Dynamic content in stats.ts
+        "stats.select_matchup": "Seleccionar oponente",
+        "stats.wins": "Victorias",
+        "stats.losses": "Derrotas",
+        "stats.t-first": "Torneo Primera Ronda",
+        "stats.t-final": "Torneo Final",
+        "stats.mode": "Modo",
+        "stats.quickMatch": "Partida Rapida",
+        "stats.default": "(Principal)",
+        "stats.matchup-ylabel": "Partidas",
 
         //match-detail.html
         "match.title": "Detalle del partido",
@@ -729,9 +729,9 @@ const translations: Record<Lang, Record<string, string>> =
         "match.inputs": "Entradas",
         "match.graph-title": "Cronologia de puntos",
 
-            //Dynamic content in stats.ts
-            "match.timeline-ylabel": "Duracion del rally (s)",
-            "match.timeline-xlabel": "Punto",
+        //Dynamic content in stats.ts
+        "match.timeline-ylabel": "Duracion del rally (s)",
+        "match.timeline-xlabel": "Punto",
 
 		//tournament.html
 		"tournament.title": "Torneo",

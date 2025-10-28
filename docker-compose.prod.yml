@@ -13,6 +13,7 @@ services:
       - dev_backend/.env.prod
     volumes:
       - ./app/api:/app/data
+    expose:
       - "3000"
     networks:
       - transcendence
