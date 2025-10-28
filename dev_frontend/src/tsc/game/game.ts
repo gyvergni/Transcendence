@@ -297,7 +297,7 @@ export class Game {
 		this.updateParticles();
         if (this.gameover == true)
 			this.endGame();
-		if (this.ball.score1 == 2 || this.ball.score2 == 2)
+		if (this.ball.score1 == 5 || this.ball.score2 == 5)
 			this.gameover = true;
 	}
 
@@ -307,9 +307,9 @@ export class Game {
 
 	endGame()
 	{
-		if (this.ball.score1 == 2)
+		if (this.ball.score1 == 5)
 			this.match.winner = this.player1.config;
-		else if (this.ball.score2 == 2)
+		else if (this.ball.score2 == 5)
 			this.match.winner = this.player2.config;
 		this.match.rm = true;
         this.engine.stopRenderLoop();
