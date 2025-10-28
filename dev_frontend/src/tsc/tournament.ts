@@ -4,7 +4,7 @@ import { toggleBackButton } from "./animations.js";
 import { createPlayerSlot } from "./player-selection.js";
 import { setContentView, setGameView } from "./views.js";
 import { PlayerConfig, MatchSetup, TournamentManager } from "./models.js";
-import { startTournament } from "./pong.js";
+import { startTournament } from "./game/pong.js";
 import {currentLang, setLang} from "./translation.js";
 
 

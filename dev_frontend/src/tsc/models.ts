@@ -1,8 +1,9 @@
 // models.ts
 
-import {matchStatsSend, Game} from "./pong.js"
-import {animateContentBoxOut, animateContentBoxIn, toggleIsAnimation} from "./animations.js";
-import {setContentView, setGameView, setupPause} from "./views.js";
+import {matchStatsSend} from "./game/pong.js"
+import { Game } from "./game/game.js";
+import {animateContentBoxOut, animateContentBoxIn} from "./animations.js";
+import { setGameView, setupPause } from "./views.js";
 import uiManager from "./main.js";
 import { API_BASE_URL } from "./features/utils-api.js";
 import { getApiErrorText } from "./features/utils-api.js";

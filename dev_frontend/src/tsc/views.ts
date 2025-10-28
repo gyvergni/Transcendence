@@ -1,7 +1,7 @@
 import uiManager from "./main.js";
 
 import {animateContentBoxOut, animateContentBoxIn, toggleBackButton} from "./animations.js";
-import { startMatch, postMatchStats } from "./pong.js";
+import { startMatch, postMatchStats } from "./game/pong.js";
 import {createPlayerSlot} from "./player-selection.js";
 import { PlayerConfig, MatchSetup, GuestsManager } from "./models.js";
 import {setupTournament} from "./tournament.js"
