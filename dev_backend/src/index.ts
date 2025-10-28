@@ -18,7 +18,6 @@ import { wsRoute } from "./utils/ws";
 import { createAIIdentities } from "./utils/prisma";
 
 export const server = Fastify({
-	// logger: true,
 }); 
 
 export const path = require('node:path');
@@ -52,7 +51,6 @@ server.register(require('@fastify/jwt'), {
 });
 
 server.decorate("auth", async (request: FastifyRequest, reply: FastifyReply) => {
-	// console.log("Authenticating user...");
 	const token = request.headers.authorization?.substring(7);
     if (!token) {
         return httpError({
@@ -64,9 +62,7 @@ server.decorate("auth", async (request: FastifyRequest, reply: FastifyReply) => 
     }
     try {
 		const test = await request.jwtVerify();
-        // console.log("User authenticated:", request.user);   
     } catch (e) {
-		// console.error("Authentication error");
         return httpError({
 			reply,
             code: StatusCodes.UNAUTHORIZED,
@@ -119,9 +115,9 @@ async function main() {
     });
 
 	await server.register(require('@fastify/cors'), { 
-		origin: true, // Allow all origins
+		origin: true,
 		methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-		credentials: true, // If you use cookies
+		credentials: true,
 	});
 
     server.register(userRoutes, {prefix: '/api/users'});

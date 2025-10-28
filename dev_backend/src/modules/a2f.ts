@@ -136,7 +136,6 @@ export async function enableTwoFactorAuthHandler(req: FastifyRequest<{Body: TwoF
 }
 
 export async function disableTwoFactorAuthHandler(req: FastifyRequest<{Body: TwoFactorAuthDisableInput}>, reply: FastifyReply) {
-	console.log("Disabling 2FA...");
 	try {
 		const userId = req.user.id;
 		const { password, token} = req.body as { password: string, token: string};
@@ -204,16 +203,13 @@ export async function verifyAndCompleteLogin(req: FastifyRequest<{Body: TwoFacto
             return reply.status(400).send({ error: "Login session expired or invalid" });
         }
 
-        // Vérifier le token 2FA
         const isValid = await TwoFactorAuthService.verifyTwoFactorAuth(session.userId, token);
         if (!isValid) {
             return reply.status(401).send({ error: "Invalid 2FA token" });
         }
 
-        // Nettoyer la session temporaire
         pendingLoginSessions.delete(loginSessionId);
 
-        // Générer le vrai JWT token
         const user = await prisma.users.findUnique({ where: { id: session.userId } });
         if (!user) {
             return reply.status(404).send({ error: "User not found" });

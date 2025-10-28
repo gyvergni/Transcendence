@@ -49,15 +49,6 @@ export async function findUsers() {
         omit: {
             password: true,
         },
-        // include: {
-        //     identities: true,
-        //     guests: {
-        //         select: {
-        //             id: true,
-        //             pseudo: true
-        //         }
-        //     },
-        // }
     });
 };
 
@@ -102,7 +93,7 @@ export async function deleteFriend(userId: number, friendId: number) {
             friend_id: friendId,
         }
     });
-    return result.count; // Return the count of deleted records
+    return result.count;
 }
 
 export async function updatePassword(userPseudo: string, newPassword: string) {

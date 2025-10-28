@@ -7,9 +7,7 @@ import { PrismaClient, Prisma } from "../../generated/prisma";
 import { getGuestListByPseudoHandler } from "../guest/guest.controller";
 import { getGuestList } from "../guest/guest.service";
 import { addMatchSchema } from "./stats.schema";
-import { addMatch, checkIdentityExists, getStats2 } from "./stats.service";
-import { size } from "zod/v4";
-import { ca } from "zod/v4/locales";
+import { addMatch, checkIdentityExists, getStats } from "./stats.service";
 import { findUserByPseudo } from "../user/user.service";
 
 function isValidMatchScore(player1Score: number, player2Score: number) {
@@ -19,7 +17,7 @@ function isValidMatchScore(player1Score: number, player2Score: number) {
     if (player1Score === player2Score) {
         return false;
     }
-    if (player1Score > 5 || player2Score > 5) {//Change this with the max score range setup in front
+    if (player1Score > 5 || player2Score > 5) {
         return false;
     }
     return true;
@@ -53,17 +51,6 @@ export async function addMatchHandler(req: FastifyRequest, reply: FastifyReply )
 
     try {
         const guestList = await getGuestList(currentUser.id);
-    
-        // console.log("Current user ID:", currentUser.id);
-        // console.log("Guest list:", guestList);
-
-        // if (!isValidMatchBody(currentUser.id, body, guestList)) {
-        //     return httpError({
-        //         reply,
-        //         message: "Invalid match data",
-        //         code: StatusCodes.UNPROCESSABLE_ENTITY,
-        //     });
-        // };
 
         const winnerUsername = body.player1Score > body.player2Score ? body.player1Username : body.player2Username;
         const loserUsername = body.player1Score < body.player2Score ? body.player1Username : body.player2Username;
@@ -74,7 +61,6 @@ export async function addMatchHandler(req: FastifyRequest, reply: FastifyReply )
         const aiPlayers = ["ai-easy", "ai-medium", "ai-hard"];
 
 		const currentUserDb = await findUserByPseudo(currentUser.pseudo);
-        console.log("Current User DB:", currentUserDb);
         let winner;
         let winnerId;
         if (aiPlayers.includes(winnerUsername)) {
@@ -91,7 +77,6 @@ export async function addMatchHandler(req: FastifyRequest, reply: FastifyReply )
                     winnerId = winner ? winner.id : undefined;
                 }
 			}
-			console.log("WinnerId:", winnerId);
         }   
 
         let loser;
@@ -110,16 +95,7 @@ export async function addMatchHandler(req: FastifyRequest, reply: FastifyReply )
                     loserId = loser ? loser.id : undefined;
                 }
 			}
-			console.log("LooserId:", loserId);
         }
-
-        // if (!winner && !loser) {
-        //     return httpError({
-        //         reply,
-        //         message: "At least one player must be a registered user",
-        //         code: StatusCodes.UNPROCESSABLE_ENTITY,
-        //     });
-        // }
 
         if (!winnerId || !loserId) {
             return httpError({
@@ -130,8 +106,6 @@ export async function addMatchHandler(req: FastifyRequest, reply: FastifyReply )
             });
         }
     
-        // console.log("Body to add match:", body);
-        // console.log("Winner ID:", winnerId, "Loser ID:", loserId);
         const match = await addMatch(body, winnerId, loserId, winnerScore, loserScore, isPlayer1);
 
         return reply.status(StatusCodes.CREATED).send({message: "Match added successfully"});
@@ -171,7 +145,7 @@ export async function getStatsHandler(req: FastifyRequest<{Params: {username: st
 						errorKey: "error.guest.not_found"
                     });
                 }
-                const stats = await getStats2({id: guestFound.id, game_username: guestFound.pseudo});
+                const stats = await getStats({id: guestFound.id, game_username: guestFound.pseudo});
                 if (!stats) {
                     return httpError({
                         reply,
@@ -182,7 +156,7 @@ export async function getStatsHandler(req: FastifyRequest<{Params: {username: st
                 }
                 return reply.status(StatusCodes.OK).send(stats);
             } else {
-                const stats = await getStats2(userId);
+                const stats = await getStats(userId);
                 if (!stats) {
                     return httpError({
                         reply,
@@ -195,7 +169,7 @@ export async function getStatsHandler(req: FastifyRequest<{Params: {username: st
             }
         } else {
             const currentUser = req.user;
-            const stats = await getStats2({id: currentUser.id, game_username: currentUser.pseudo});
+            const stats = await getStats({id: currentUser.id, game_username: currentUser.pseudo});
             if (!stats) {
                 return httpError({
                     reply,
