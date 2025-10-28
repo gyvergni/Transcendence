@@ -1,6 +1,6 @@
-import { setContentView } from "../views.js";
+import { setContentView } from "../display/viewHandler.js";
 import { disconnectWebSocket } from "./auth.js";
-import { API_BASE_URL, getApiErrorText } from "./utils-api.js";
+import { API_BASE_URL, getApiErrorText } from "../utils/utilsApi.js";
 
 export async function logoutUser() {
 	try {

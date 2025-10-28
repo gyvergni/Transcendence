@@ -1,4 +1,4 @@
-import {Lang, setLang} from "./translation.js"
+import {Lang, setLang} from "../utils/translation.js"
 
 interface GameSettings {
 	paddleSize: number;

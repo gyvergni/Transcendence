@@ -1,7 +1,7 @@
-import { getTranslatedKey } from "../translation.js";
-import { setContentView } from "../views.js";
+import { getTranslatedKey } from "../utils/translation.js";
+import { setContentView } from "../display/viewHandler.js";
 import { a2fStatus, loginWithWebSocket } from "./auth.js";
-import { API_BASE_URL, getApiErrorText } from "./utils-api.js";
+import { API_BASE_URL, getApiErrorText } from "../utils/utilsApi.js";
 
 let pendingSessionId: string | null = null;
 

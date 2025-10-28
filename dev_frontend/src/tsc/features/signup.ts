@@ -1,7 +1,7 @@
-import { setContentView } from "../views.js";
-import { API_BASE_URL, getApiErrorText, parseApiErrorMessage } from "./utils-api.js";
+import { setContentView } from "../display/viewHandler.js";
+import { API_BASE_URL, getApiErrorText, parseApiErrorMessage } from "../utils/utilsApi.js";
 import { loginWithWebSocket } from "./auth.js";
-import { getTranslatedKey } from "../translation.js";
+import { getTranslatedKey } from "../utils/translation.js";
 
 const temp = false;
 

@@ -1,5 +1,5 @@
-import { setContentView } from "../views.js";
-import { API_BASE_URL } from "./utils-api.js";
+import { setContentView } from "../display/viewHandler.js";
+import { API_BASE_URL } from "../utils/utilsApi.js";
 
 export async function authenticateWithWebSocket(token: string): Promise<boolean> {
     try {

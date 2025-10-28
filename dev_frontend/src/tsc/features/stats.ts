@@ -1,12 +1,12 @@
-import { API_BASE_URL } from "./utils-api";
-import { GuestsManager } from "../models";
-import { setContentView } from "../views";
+import { API_BASE_URL } from "../utils/utilsApi";
+import { GuestsManager } from "../utils/models";
+import { setContentView } from "../display/viewHandler";
 import Chart from "chart.js/auto";
-import { getApiErrorText } from "./utils-api.js";
-import { text } from "stream/consumers";
-import { toggleBackButton } from "../animations";
+import { getApiErrorText } from "../utils/utilsApi.js";
+//import { text } from "stream/consumers";
+import { toggleBackButton } from "../display/animations";
 import uiManager from "../main";
-import {getTranslatedKey, setLang, currentLang, translateName} from "../translation";
+import {getTranslatedKey, setLang, currentLang, translateName} from "../utils/translation";
 
 type MatchStatsResponse = {
     id: number;

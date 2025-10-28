@@ -1,7 +1,7 @@
-import {UIManager} from "./ui-manager.js";
-import {setContentView} from "./views.js";
+import {UIManager} from "./display/uiManager.js";
+import {setContentView} from "./display/viewHandler.js";
 import { checkTokenValidity } from "./features/auth.js";
-import {Lang, setLang} from "./translation.js"
+import {Lang, setLang} from "./utils/translation.js"
 const uiManager = new UIManager();
 export default uiManager;
 

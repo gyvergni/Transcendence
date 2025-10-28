@@ -2,17 +2,17 @@
 import * as BABYLON from "babylonjs";
 import * as earcut from "earcut";
 (window as any).earcut = earcut;
-import { API_BASE_URL, getApiErrorText } from "./features/utils-api.js";
+import { API_BASE_URL, getApiErrorText } from "./utils/utilsApi.js";
 
 import uiManager from "./main.js";
-import {animateContentBoxIn} from "./animations.js";
-import {setContentView} from "./views.js";
-import {PlayerConfig, MatchSetup, TournamentManager, AIDifficulty} from "./models.js";
-import {setupTournamentEndScreen, setupTournamentWaitingRoom} from "./t-waitingscreen.js";
-import {getTranslatedKey, translateName} from "./translation";
+import {animateContentBoxIn} from "./display/animations.js";
+import {setContentView} from "./display/viewHandler.js";
+import {PlayerConfig, MatchSetup, TournamentManager, AIDifficulty} from "./utils/models.js";
+import {setupTournamentEndScreen, setupTournamentWaitingRoom} from "./display/gameScreens.js";
+import {getTranslatedKey, translateName} from "./utils/translation.js";
 
 //################ customization variables ###########
-import { getSettings, resetSettings } from "./settings.js"
+import { getSettings, resetSettings } from "./features/settings.js"
 
 let paddle_size: number;
 let PaddleColor: string;

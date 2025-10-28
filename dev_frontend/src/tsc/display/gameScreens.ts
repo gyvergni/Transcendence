@@ -1,9 +1,10 @@
 // t-waitingscreen.ts
 import { animateContentBoxIn, animateContentBoxOut } from "./animations";
-import { setContentView } from "./views";
-import { MatchSetup, TournamentManager } from "./models";
-import { setGameView } from "./views";
-import { setLang, currentLang, translateName } from "./translation";
+import { setContentView, setupPause } from "./viewHandler";
+import { MatchSetup, TournamentManager } from "../utils/models";
+import { setGameView } from "./viewHandler";
+import { setLang, currentLang, translateName } from "../utils/translation";
+import uiManager from "../main";
 
 export async function setupTournamentWaitingRoom(tournament: TournamentManager): Promise<void> {
     animateContentBoxIn();
@@ -91,4 +92,34 @@ export async function setupGameEndScreen(match: MatchSetup): Promise<void> {
             resolve();
         }, { once: true }); // once = auto-remove listener after click
     });
+}
+
+export function pause(match: MatchSetup, e: KeyboardEvent) {
+    console.log("game = ", match.game);
+    console.log("IS ANIMATING= %d", uiManager.getIsAnimating());
+    if (e.key === "Escape" && uiManager.getIsAnimating() === false && match.game != null) {
+        console.log("2: %d", uiManager.getIsAnimating());
+        uiManager.setIsAnimating(true);
+        if (uiManager.getCurrentView().includes("pause"))
+        {
+            if (match.game != null && match.game.pause == true)
+                match.game.pause = false;
+            match.game.clock.resumeTimer();
+            animateContentBoxOut();
+            console.log("apres 1");
+            setGameView();
+            console.log("3: %d", uiManager.getIsAnimating());
+        }
+        else if (uiManager.getCurrentView().includes("game"))
+        {
+            if (match.game != null && match.game.pause == false) {
+                match.game.pause = true;
+            }
+            match.game.clock.pauseTimer();
+            animateContentBoxIn();
+            console.log("apres 2");
+            setupPause(match);
+            console.log("4: %d", uiManager.getIsAnimating());
+        };
+    }
 }
