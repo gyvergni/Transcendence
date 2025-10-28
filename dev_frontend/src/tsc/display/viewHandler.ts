@@ -288,21 +288,6 @@ function setupProfileEvents() {
         initStatsView(null);
 	});
 
-	// Listen for match open events dispatched by the stats view
-	window.addEventListener('open-match', (ev: any) => {
-		const mid = ev.detail?.matchId as string | undefined;
-		if (!mid) return;
-		// store temporarily so the match feature can read it
-		(window as any).__openMatchId = mid;
-		setContentView('views/match-detail.html').then(() => {
-			// inject a module script to initialize the match view to avoid TS dynamic import lint
-			const s = document.createElement('script');
-			s.type = 'module';
-			s.textContent = `import('./features/match.js').then(m=>m.initMatchView && m.initMatchView()).catch(e=>console.error('init match', e));`;
-			document.body.appendChild(s);
-		});
-	});
-
 	accountBtn.addEventListener("click", () => {
 		setContentView("views/account.html");
 	})
@@ -383,6 +368,14 @@ function setupFriendsEvents() {
 			await deleteFriend(e, root, tpl, search);
 			return ;
 		} else {
+            uiManager.contentBox.classList.remove("rounded-xl");
+		    uiManager.contentBox.classList.add("max-w-7xl", "w-full", "p-6", "rounded-none");
+		    // Set back button to revert layout back to profile when closing stats
+		    toggleBackButton(true, async () => {
+			    uiManager.contentBox.classList.remove("max-w-7xl", "w-full", "p-6", "rounded-none");
+			    uiManager.contentBox.classList.add("rounded-xl");
+			    await setContentView("views/friends.html");
+		    });
 			const friendBtn = (e.target as HTMLElement).closest("li") as HTMLLIElement;
 			if (friendBtn) {
 				const friendPseudo = friendBtn.getAttribute("data-pseudo");
