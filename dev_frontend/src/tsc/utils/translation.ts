@@ -48,6 +48,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"account.otc": "One-time code",
 		"account.butt.d2FA": "Disable 2FA",
 		"account.2FA.disable.success": "2FA has been successfully disabled.",
+		"account.2FA.password_and_token_required": "Password and token are required",
 		"account.avatar.upload.too-large": "Avatar file is too large. Maximum size is 10MB.",
 
 		//ai-selection.html
@@ -266,6 +267,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"error.auth.no_token": "No access token provided",
 		"error.auth.invalid_token": "Invalid access token",
 		"error.auth.logout_failed": "Failed to logout user",
+		"error.auth.session_expired": "Session expired or invalid",
 
 		"error.friend.not_found": "No friends found",
 		"error.friend.fetch_failed": "Failed to fetch friends",
@@ -317,6 +319,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"account.cancel": "Annuler",
 		"account.2FA.token.placeholder": "Entrez le token généré",
 		"account.2FA.nosession" : "Aucun ID de session trouvé, impossible d'activer l'A2F. Veuillez réessayer.",
+		"account.2FA.enable.token.required": "Le token A2F est requis pour activer l'A2F",
 		"account.2FA.token.required": "Le token A2F est requis pour activer l'A2F",
 		"account.2FA.invalid_token": "Token A2F invalide.",
 		"account.2FA.enable.success": "L'A2F a été activée avec succès.",
@@ -330,6 +333,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"account.otc": "Code à usage unique",
 		"account.butt.d2FA": "Désactiver l'A2F",
 		"account.2FA.disable.success": "L'A2F a été désactivée avec succès.",
+		"account.2FA.password_and_token_required": "Le mot de passe et le token sont requis",
 		"account.avatar.upload.too-large": "Le fichier avatar est trop volumineux. Taille maximale : 10MB.",
 
 		//ai-selection.html
@@ -547,6 +551,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"error.auth.no_token": "Aucun jeton d'accès fourni",
 		"error.auth.invalid_token": "Jeton d'accès invalide",
 		"error.auth.logout_failed": "Échec de la déconnexion",
+		"error.auth.session_expired": "Session expirée ou invalide",
 
 		"error.friend.not_found": "Aucun ami trouvé",
 		"error.friend.fetch_failed": "Échec de la récupération des amis",
@@ -597,6 +602,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"account.cancel": "Cancelar",
 		"account.2FA.token.placeholder": "Ingrese el token generado",
 		"account.2FA.nosession" : "No se encontró ID de sesión, no se puede activar 2FA. Por favor, intente de nuevo.",
+		"account.2FA.enable.token.required": "Se requiere el token 2FA para activar 2FA",
 		"account.2FA.token.required": "Se requiere el token 2FA para activar 2FA",
 		"account.2FA.invalid_token": "Token 2FA inválido.",
 		"account.2FA.enable.success": "2FA se ha activado con éxito.",
@@ -610,6 +616,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"account.otc": "Código de un solo uso",
 		"account.butt.d2FA": "Desactivar 2FA",
 		"account.2FA.disable.success": "2FA se ha desactivado con éxito.",
+		"account.2FA.password_and_token_required": "Se requieren contraseña y token",
 		"account.avatar.upload.too-large": "El archivo del avatar es demasiado grande. Tamaño máximo: 10MB.",
 
 		//ai-selection.html
@@ -828,6 +835,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"error.auth.no_token": "No se proporcionó token de acceso",
 		"error.auth.invalid_token": "Token de acceso inválido",
 		"error.auth.logout_failed": "Error al cerrar sesión",
+		"error.auth.session_expired": "Sesión expirada o inválida",
 
 		"error.friend.not_found": "No se encontraron amigos",
 		"error.friend.fetch_failed": "Error al obtener amigos",

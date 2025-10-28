@@ -252,7 +252,9 @@ export const twoFactorAuthSetupSchema = {
             qrCode: z.string().describe("Data URL for QR code"),
         }),
         401: errorResponses[401].describe("Unauthorized"),
-        500: errorResponses[500].describe("Internal Server Error"),
+        500: z.object({
+            error: z.string().describe("Internal Server Error"),
+        }),
     }
 } as const;
 
@@ -268,8 +270,14 @@ export const twoFactorAuthEnableSchema = {
             success: z.boolean().describe("Operation success flag"),
             message: z.string().describe("Result message"),
         }),
-        400: errorResponses[400].describe("Bad Request, session expired or invalid"),
-        401: errorResponses[401].describe("Unauthorized, invalid token"),
+        400: z.object({
+            error: z.string().describe("Error message"),
+            errorKey: z.string().describe("Session expired or invalid - error.auth.session_expired"),
+        }),
+        401: z.object({
+            error: z.string().describe("Error message"),
+            errorKey: z.string().describe("Invalid token - account.2FA.invalid_token"),
+        }),
         500: errorResponses[500].describe("Internal Server Error"),
     }
 } as const;
@@ -288,9 +296,18 @@ export const twoFactorAuthDisableSchema = {
             success: z.boolean().describe("Operation success flag"),
             message: z.string().describe("Result message"),
         }),
-        400: errorResponses[400].describe("Bad Request"),
-        401: errorResponses[401].describe("Unauthorized, invalid password or token"),
-        404: errorResponses[404].describe("User not found"),
+        400: z.object({
+            message: z.string().describe("Error message"),
+            errorKey: z.string().describe("Password and token required - account.2FA.password_and_token_required"),
+        }),
+        401: z.object({
+            message: z.string().describe("Error message"),
+            errorKey: z.string().describe("Invalid password or token - account.2FA.invalid_password or account.2FA.invalid_token"),
+        }),
+        404: z.object({
+            message: z.string().describe("Error message"),
+            errorKey: z.string().describe("User not found - error.user.not_found"),
+        }),
         500: errorResponses[500].describe("Internal Server Error"),
     }
 } as const;
@@ -309,7 +326,10 @@ export const twoFactorAuthVerifySchema = {
             success: z.boolean().describe("Operation success flag"),
             message: z.string().describe("Result message"),
         }),
-        401: errorResponses[401].describe("Unauthorized, invalid two-factor authentication token"),
+        401: z.object({
+            error: z.string().describe("Error message"),
+            errorKey: z.string().describe("Invalid token - account.2FA.invalid_token"),
+        }),
         500: errorResponses[500].describe("Internal Server Error"),
     }
 } as const;
@@ -328,9 +348,18 @@ export const twoFactorAuthLoginVerifySchema = {
             accessToken: z.string().describe("JWT access token"),
             message: z.string().describe("Login successful"),
         }),
-        400: errorResponses[400].describe("Bad Request, session expired or invalid"),
-        401: errorResponses[401].describe("Unauthorized, invalid 2FA token"),
-        404: errorResponses[404].describe("User not found"),
+        400: z.object({
+            error: z.string().describe("Error message"),
+            errorKey: z.string().describe("Session expired or invalid - error.auth.session_expired"),
+        }),
+        401: z.object({
+            error: z.string().describe("Error message"),
+            errorKey: z.string().describe("Invalid token - account.2FA.invalid_token"),
+        }),
+        404: z.object({
+            error: z.string().describe("Error message"),
+            errorKey: z.string().describe("User not found - error.user.not_found"),
+        }),
         500: errorResponses[500].describe("Internal Server Error"),
     }
 } as const;

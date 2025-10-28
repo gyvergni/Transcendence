@@ -5,7 +5,7 @@ import bcrypt from "bcrypt";
 
 import { FastifyRequest, FastifyReply } from "fastify";
 import { TwoFactorAuthDisableInput, TwoFactorAuthEnableInput, TwoFactorAuthLoginVerifyInput, TwoFactorAuthVerifyInput } from "./user/user.schema";
-import { error } from "console";
+import crypto from "crypto";
 
 export class TwoFactorAuthService {
 	static async generateTempSecret(userId: number) {
@@ -121,7 +121,7 @@ export async function enableTwoFactorAuthHandler(req: FastifyRequest<{Body: TwoF
 		const storedData = tempSecret.get(sessionId);
 
 		if (!storedData || storedData.expires < Date.now()) {
-			return reply.status(400).send({ error: "Session expired or invalid" });
+			return reply.status(400).send({ error: "Session expired or invalid", errorKey: "error.auth.session_expired" });
 		}
 
 		const res = await TwoFactorAuthService.enableTwoFactorAuth(userId, storedData.secret, token);
@@ -141,7 +141,7 @@ export async function disableTwoFactorAuthHandler(req: FastifyRequest<{Body: Two
 		const { password, token} = req.body as { password: string, token: string};
 
 		if (!password || !token) {
-			return reply.status(400).send({ message: "Password and token are required" });
+			return reply.status(400).send({ message: "Password and token are required", errorKey: "account.2FA.password_and_token_required" });
 		}
 
 		const user = await prisma.users.findUnique({
@@ -149,7 +149,7 @@ export async function disableTwoFactorAuthHandler(req: FastifyRequest<{Body: Two
 		});
 
 		if (!user) {
-			return reply.status(404).send({ message: "User not found" });
+			return reply.status(404).send({ message: "User not found", errorKey: "error.user.not_found" });
 		}
 
 		const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -177,7 +177,7 @@ export async function verifyTwoFactorAuthHandler(req: FastifyRequest<{Body: TwoF
 		if (isValid) {
 			return reply.status(200).send({ success: true, message: "Two-factor authentication verified successfully" });
 		} else {
-			return reply.status(401).send({ error: "Invalid two-factor authentication token" });
+			return reply.status(401).send({ error: "Invalid two-factor authentication token", errorKey: "account.2FA.invalid_token" });
 		}
 	} catch (error) {
 		console.error("Error verifying two-factor auth:", error);
@@ -200,19 +200,19 @@ export async function verifyAndCompleteLogin(req: FastifyRequest<{Body: TwoFacto
         const session = pendingLoginSessions.get(loginSessionId);
 
         if (!session || session.expires < Date.now()) {
-            return reply.status(400).send({ error: "Login session expired or invalid" });
+            return reply.status(400).send({ error: "Login session expired or invalid", errorKey: "error.auth.session_expired" });
         }
 
         const isValid = await TwoFactorAuthService.verifyTwoFactorAuth(session.userId, token);
         if (!isValid) {
-            return reply.status(401).send({ error: "Invalid 2FA token" });
+            return reply.status(401).send({ error: "Invalid 2FA token", errorKey: "account.2FA.invalid_token" });
         }
 
         pendingLoginSessions.delete(loginSessionId);
 
         const user = await prisma.users.findUnique({ where: { id: session.userId } });
         if (!user) {
-            return reply.status(404).send({ error: "User not found" });
+            return reply.status(404).send({ error: "User not found", errorKey: "error.user.not_found" });
         }
 
         const accessToken = req.server.jwt.sign({ id: user.id, pseudo: user.pseudo });

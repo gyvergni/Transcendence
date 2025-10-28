@@ -269,6 +269,7 @@ export async function setup2FA() {
 		});
 		if (!response.ok) {
 			const errorData = await response.json();
+			errorDiv.textContent = getApiErrorText(errorData);
 			console.error("Failed to enable 2FA:", getApiErrorText(errorData));
 			return ;
 		}

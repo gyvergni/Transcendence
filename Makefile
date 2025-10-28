@@ -3,10 +3,7 @@ DockerComposeProdFile   = ./docker-compose.prod.yml
 ### PROD ###
 apiVolume 		= ./app/api
 folderVolume = ./app
-API_DOCKER_VOLUME	= transcendence_api
-FRONTEND_DOCKER_VOLUME	= transcendence_frontend_dist
-
-### PROD ###
+FRONTEND_DOCKER_VOLUME	= $(shell basename $(CURDIR) | tr '[:upper:]' '[:lower:]')_frontend_dist
 
 prod:
 	mkdir -p $(apiVolume)
@@ -29,7 +26,6 @@ prod-clean: prod-down
 	docker image prune --all --force
 
 prod-fclean: prod-clean
-	docker volume rm $(API_DOCKER_VOLUME) || true
 	docker volume rm $(FRONTEND_DOCKER_VOLUME) || true
 	rm -rdf $(apiVolume)
 	rm -rdf $(folderVolume)
