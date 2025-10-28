@@ -60,7 +60,6 @@ export async function signupUser(e: Event, form: HTMLFormElement) {
 			const errorDiv = document.querySelector("#login-error-message") as HTMLDivElement;
 			try {
 				const err = await signupResponse.json();
-				console.log(err);
 				errorDiv.textContent = getApiErrorText(err);
 			} catch {
 				errorDiv.textContent = getTranslatedKey("error.internal");
@@ -101,6 +100,4 @@ export async function signupUser(e: Event, form: HTMLFormElement) {
 	} catch (error) {
 		console.error("Signup failed:", error);
 	}
-	
-	// setContentView("views/home.html");
 }

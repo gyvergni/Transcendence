@@ -14,7 +14,6 @@ export async function loginUser(e: Event, form: HTMLFormElement) {
 		const password = formData.get("login-password");
 		const errorDiv = document.querySelector("#login-error-message") as HTMLDivElement;
 		if (!username || !password) {
-			// console.error("Username and password are required");
 			errorDiv.textContent = getTranslatedKey("login.username-password.required");
 			return;
 		}
@@ -37,7 +36,6 @@ export async function loginUser(e: Event, form: HTMLFormElement) {
 		}
 
 		const data = await loginResponse.json();
-		// console.log("Login successful:", data);
 		if (await a2fStatus(data) === false) {
 			const success = await loginWithWebSocket(data.accessToken);
 			if (!success) {

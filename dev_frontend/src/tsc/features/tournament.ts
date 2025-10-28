@@ -1,4 +1,3 @@
-// tournament.ts
 import uiManager from "../main.js";
 import { toggleBackButton } from "../display/animations.js";
 import { createPlayerSlot } from "../display/player-selection.js";
@@ -30,7 +29,6 @@ export async function setupTournament() {
     container.appendChild(playerSlot);
   }
   setLang(currentLang);
-console.log("tournament length: ", tournament.players.length);
   const startBtn = document.getElementById("start-btn");
   startBtn?.addEventListener("click", () => 
   {
@@ -53,9 +51,6 @@ console.log("tournament length: ", tournament.players.length);
     tournament.firstRound[1].addPlayer(shuffled[2]);
     tournament.firstRound[1].addPlayer(shuffled[3]);
     tournament.firstRound[1].gameMode = "t-first";
-
-    console.log("Match 1:", tournament.firstRound[0].players.map(p => p.name));
-    console.log("Match 2:", tournament.firstRound[1].players.map(p => p.name));
 
     startTournament(tournament);
     setGameView();

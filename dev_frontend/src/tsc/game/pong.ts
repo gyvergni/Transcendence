@@ -61,8 +61,6 @@ function setUpSettings() {
 export function getMatchStats(match: MatchSetup)
 {
     const gameSettings = getSettings();
-	console.log("player 1 " + match.players[0].name);
-	console.log("player 2 " + match.players[1].name);
 	// Build the clean payload
 	let stats: matchStatsSend;
     stats = {
@@ -98,8 +96,6 @@ export function getMatchStats(match: MatchSetup)
 export async function postMatchStats(stats: matchStatsSend) {
 	
 
-	console.log("📤 Preparing to send match stats:", stats);
-
 	try {
 		const res = await fetch(`${API_BASE_URL}/stats/match/create`, {
 			method: "POST",
@@ -110,7 +106,6 @@ export async function postMatchStats(stats: matchStatsSend) {
 			body: JSON.stringify(stats),
 		});
 
-		console.log("✅ Response received:", res);
 
 		if (!res.ok) {
 			try {
@@ -124,7 +119,6 @@ export async function postMatchStats(stats: matchStatsSend) {
 		}
 
 		const data = await res.json();
-		console.log("✅ Stats successfully saved:", data);
 		return data;
 	} catch (err) {
 		console.error("❌ Error posting match stats:", err);
@@ -136,19 +130,16 @@ export async function postMatchStats(stats: matchStatsSend) {
 export function startMatch(match_setup: MatchSetup, type: number): Promise<MatchSetup> {
     const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
     setUpSettings();
-    console.log("Game settings loaded:", { paddle_size, PaddleColor, BallSize, BallColor });
     const game = new Game(canvas, match_setup, type);
     match_setup.game = game;
     match_setup.escape();
     game.launch();
-    //resetSettings();
 	return game.whenEnded();
 }
 
 
 export async function startTournament(tournament: TournamentManager): Promise<void>
 {
-	console.log("started tournament with", tournament.firstRound[0].players[0].name);
     await startMatch(tournament.firstRound[0], 1);
     if (!tournament.firstRound[0].winner)
         return ;
@@ -166,7 +157,6 @@ export async function startTournament(tournament: TournamentManager): Promise<vo
 		await setupTournamentWaitingRoom(tournament);
     	tournament.currentRound = 2;
 		await startMatch(tournament.final, 2);
-		console.log("Tournament winner:", tournament.final.winner!.name);
 		if (tournament.final?.game?.pause === false)
         {
             postMatchStats(tournament.firstRound[0].stats!);

@@ -3,7 +3,6 @@ import { GuestsManager } from "../utils/models";
 import { setContentView } from "../display/viewHandler";
 import Chart from "chart.js/auto";
 import { getApiErrorText } from "../utils/utilsApi.js";
-//import { text } from "stream/consumers";
 import { toggleBackButton } from "../display/animations";
 import uiManager from "../main";
 import {getTranslatedKey, setLang, currentLang, translateName} from "../utils/translation";
@@ -161,7 +160,6 @@ function renderHistory(matchHistory: MatchStatsResponse["matchHistory"], info: D
     container.innerHTML = "";
 
     matchHistory.slice(0, 10).forEach(m => {
-        console.log("m.player1Username:", m.player1Username, "m.player2Username:", m.player2Username, "currentMainGuest:", info.currentMainGuest);
         const won = (m.player1Username === info.currentMainGuest && m.player1Score > m.player2Score) ||
                     (m.player2Username === info.currentMainGuest && m.player2Score > m.player1Score);
 
@@ -187,7 +185,6 @@ function renderHistory(matchHistory: MatchStatsResponse["matchHistory"], info: D
         `;
 
         li.addEventListener("click", async () => {
-            console.log("clicked on match");
             await setContentView("../views/match-detail.html");
             handleMatchDetail(m, info);
         });
@@ -282,8 +279,6 @@ async function updateMatchupDropdown(info: DashboardContext, matchupSelect: HTML
 
 async function loadDashboard(info: DashboardContext)
 {
-    console.log("Account username: ", info.accountPseudo);
-    console.log("AccountIngame: ", info.accountIngame);
 
     toggleBackButton(true, async () => {
         uiManager.contentBox.classList.remove("max-w-7xl", "w-full", "p-6", "rounded-none");
@@ -370,7 +365,7 @@ export function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0], 
     const canvas = document.getElementById("match-points-timeline") as HTMLCanvasElement;
     if ((canvas as any)._chart) (canvas as any)._chart.destroy();
 
-    const pointsOrderSplit = ms.pointsOrder.split(""); // ['1','2','2']
+    const pointsOrderSplit = ms.pointsOrder.split("");
     const labels = pointsOrderSplit.map((winner, i) => winner === "1" ? i + 1 + ": " + translateName(match.player1Username) : i  + 1 + ": " +  translateName(match.player2Username));
     const colors = pointsOrderSplit.map(winner => winner === "1" ? "#eb69e2ff" : "#05c9b8ff");
 

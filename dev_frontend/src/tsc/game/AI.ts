@@ -106,7 +106,6 @@ export class AIPlayer implements PlayerType {
     else
         offset = (Math.random() - 0.5) * (paddle_size * 0.9);
     this.padTargetZ = this.predictZ() + offset;
-    console.log("offset: " + offset);
 }
 
 	// Compute final z after time t, accounting for reflections between -5 and 5. Returns pos and number of bounces.

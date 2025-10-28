@@ -62,7 +62,6 @@ export async function setupPause(match: MatchSetup)
     btn.addEventListener("click", () => {
       const option = (btn as HTMLElement).dataset.view;
       if (option === "resume") {
-		// if (uiManager.match != null && uiManager.match.game != null)
 		match.game!.clock.resumeTimer();
 		match!.game!.pause = false;
 		setGameView();
@@ -260,7 +259,6 @@ function setupSettingsEvents() {
 		setContentView("views/home.html");
 	})
 	const gameSettings = getSettings();
-	// console.log(gameSettings.paddleSize);
 }
 
 function setupProfileEvents() {
@@ -275,7 +273,6 @@ function setupProfileEvents() {
 		setContentView("views/home.html");
 	});
 	statsBtn.addEventListener("click", async () => {
-		console.log("Show stats view");
 		// Expand the content box to act as a near-fullscreen dashboard
 		uiManager.contentBox.classList.remove("rounded-xl");
 		uiManager.contentBox.classList.add("max-w-7xl", "w-full", "p-6", "rounded-none");
@@ -290,11 +287,6 @@ function setupProfileEvents() {
 		await setContentView("views/stats-dashboard.html");
         initStatsView(null);
 	});
-
-	// Note: `setContentView` already calls `attachStatsIfViewPresent()` after injecting HTML.
-	// A MutationObserver here caused duplicate attachments and broke the back-button / dropdown
-	// behavior (it could re-run stats logic while navigating). Removed the observer to
-	// avoid re-attaching listeners unexpectedly.
 
 	// Listen for match open events dispatched by the stats view
 	window.addEventListener('open-match', (ev: any) => {
@@ -312,12 +304,10 @@ function setupProfileEvents() {
 	});
 
 	accountBtn.addEventListener("click", () => {
-		console.log("Show account");
 		setContentView("views/account.html");
 	})
 
 	friendsBtn.addEventListener("click", () => {
-		console.log("Show friends");
 		setContentView("views/friends.html");
 	});
 
@@ -364,8 +354,6 @@ async function setQuickMatchView() {
         postMatchStats(match.stats!);
 		await setupGameEndScreen(match);
 	}
-	//animateContentBoxIn();
-	//setContentView("views/home.html");
   });
 }
 
@@ -392,7 +380,6 @@ function setupFriendsEvents() {
 	root.addEventListener("click", async (e) => {
 		const removeBtn = (e.target as HTMLElement).closest(".remove-friend-btn") as HTMLButtonElement;
 		if (removeBtn) {
-			console.log("Delete friend btn clicked");
 			await deleteFriend(e, root, tpl, search);
 			return ;
 		} else {
@@ -401,7 +388,6 @@ function setupFriendsEvents() {
 				const friendPseudo = friendBtn.getAttribute("data-pseudo");
 				if (!friendPseudo)
                     return;
-				console.log("View friend stats:", friendPseudo);
                 await setContentView("views/stats-dashboard.html");
 			    initStatsView(friendPseudo);
 			}
@@ -409,7 +395,6 @@ function setupFriendsEvents() {
 	});
 
 	addBtn?.addEventListener("click", () => {
-		console.log("Show add friend form");
 		toggleBackButton(false);
 		document.querySelector("#add-friend-form-container")?.classList.replace("hidden", "flex");
 	});

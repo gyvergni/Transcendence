@@ -1,10 +1,5 @@
-// models.ts
-
 import {matchStatsSend} from "../game/pong.js";
 import { Game } from "../game/game.js";
-import {animateContentBoxOut, animateContentBoxIn, toggleIsAnimation} from "../display/animations.js";
-import {setContentView, setGameView, setupPause} from "../display/viewHandler.js";
-import uiManager from "../main.js";
 import { API_BASE_URL } from "./utilsApi.js";
 import { getApiErrorText } from "./utilsApi.js";
 import {pause} from "../display/gameScreens.js"
@@ -93,14 +88,11 @@ export class MatchSetup implements GameTypeManager {
 		// Store the listener function so we can remove it later
 		this.keydownHandler = (e: KeyboardEvent) => {
 
-			// faire attention, actuellement tout les key press event passent ici
 			if (this.rm) {
 				this.rm = false;
 				document.removeEventListener("keydown", this.keydownHandler!);
 				return;
 			}
-
-			console.log("ON KEY PRESS I GO HERE");
 			pause(this, e);
 		};
 
@@ -139,7 +131,6 @@ export class TournamentManager implements GameTypeManager {
   }
 }
 
-//Guest Management
 
 //Interface
 export interface Guest {

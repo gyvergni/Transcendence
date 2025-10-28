@@ -1,4 +1,4 @@
-// t-waitingscreen.ts
+
 import { animateContentBoxIn, animateContentBoxOut } from "./animations";
 import { setContentView, setupPause } from "./viewHandler";
 import { MatchSetup, TournamentManager } from "../utils/models";
@@ -9,12 +9,11 @@ import uiManager from "../main";
 export async function setupTournamentWaitingRoom(tournament: TournamentManager): Promise<void> {
     animateContentBoxIn();
     await setContentView("views/t-waitingscreen.html");
-    console.log("In waiting screen setup");
     return new Promise<void>((resolve) => {
         const resumeBtn = document.getElementById("ready-btn");
         if (!resumeBtn) {
             console.error("Ready button not found in waiting screen");
-            resolve(); // fallback: don't block
+            resolve();
             return;
         }
         let prevWinner = document.getElementById("prev-winner");
@@ -46,19 +45,18 @@ export async function setupTournamentWaitingRoom(tournament: TournamentManager):
         resumeBtn.addEventListener("click", () => {
         setGameView();
         resolve();
-        }, { once: true }); // once = auto-remove listener after click
+        }, { once: true });
     });
 }
 
 export async function setupTournamentEndScreen(tournament: TournamentManager): Promise<void> {
     animateContentBoxIn();
     await setContentView("views/tournament-end.html");
-    console.log("In tournament end screen setup");
     return new Promise<void>((resolve) => {
         const homeBtn = document.getElementById("home-btn");
         if (!homeBtn) {
             console.error("Home button not found in tournament end screen");
-            resolve(); // fallback: don't block
+            resolve();
             return;
         }
         let champion = document.getElementById("champion-name");
@@ -68,19 +66,18 @@ export async function setupTournamentEndScreen(tournament: TournamentManager): P
         homeBtn.addEventListener("click", () => {
             setContentView("views/home.html");
             resolve();
-        }, { once: true }); // once = auto-remove listener after click
+        }, { once: true });
     });
 }
 
 export async function setupGameEndScreen(match: MatchSetup): Promise<void> {
     animateContentBoxIn();
     await setContentView("views/game-end.html");
-    console.log("In game end screen setup");
     return new Promise<void>((resolve) => {
         const homeBtn = document.getElementById("home-btn");
         if (!homeBtn) {
             console.error("Home button not found in game end screen");
-            resolve(); // fallback: don't block
+            resolve();
             return;
         }
         let winner = document.getElementById("winner-name");
@@ -90,15 +87,12 @@ export async function setupGameEndScreen(match: MatchSetup): Promise<void> {
         homeBtn.addEventListener("click", () => {
             setContentView("views/home.html");
             resolve();
-        }, { once: true }); // once = auto-remove listener after click
+        }, { once: true });
     });
 }
 
 export function pause(match: MatchSetup, e: KeyboardEvent) {
-    console.log("game = ", match.game);
-    console.log("IS ANIMATING= %d", uiManager.getIsAnimating());
     if (e.key === "Escape" && uiManager.getIsAnimating() === false && match.game != null) {
-        console.log("2: %d", uiManager.getIsAnimating());
         uiManager.setIsAnimating(true);
         if (uiManager.getCurrentView().includes("pause"))
         {
@@ -106,9 +100,7 @@ export function pause(match: MatchSetup, e: KeyboardEvent) {
                 match.game.pause = false;
             match.game.clock.resumeTimer();
             animateContentBoxOut();
-            console.log("apres 1");
             setGameView();
-            console.log("3: %d", uiManager.getIsAnimating());
         }
         else if (uiManager.getCurrentView().includes("game"))
         {
@@ -117,9 +109,7 @@ export function pause(match: MatchSetup, e: KeyboardEvent) {
             }
             match.game.clock.pauseTimer();
             animateContentBoxIn();
-            console.log("apres 2");
             setupPause(match);
-            console.log("4: %d", uiManager.getIsAnimating());
         };
     }
 }

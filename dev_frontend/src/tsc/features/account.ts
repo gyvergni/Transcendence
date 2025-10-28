@@ -31,7 +31,6 @@ export async function accountEditAvatar() {
 		const avatarUrl = API_BASE_URL + data.avatarUrl + '?t=' + Date.now(); // Cache busting
 		const avatarImg = document.querySelector("#account-avatar-img")! as HTMLImageElement;
 		avatarImg.src = avatarUrl;
-		console.log("Avatar updated successfully:", avatarUrl);
 	}
 }
 
@@ -50,8 +49,6 @@ export async function loadAccountAvatar() {
 		const data = await response.json();
 		const avatarUrl = API_BASE_URL + data.avatarUrl + '?t=' + Date.now(); // Cache busting
 		const avatarImg = document.querySelector("#account-avatar-img")! as HTMLImageElement;
-		console.log("Avatar loaded successfully:", avatarUrl);
-		console.log("Avatar data:", data);
 		avatarImg.src = avatarUrl;
 	} catch (error) {
 		console.error("Failed to load account avatar:", error);
@@ -66,13 +63,11 @@ export async function loadAccountInfo() {
 				'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
 			}
 		});
-		// console.log(response);
 		if (!response.ok) {
 			try { console.error("Failed to load account info:", getApiErrorText(await response.json())); } catch {}
 			return ;
 		}
 		const data = await response.json();
-		console.log("Account info loaded successfully:", data);
 		const usernameElement = document.querySelector("#account-displayed-username")! as HTMLSpanElement;
 		const igUsernameElement = document.querySelector("#account-displayed-igUsername")! as HTMLSpanElement;
 		const avatarUrl = API_BASE_URL + '/public/avatars/' + data.avatar + '?t=' + Date.now();
@@ -273,7 +268,6 @@ export async function setup2FA() {
 			return ;
 		}
 		const data = await response.json();
-		console.log(data);
 		
 		tempSessionId = data.sessionId;
 		const qrCodeUrl = data.qrCode;
@@ -336,7 +330,6 @@ export async function enable2FA(e: Event, form: HTMLFormElement) {
 		errorDiv.textContent = "";
 		const successDiv = document.querySelector("#div-2fa-success") as HTMLDivElement;
 		successDiv.textContent = getTranslatedKey("account.2FA.enable.success");
-		console.log("2FA enabled successfully");
 		setTimeout(() => {
 			const form2fa = document.querySelector("#edit-2fa-setup-form-container") as HTMLDivElement;
 			loadAccountInfo();
@@ -391,7 +384,6 @@ export async function disable2FA(e: Event, form: HTMLFormElement) {
 
 		errorDiv.textContent = "";
 		successDiv.textContent = getTranslatedKey("account.2FA.disable.success");
-		console.log("2FA disabled successfully");
 		setTimeout(() => {
 			const form2faDisable = document.querySelector("#edit-2fa-disable-form-container") as HTMLDivElement;
 			loadAccountInfo();

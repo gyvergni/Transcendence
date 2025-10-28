@@ -1,14 +1,14 @@
 
 
 export class Clock {
-	gameTime: number = 0; //total game time in seconds
-	gameTimerStart: number = 0; //timestamp when game started or resumed
+	gameTime: number = 0;
+	gameTimerStart: number = 0; 
 	
-	pointMaxTime: number = 0; //total point time in seconds
+	pointMaxTime: number = 0; 
 	pointCurrentTime: number = 0;
-	pointTimerStart: number = 0; //timestamp when point started
+	pointTimerStart: number = 0;
 
-	ballDelayStart: number = 0; //timestamp when ball delay started
+	ballDelayStart: number = 0;
 
 	start() 
 	{

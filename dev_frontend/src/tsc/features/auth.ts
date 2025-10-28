@@ -3,8 +3,6 @@ import { API_BASE_URL } from "../utils/utilsApi.js";
 
 export async function authenticateWithWebSocket(token: string): Promise<boolean> {
     try {
-        // 1. Valider le token JWT
-        console.log("🔍 Validating JWT token...");
         const response = await fetch(API_BASE_URL + "/users/auth/validate-jwt-token", {
             method: "GET",
             headers: {
@@ -17,12 +15,7 @@ export async function authenticateWithWebSocket(token: string): Promise<boolean>
             console.error("❌ JWT token validation failed");
             return false;
         }
-
-        // 2. Connecter le WebSocket
-        console.log("🔌 Connecting WebSocket...");
         await connectWebSocket();
-        
-        console.log("✅ Authentication successful - JWT valid and WebSocket connected");
         return true;
 
     } catch (error) {
@@ -34,7 +27,6 @@ export async function authenticateWithWebSocket(token: string): Promise<boolean>
 export async function checkTokenValidity(): Promise<boolean> {
     const token = localStorage.getItem("accessToken");
     if (!token) {
-        console.log("No token found, redirecting to login view");
         setContentView("views/login.html");
         return false;
     }
@@ -78,7 +70,6 @@ function connectWebSocket(): Promise<boolean> {
         }
         
         if (websocket) {
-            console.log("WebSocket already connected");
             websocket.close();
         }
 
@@ -86,10 +77,8 @@ function connectWebSocket(): Promise<boolean> {
         isAuthResponseReceived = false;
 
         websocket.onopen = () => {
-            console.log("✅ WebSocket connection established");
             const token = localStorage.getItem("accessToken");
             if (token) {
-                console.log("📤 Sending auth message...");
                 websocket?.send(JSON.stringify({ type: "auth", token }));
                 
 				pingInterval = setInterval(() => {
@@ -111,7 +100,6 @@ function connectWebSocket(): Promise<boolean> {
         };
 
         websocket.onmessage = (event) => {
-            // console.log("📥 WebSocket message received:", event.data);
             
             isAuthResponseReceived = true;
             if (authTimeout) {
@@ -121,10 +109,8 @@ function connectWebSocket(): Promise<boolean> {
 
             try {
                 const data = JSON.parse(event.data);
-                // console.log("📥 Parsed message:", data);
 
                 if (data.type === 'status' && data.online) {
-                    console.log("✅ WebSocket authentication successful");
                     resolve(true);
                 } else if (data.type === 'pong' && data.online) {
 					resolve(true);
@@ -143,7 +129,6 @@ function connectWebSocket(): Promise<boolean> {
         };
 
         websocket.onclose = (event) => {
-            console.log("🔌 WebSocket connection closed");
 			if (pingInterval) {
 				clearInterval(pingInterval);
 				pingInterval = null;
@@ -170,20 +155,6 @@ function connectWebSocket(): Promise<boolean> {
         };
     });
 }
-
-// export async function reconnectWebSocket(): Promise<boolean> {
-//     try {
-//         if (websocket) {
-//             websocket.close();
-//             websocket = null;
-//         }
-//         await connectWebSocket();
-//         return true;
-//     } catch (error) {
-//         console.error("❌ Failed to reconnect WebSocket:", error);
-//         return false;
-//     }
-// }
 
 export function disconnectWebSocket() {
 	if (pingInterval) {
