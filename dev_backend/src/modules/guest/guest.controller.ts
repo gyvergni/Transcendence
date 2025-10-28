@@ -11,7 +11,6 @@ export async function getGuestListByPseudoHandler(req: FastifyRequest<{Params: {
     try {
         if (req.params.username)
         {
-            //console.log("Username provided:", req.params.username);
             const username = req.params.username;
             const userId = await findUserByPseudo(username);
             if (!userId) {
@@ -25,7 +24,6 @@ export async function getGuestListByPseudoHandler(req: FastifyRequest<{Params: {
             const guestname = req.query.guestname;
             const guestList = await getGuestList(userId.id);
             if (guestname){
-                //console.log("Guestname provided:", req.query.guestname);
                 let guestFound = guestList.find(g => g.pseudo === guestname);
                 if (!guestFound) {
                     return httpError({
@@ -39,13 +37,11 @@ export async function getGuestListByPseudoHandler(req: FastifyRequest<{Params: {
                 return reply.status(StatusCodes.OK).send({guests: guestFoundArray, message: "Guest found successfully", user: username, numberOfGuests: guestFoundArray.length});
             }
             else {
-                //console.log("No guestname provided, returning full guest list");
                 return reply.status(StatusCodes.OK).send({message: "Guest list retrieved successfully", guests: guestList, user: username, numberOfGuests: guestList.length});
             }
         }
         else {
             const currentUser = req.user;
-            //console.log("TAG: ", currentUser);
             const guestList = await getGuestList(currentUser.id);
 			const user = await findUserByPseudo(currentUser.pseudo);
 			if (!user) {

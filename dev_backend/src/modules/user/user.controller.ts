@@ -120,7 +120,6 @@ export async function getUsersHandler(req: FastifyRequest<{ Params: {username: s
 }
 
 export async function getMeHandler(req: FastifyRequest, reply: FastifyReply) {
-    console.log(req.headers);
 	try {
 		const user = req.user;
 		if (!user) {
@@ -233,7 +232,6 @@ export async function addFriendHandler(req: FastifyRequest<{Body: AddFriendInput
 }
 
 export async function deleteFriendHandler(req: FastifyRequest<{Body: AddFriendInput}>, reply: FastifyReply) {
-    console.log("Delete friend handler called");
     const body = req.body;
 
     try {
@@ -315,7 +313,7 @@ export async function changePasswordHandler(req: FastifyRequest<{Body: ChangePas
 
 export async function changeUsernameHandler(req: FastifyRequest<{Body: ChangeUsernameInput}>, reply: FastifyReply) {
     const body = req.body;
-    if (body.newPseudo === "Deleted Guest" || body.newPseudo === "Invité supprimé" || body.newPseudo === "Invitado eliminado") {// A suppr faire la trad espagnol
+    if (body.newPseudo === "Deleted Guest" || body.newPseudo === "Invité Supprimé" || body.newPseudo === "Invitado Eliminado") {
         return httpError({
             reply,
             code: StatusCodes.BAD_REQUEST,
@@ -367,7 +365,6 @@ export async function changeUsernameHandler(req: FastifyRequest<{Body: ChangeUse
 }
 
 export async function logoutUserHandler(req: FastifyRequest, reply: FastifyReply) {
-	console.log("Logout handler called");
     const token = req.headers.authorization?.substring(7);
 
     if (!token) {
@@ -395,19 +392,8 @@ export async function logoutUserHandler(req: FastifyRequest, reply: FastifyReply
 export async function changeAvatarHandler(req: FastifyRequest, reply: FastifyReply) {
     const currentUser = req.user;
 
-	
-    // if (!avatar || avatar.length === 0) {
-		//     return httpError({
-			//         reply,
-			//         message: "Avatar cannot be empty",
-			//         code: StatusCodes.UNPROCESSABLE_ENTITY,
-			//     });
-			// }
-			
 	try {
 		const data = await (req as FastifyRequest & { file: () => Promise<any> }).file();
-	
-		// console.log("Received file data:", data); 
 	
 		if (!data) {
 			return httpError({
@@ -425,7 +411,6 @@ export async function changeAvatarHandler(req: FastifyRequest, reply: FastifyRep
 		await pipeline(data.file, fs.createWriteStream(filePath));
 	
 		await updateAvatar(currentUser.id, fileName);
-        // await updateAvatar(currentUser.id, avatar);
         return reply.code(StatusCodes.OK).send({message: "Avatar changed successfully", avatarUrl: `/public/avatars/${fileName}`});
     } catch (e) {
         return httpError({

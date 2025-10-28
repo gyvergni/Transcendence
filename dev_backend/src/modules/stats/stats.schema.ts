@@ -2,31 +2,6 @@ import {z} from 'zod';
 import { errorResponses } from '../utils/http';
 import { platform } from 'os';
 
-// export const addMatchSchema = {
-//     tags: ['matches'],
-//     body: z.object({
-//         player1Id: z.number({
-//             required_error: 'Player 1 ID is required',
-//             invalid_type_error: 'Player 1 ID must be a number'}),
-//         player2Id: z.number({
-//             required_error: 'Player 2 ID is required',
-//             invalid_type_error: 'Player 2 ID must be a number'}),
-//         player1Score: z.number({
-//             required_error: 'Player 1 score is required',
-//             invalid_type_error: 'Player 1 score must be a number'}),
-//         player2Score: z.number({
-//             required_error: 'Player 2 score is required',
-//             invalid_type_error: 'Player 2 score must be a number'}),
-//     }),
-//     response: {
-//         201: z.object({
-//             message: z.string().describe('Match added successfully'),
-//         }),
-//         400: errorResponses[400].describe('Bad Request'),
-//         500: errorResponses[500].describe('Internal Server Error'),
-//     }
-// } as const;
-
 export const addMatchSchema = {
     tags: ['stats'],
     body: z.object({

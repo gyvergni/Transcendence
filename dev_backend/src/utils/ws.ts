@@ -7,12 +7,10 @@ export async function wsRoute(server: FastifyInstance) {
 
 	server.get('/', { websocket: true }, (conn, req) => {
 		conn.on('message', async (msg: any) => {
-			// console.log("Received message:", msg.toString());
 			try {
 				const data = JSON.parse(msg.toString());
 
 				if (data.type === "ping") {
-					// console.log("Received ping from client");
 					conn.send(JSON.stringify({ type: "pong", online: true }));
 					return;
 				}
@@ -23,7 +21,6 @@ export async function wsRoute(server: FastifyInstance) {
 					}
 					loginUser(user.id);
 					onlineUsers.get(user.id)!.add(conn);
-					console.log("User connected:", user.id, "Total connections:", onlineUsers.get(user.id)!.size);
 					conn.send(JSON.stringify({ type: 'status', online: true}));
 					(conn as any).userId = user.id;
 				} 
@@ -32,13 +29,11 @@ export async function wsRoute(server: FastifyInstance) {
 					conn.close();
 				}
 			} catch (err) {
-				// console.error("Error processing message:", err);
 				conn.send(JSON.stringify({type: 'error', message: 'Invalid token' }));
 				conn.close();
 			}
 		})
 		conn.on('close', () => {
-			// console.log("Connection closed: ");
 			const userId = (conn as any).userId;
 			if (userId && onlineUsers.has(userId)) {
 				onlineUsers.get(userId)!.delete(conn);
@@ -46,7 +41,6 @@ export async function wsRoute(server: FastifyInstance) {
 					try {
 						logoutUser(userId);
 						onlineUsers.delete(userId);
-						console.log("User disconnected:", userId);
 					} catch (err) {
 						console.error("Error logout user:", err);
 					}

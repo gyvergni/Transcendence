@@ -197,9 +197,6 @@ export const logoutUserSchema = {
 
 export const changeAvatarSchema = {
     tags: ["users"],
-    // params: z.object({
-    //     filename: z.string().describe("The name of the avatar file"),
-    // }),
     response: {
         200: z.object({
             message: z.string().describe("Avatar changed successfully"),
