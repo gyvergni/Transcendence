@@ -1,3 +1,4 @@
+import { verifySignupInputDatas } from "../features/signup.js";
 import { PlayerConfig, MatchSetup, GameTypeManager, Guest } from "../utils/models.js";
 import { currentLang, getTranslatedKey, setLang } from "../utils/translation.js";
 
@@ -60,19 +61,24 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
   });
 
   addBtn.addEventListener("click", async () => {
-	let registeredUsers: string[] = guestsManager.guests.map(guest => guest.pseudo);
+  let registeredUsers: string[] = guestsManager.guests.map(guest => guest.pseudo);
     const name = input.value.trim();
     if (!name) return;
 
     if (guestsManager.pseudoExists(name)) {
       alert(getTranslatedKey("error.guest.add.already_exists"));
+  } else {
+      const err = verifySignupInputDatas({ username: name });
+      if (err && err != "true") {
+    		alert(getTranslatedKey(err));
     } else {
-      const result = await guestsManager.addGuest(name);
-      if (result.succes == true) {
-        registeredUsers = guestsManager.guests.map(guest => guest.pseudo);
-        updateDropdown("");
-      } else {
-        alert(getTranslatedKey(result.message));
+        const result = await guestsManager.addGuest(name);
+        if (result.succes == true) {
+          registeredUsers = guestsManager.guests.map(guest => guest.pseudo);
+          updateDropdown("");
+        } else {
+          alert(getTranslatedKey(result.message));
+        }
       }
     }
     // if (registeredUsers.includes(name)) {

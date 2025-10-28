@@ -8,6 +8,7 @@ import uiManager from "../main.js";
 import { API_BASE_URL } from "./utilsApi.js";
 import { getApiErrorText } from "./utilsApi.js";
 import {pause} from "../display/gameScreens.js"
+import { getTranslatedKey } from "./translation.js";
 
 export type PlayerType = "human" | "ai";
 export type AIDifficulty = "easy" | "medium" | "hard" | null;
@@ -196,6 +197,8 @@ export class GuestsManager {
 				},
 				body: JSON.stringify({ pseudo: pseudo })
 			});
+			if (!response.ok)
+				return ( { succes: false, message: getTranslatedKey("error.network") });
 			const data = await response.json();
 			if (response.status === 400) {
 				console.error("Failed to add guest, ", getApiErrorText(data));
@@ -208,10 +211,10 @@ export class GuestsManager {
 				return { succes: false, message: getApiErrorText(data) };
 			}
 			await this.fetchGuests(null);
-			return { succes: true, message: "Guest added successfully" };
+			return { succes: true, message: getTranslatedKey("success.guest.added") };
 		} catch (error) {
 			console.error("Error adding guest:", error);
-			return { succes: false, message: "Network error occured" };
+			return { succes: false, message: getTranslatedKey("error.network") };
 		}
 	}
 
@@ -225,6 +228,8 @@ export class GuestsManager {
 				},
 				body: JSON.stringify({ guestPseudo: pseudo })
 			});
+			if (!response.ok)
+				return ( { succes: false, message: getTranslatedKey("error.network") });
 			const data = await response.json();
 			if (response.status === 404) {
 				console.error("Failed to delete guest, ", getApiErrorText(data));
@@ -234,10 +239,10 @@ export class GuestsManager {
 				return { succes: false, message: getApiErrorText(data) };
 			}
 			await this.fetchGuests(null);
-			return { succes: true, message: "Guest deleted successfully" };
+			return { succes: true, message: getTranslatedKey("success.guest.deleted") };
 		} catch (error) {
 			console.error("Error deleting guest:", error);
-			return { succes: false, message: "Network error occured" };
+			return { succes: false, message: getTranslatedKey("error.network") };
 		}
 	}
 
