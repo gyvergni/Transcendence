@@ -1,4 +1,4 @@
-import { PlayerConfig } from "../models.js";
+import { PlayerConfig } from "../utils/models.js";
 import { Paddle } from "./paddle.js";
 
 

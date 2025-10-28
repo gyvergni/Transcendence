@@ -2,7 +2,7 @@ import { API_BASE_URL, getApiErrorText, parseApiErrorMessage } from "../utils/ut
 import { toggleBackButton } from "../display/animations.js";
 import { setContentView } from "../display/viewHandler.js";
 import { a2fStatus, checkTokenValidity } from "./auth.js";
-import { currentLang, getTranslatedKey, setLang } from "../utils/translation.js";
+import { getTranslatedKey } from "../utils/translation.js";
 import { verifySignupInputDatas } from "./signup.js";
 
 export async function accountEditAvatar() {

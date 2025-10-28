@@ -3,7 +3,7 @@ import { paddle_size } from "./pong.js";
 import { Paddle } from "./paddle.js";
 import { Ball } from "./ball.js";
 import { PlayerType } from "./player.js";
-import { PlayerConfig, AIDifficulty } from "../models.js";
+import { PlayerConfig, AIDifficulty } from "../utils/models.js";
 
 
 export class AIPlayer implements PlayerType {
