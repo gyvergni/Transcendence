@@ -23,6 +23,11 @@ export async function accountEditAvatar() {
 			},
 			body: formData
 		});
+		if (response.status === 413) {
+			console.error("Failed to upload avatar: File too large, 10MB max");
+			alert(getTranslatedKey("account.avatar.upload.too-large"));
+			return ;
+		}
 		if (!response.ok) {
 			try { console.error("Failed to upload avatar:", getApiErrorText(await response.json())); } catch {}
 			return ;

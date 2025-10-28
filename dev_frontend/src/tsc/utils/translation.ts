@@ -48,6 +48,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"account.otc": "One-time code",
 		"account.butt.d2FA": "Disable 2FA",
 		"account.2FA.disable.success": "2FA has been successfully disabled.",
+		"account.avatar.upload.too-large": "Avatar file is too large. Maximum size is 10MB.",
 
 		//ai-selection.html
 		"ai.easy-title": "For beginners. AI moves slowly and reacts late.",
@@ -329,6 +330,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"account.otc": "Code à usage unique",
 		"account.butt.d2FA": "Désactiver l'A2F",
 		"account.2FA.disable.success": "L'A2F a été désactivée avec succès.",
+		"account.avatar.upload.too-large": "Le fichier avatar est trop volumineux. Taille maximale : 10MB.",
 
 		//ai-selection.html
 		"ai.easy-title": "Pour les débutants. L'IA se déplace lentement et réagit tard.",
@@ -608,6 +610,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"account.otc": "Código de un solo uso",
 		"account.butt.d2FA": "Desactivar 2FA",
 		"account.2FA.disable.success": "2FA se ha desactivado con éxito.",
+		"account.avatar.upload.too-large": "El archivo del avatar es demasiado grande. Tamaño máximo: 10MB.",
 
 		//ai-selection.html
 		"ai.easy-title": "Para principiantes. La IA se mueve lentamente y reacciona tarde.",
