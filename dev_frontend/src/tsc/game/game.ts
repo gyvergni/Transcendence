@@ -1,5 +1,4 @@
 
-//################ imports ############
 import * as BABYLON from "babylonjs";
 import * as earcut from "earcut";
 (window as any).earcut = earcut;
@@ -167,8 +166,6 @@ export class Game {
           
         const skybox = BABYLON.MeshBuilder.CreateBox("skybox", { size: 29.0 }, this.scene);
         skybox.material = skyboxMaterial;
-          
-        // error skybox does not display because script is running on local browser, need to be running on a webserver
 	}
 
     createObjects() {
@@ -228,10 +225,8 @@ export class Game {
     }
 
 	createParticles() {
-		//texture of Particles
 		this.particleSystem.particleTexture = new BABYLON.Texture("assets/game/textures/flare.png", this.scene);
-		// Where the particles come from
-    	this.particleSystem.emitter = BABYLON.Vector3.Zero(); // the starting location
+    	this.particleSystem.emitter = BABYLON.Vector3.Zero();
 
 		// Size of each particle (random between...
 		this.particleSystem.minSize = 0.1;
@@ -288,7 +283,6 @@ export class Game {
 			return;
 
 		this.clock.updateGameTimer();
-		//console.log("Actual: ", this.clock.gameTime);
 
 		this.player1.update();
 		this.player2.update();
@@ -317,16 +311,8 @@ export class Game {
 		this.match.players[1].score = this.ball.score2;
 		//resetSettings();
         this.ball.timeOrder.slice(0, -1);
-		console.log("max time: ", this.clock.pointMaxTime/1000);
-		console.log("Total game time: ", this.clock.gameTime/1000);
-		console.log("longuest rally = ", this.ball.maxRallyBounce);
 		if (this.pause === false)
 			getMatchStats(this.match);
-        console.log("wallBounce1: " + this.ball.wallBounce1);
-        console.log("wallBounce2: " + this.ball.wallBounce2);
-        console.log("timeOrder: " + this.ball.timeOrder);
-        console.log("player1 inputs: " + this.player1.totalInputs);
-        console.log("player2 inputs: " + this.player2.totalInputs);
         this.resolveEnd(this.match);
 	}
 }

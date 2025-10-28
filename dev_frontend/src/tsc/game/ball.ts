@@ -53,7 +53,6 @@ export class Ball {
         this.speed = BallSpeed;
         this.createScoreParticles(scene);
         this.resetDirection();
-        //this.startDelay = 0;
         this.pTimer = 0;
         this.clock = clock;
         this.clock.ballDelayStart = new Date().getTime();
@@ -161,21 +160,16 @@ export class Ball {
         const within = (bz + BallSize * 0.1 > (pz - paddle_size/2)) && (bz - BallSize * 0.1 < (pz + paddle_size/2));
 
         if (hit && within && ((hitX < 0 && this.dirX < 0) || (hitX > 0 && this.dirX > 0))) {
-            // Increment speed on paddle hit (steady growth), up to BallSpeedLimit
             if (this.speed < BallSpeedLimit)
                 this.speed = Math.min(this.speed + BallSpeedIncrement, BallSpeedLimit);
-            // Calculate impact: -1 (bottom) to 1 (top)
             const impact = (bz - pz) / (paddle_size / 2);
             // Clamp impact to [-1, 1]
             const clampedImpact = Math.max(-1, Math.min(impact, 1));
             // Max angle from X axis (70° from perpendicular = 20° from X axis)
             const maxAngle = Math.PI / 2 - Math.PI / 9; // 70° from perpendicular
             const angle = clampedImpact * maxAngle;
-            // Direction: sign of dirX
             const signX = hitX > 0 ? -1 : 1;
-            // Calculate new dirZ, clamp to max angle
             let newDirZ = this.speed * Math.sin(angle);
-            // Ensure dirZ sign matches impact (top hit = positive, bottom hit = negative)
             if (clampedImpact === 0)
                 newDirZ = 0;
             // Calculate dirX to preserve total speed
@@ -185,14 +179,11 @@ export class Ball {
             this.pTimer = 1;
             this.rebound++;
             this.rallyBounce++;
-            // Debug
-            console.log(`Ball speed: ${this.speed}, dirX: ${this.dirX}, dirZ: ${this.dirZ}, impact: ${impact}`);
         }
     }
 
     reset() {
         this.timeOrder += (new Date().getTime() - this.clock.pointTimerStart + this.clock.pointCurrentTime) + ",";
-        console.log("Point time: " + (new Date().getTime() - this.clock.pointTimerStart + this.clock.pointCurrentTime));
         this.clock.updateGameTimer();
         this.clock.updatePointTimer();
         this.clock.pointCurrentTime = 0;

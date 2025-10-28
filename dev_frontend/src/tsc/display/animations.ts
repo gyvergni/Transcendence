@@ -30,8 +30,8 @@ function closeDoors() {
 
 export function animateContentBoxIn() {
 	toggleIsAnimation(true);
-  closeDoors();
-  setTimeout(() =>
+	closeDoors();
+	setTimeout(() =>
 	{
 		uiManager.contentBox.classList.remove("hidden");
 

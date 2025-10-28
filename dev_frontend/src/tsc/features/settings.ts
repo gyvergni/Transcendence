@@ -42,10 +42,8 @@ export function loadSettings(): GameSettings {
 
 	const stored = localStorage.getItem(STORAGE_KEY);
 	if (!stored) {
-		console.log("no stored values");
 		return { ...defaultSettings };}
 	else {
-		console.log("stored values");
 		return JSON.parse(stored);}
 }
 
@@ -53,7 +51,6 @@ export function loadSettings(): GameSettings {
 function saveSettings(currentSettings: GameSettings) {
 	settings = currentSettings;
 	localStorage.setItem(STORAGE_KEY, JSON.stringify(currentSettings));
-	//settings = loadSettings();
 }
 
 export function resetSettings() {
@@ -81,7 +78,6 @@ export function PaddleSizeSetting() {
 		paddleSizeInput.addEventListener("input", () => {
 			settings.paddleSize = parseInt(paddleSizeInput.value, 10);
 			saveSettings(settings);
-			console.log("Paddle size saved:", settings.paddleSize);
 		});
 	}
 }
@@ -95,7 +91,6 @@ export function PaddleColorSetting() {
 			if (color) {
 				settings.paddleColor = color;
 				saveSettings(settings);
-				console.log("Paddle color saved:", settings.paddleColor);
 			}
 		});
 	});
@@ -110,7 +105,6 @@ export function PaddleSpeedSetting() {
 		paddleSpeedInput.addEventListener("input", () => {
 			settings.paddleSpeed = parseInt(paddleSpeedInput.value, 10);
 			saveSettings(settings);
-			console.log("Paddle Speed saved:", settings.paddleSpeed);
 		});
 	}
 }
@@ -124,7 +118,6 @@ export function BallColorSetting() {
 			if (color) {
 				settings.ballColor = color;
 				saveSettings(settings);
-				console.log("Ball color saved:", settings.ballColor);
 			}
 		});
 	});
@@ -147,7 +140,6 @@ export function BallSizeSetting() {
 			if (ballSizeValue) {
 				ballSizeValue.textContent = settings.ballSize.toString();
 			}
-			console.log("Ball size saved:", settings.ballSize);
 		});
 	}
 }
@@ -169,7 +161,6 @@ export function BallSpeedSetting() {
 			if (ballSpeedValue) {
 				ballSpeedValue.textContent = settings.ballSpeed.toString();
 			}
-			console.log("Ball Speed saved:", settings.ballSpeed);
 		});
 	}
 }
@@ -183,7 +174,6 @@ export function BallShapeSetting() {
 			if (Shape) {
 				settings.ballShape = Shape;
 				saveSettings(settings);
-				console.log("Ball Shape saved:", settings.ballShape);
 			}
 		});
 	});
@@ -194,7 +184,6 @@ export function SettingsResetButton() {
 	reset.forEach((btn) => {
 		btn.addEventListener("click", () => {
 			resetSettings();
-			console.log("reseted settings :", settings);
 		});
 	});
 }
@@ -209,7 +198,6 @@ export function LanguageSetting() {
 			if (lang) {
 				settings.language = lang;
 				saveSettings(settings);
-				console.log("Language saved:", settings.language);
 				setLang(lang);
 			}
 		});

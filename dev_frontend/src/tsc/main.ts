@@ -5,8 +5,6 @@ import {Lang, setLang} from "./utils/translation.js"
 const uiManager = new UIManager();
 export default uiManager;
 
-console.log("version 0.41");
-
 // Initial DOM setup
 document.addEventListener("DOMContentLoaded",  async () => {
 	const isTokenValid = await checkTokenValidity();
@@ -20,10 +18,6 @@ document.addEventListener("DOMContentLoaded",  async () => {
 		const settings = JSON.parse(settingsStr);
 		lang = (settings.language as Lang) || "en";
 	}
-	
-	console.log("Language from storage:", lang);
 	setLang(lang);
-	// console.log("User is authenticated");//
 	setContentView("views/home.html");
 });
-//0969396999

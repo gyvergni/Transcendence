@@ -38,8 +38,6 @@ export async function fetchFriends() {
 			f.avatar = API_BASE_URL + '/public/avatars/' + f.avatar + '?t=' + Date.now();
 		});
 
-		// friendsCache = friendsCache.sort((a, b) => a.pseudo.localeCompare(b.pseudo));
-
 		friendsCache = friendsCache.sort((a, b) => {
 			if (a.status !== b.status) {
 				return b.status ? 1 : -1;
@@ -57,7 +55,6 @@ export async function fetchFriends() {
 
 export async function renderFriends(root: HTMLElement, tpl: HTMLTemplateElement, term: string, skipFetch = false) {
 	if (!skipFetch) {
-		console.log("Fetching friends before rendering...");
 		await fetchFriends();
 	}
 	
@@ -106,7 +103,6 @@ export async function renderFriends(root: HTMLElement, tpl: HTMLTemplateElement,
 }
 
 export async function addFriend(e: Event, form: HTMLFormElement) {
-	console.log("Adding friend...");
 	e.preventDefault();
 	try {
 		const formData = new FormData(form);
@@ -174,7 +170,6 @@ export async function deleteFriend(e:Event, root: HTMLElement, tpl: HTMLTemplate
 			} catch {}
 			return ;
 		}
-		console.log("Friend removed successfully:", friendPseudo);
 		await renderFriends(root, tpl, search.value);
 		return;
 	} catch (error) {
