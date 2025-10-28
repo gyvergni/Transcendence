@@ -1,12 +1,13 @@
 // models.ts
 
-import {matchStatsSend} from "./game/pong.js"
-import { Game } from "./game/game.js";
-import {animateContentBoxOut, animateContentBoxIn} from "./animations.js";
-import { setGameView, setupPause } from "./views.js";
-import uiManager from "./main.js";
-import { API_BASE_URL } from "./features/utils-api.js";
-import { getApiErrorText } from "./features/utils-api.js";
+import {matchStatsSend} from "../game/pong.js";
+import { Game } from "../game/game.js";
+import {animateContentBoxOut, animateContentBoxIn, toggleIsAnimation} from "../display/animations.js";
+import {setContentView, setGameView, setupPause} from "../display/viewHandler.js";
+import uiManager from "../main.js";
+import { API_BASE_URL } from "./utilsApi.js";
+import { getApiErrorText } from "./utilsApi.js";
+import {pause} from "../display/gameScreens.js"
 
 export type PlayerType = "human" | "ai";
 export type AIDifficulty = "easy" | "medium" | "hard" | null;
@@ -107,36 +108,6 @@ export class MatchSetup implements GameTypeManager {
 
 	getGuestsManager(): GuestsManager {
 		return this.guestsManager;
-	}
-}
-
-function pause(match: MatchSetup, e: KeyboardEvent) {
-	console.log("game = ", match.game);
-	console.log("IS ANIMATING= %d", uiManager.getIsAnimating());
-	if (e.key === "Escape" && uiManager.getIsAnimating() === false && match.game != null) {
-		console.log("2: %d", uiManager.getIsAnimating());
-		uiManager.setIsAnimating(true);
-		if (uiManager.getCurrentView().includes("pause"))
-		{
-			if (match.game != null && match.game.pause == true)
-				match.game.pause = false;
-			match.game.clock.resumeTimer();
-			animateContentBoxOut();
-			console.log("apres 1");
-			setGameView();
-			console.log("3: %d", uiManager.getIsAnimating());
-		}
-		else if (uiManager.getCurrentView().includes("game"))
-		{
-			if (match.game != null && match.game.pause == false) {
-				match.game.pause = true;
-			}
-			match.game.clock.pauseTimer();
-			animateContentBoxIn();
-			console.log("apres 2");
-			setupPause(match);
-			console.log("4: %d", uiManager.getIsAnimating());
-		};
 	}
 }
 

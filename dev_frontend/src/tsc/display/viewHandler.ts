@@ -1,20 +1,20 @@
-import uiManager from "./main.js";
+import uiManager from "../main.js";
 
 import {animateContentBoxOut, animateContentBoxIn, toggleBackButton} from "./animations.js";
-import { startMatch, postMatchStats } from "./game/pong.js";
+import { startMatch, postMatchStats } from "../game/pong.js";
 import {createPlayerSlot} from "./player-selection.js";
-import { PlayerConfig, MatchSetup, GuestsManager } from "./models.js";
-import {setupTournament} from "./tournament.js"
-import { checkTokenValidity } from "./features/auth.js";
-import { loginUser, submitLogin2FA } from "./features/login.js";
-import { logoutUser } from "./features/logout.js";
-import { signupUser } from "./features/signup.js";
-import { account2FAHandler, accountEditAvatar, editIgUsername, editPassword, setup2FA, loadAccountAvatar, loadAccountInfo, enable2FA, disable2FA } from "./features/account.js";
-import { getSettings } from "./settings.js";
-import { getTranslatedKey, setLang, currentLang } from "./translation.js";
-import { addFriend, deleteFriend, friendsCache, renderFriends } from "./features/friends.js";
-import { setupGameEndScreen, setupTournamentWaitingRoom } from "./t-waitingscreen.js";
-import { initStatsView } from "./features/stats.js";
+import { PlayerConfig, MatchSetup, GuestsManager } from "../utils/models.js";
+import {setupTournament} from "../features/tournament.js"
+import { checkTokenValidity } from "../features/auth.js";
+import { loginUser, submitLogin2FA } from "../features/login.js";
+import { logoutUser } from "../features/logout.js";
+import { signupUser } from "../features/signup.js";
+import { account2FAHandler, accountEditAvatar, editIgUsername, editPassword, setup2FA, loadAccountAvatar, loadAccountInfo, enable2FA, disable2FA } from "../features/account.js";
+import { getSettings } from "../features/settings.js";
+import { getTranslatedKey, setLang, currentLang } from "../utils/translation.js";
+import { addFriend, deleteFriend, friendsCache, renderFriends } from "../features/friends.js";
+import { setupGameEndScreen, setupTournamentWaitingRoom } from "./gameScreens.js";
+import { initStatsView } from "../features/stats.js";
 
 async function loadHTML(path: string): Promise<string> {
 	const res = await fetch(path);

@@ -4,8 +4,8 @@ import * as BABYLON from "babylonjs";
 import * as earcut from "earcut";
 (window as any).earcut = earcut;
 
-import { PlayerConfig, MatchSetup } from "../models.js";
-import { translateName } from "../translation.js";
+import { PlayerConfig, MatchSetup } from "../utils/models.js";
+import { translateName } from "../utils/translation.js";
 
 import { Paddle } from "./paddle.js";
 import { Clock } from "./clock.js";

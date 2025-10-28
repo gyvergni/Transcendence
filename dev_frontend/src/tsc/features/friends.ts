@@ -1,9 +1,8 @@
-import { freemem } from "os";
-import { animateContentBoxIn, toggleBackButton } from "../animations";
-import { setContentView } from "../views";
-import { API_BASE_URL, getApiErrorText } from "./utils-api";
+import { animateContentBoxIn, toggleBackButton } from "../display/animations";
+import { setContentView } from "../display/viewHandler";
+import { API_BASE_URL, getApiErrorText } from "../utils/utilsApi";
 import uiManager from "../main";
-import { getTranslatedKey } from "../translation";
+import { getTranslatedKey } from "../utils/translation";
 
 type Friend = {
 	id: number;

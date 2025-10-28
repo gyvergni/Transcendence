@@ -1,12 +1,12 @@
 
-import { API_BASE_URL, getApiErrorText } from "../features/utils-api.js";
+import { API_BASE_URL, getApiErrorText } from "../utils/utilsApi.js";
 
-import { MatchSetup, TournamentManager } from "../models.js";
-import {setupTournamentEndScreen, setupTournamentWaitingRoom} from "../t-waitingscreen.js";
+import { MatchSetup, TournamentManager } from "../utils/models.js";
+import {setupTournamentEndScreen, setupTournamentWaitingRoom} from "../display/gameScreens.js";
 
 import { Game } from "./game.js";
 
-import { getSettings } from "../settings.js"
+import { getSettings } from "../features/settings.js"
 
 export let paddle_size: number;
 export let PaddleColor: string;

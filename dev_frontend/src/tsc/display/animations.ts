@@ -1,4 +1,4 @@
-import uiManager from "./main.js";
+import uiManager from "../main.js";
 
 export function toggleBackButton(show: boolean, onClick?: () => void)
 {

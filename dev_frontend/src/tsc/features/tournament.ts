@@ -1,12 +1,11 @@
 // tournament.ts
-import uiManager from "./main.js";
-import { toggleBackButton } from "./animations.js";
-import { createPlayerSlot } from "./player-selection.js";
-import { setContentView, setGameView } from "./views.js";
-import { PlayerConfig, MatchSetup, TournamentManager } from "./models.js";
-import { startTournament } from "./game/pong.js";
-import {currentLang, setLang} from "./translation.js";
-
+import uiManager from "../main.js";
+import { toggleBackButton } from "../display/animations.js";
+import { createPlayerSlot } from "../display/player-selection.js";
+import { setContentView, setGameView } from "../display/viewHandler.js";
+import { PlayerConfig, MatchSetup, TournamentManager } from "../utils/models.js";
+import { startTournament } from "../game/pong.js";
+import {currentLang, setLang} from "../utils/translation.js";
 
 export async function setupTournament() {
   uiManager.setCurrentView("tournament");

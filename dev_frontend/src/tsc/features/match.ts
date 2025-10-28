@@ -1,4 +1,4 @@
-import { API_BASE_URL } from './utils-api.js';
+import { API_BASE_URL } from '../utils/utilsApi.js';
 import Chart from 'chart.js/auto';
 
 // We'll read the temporary match id set on window.__openMatchId by the event handler

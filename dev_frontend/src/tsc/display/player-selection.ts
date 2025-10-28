@@ -1,16 +1,5 @@
-// player-selection.ts
-import { API_BASE_URL } from "./features/utils-api.js";
-import { PlayerConfig, MatchSetup, GameTypeManager, Guest } from "./models.js";
-import { currentLang, getTranslatedKey, setLang } from "./translation.js";
-
-// const registeredUsers: string[] = ["alice", "bob", "carol", "dave", "eve", "frank"];
-
-// function check_name(name: string, config: PlayerConfig)
-// {
-//   if (config != null && config.name == name)
-//     return 1;
-//   return 0;
-// }
+import { PlayerConfig, MatchSetup, GameTypeManager, Guest } from "../utils/models.js";
+import { currentLang, getTranslatedKey, setLang } from "../utils/translation.js";
 
 // Human player selector
 async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: GameTypeManager): Promise<HTMLElement> {
