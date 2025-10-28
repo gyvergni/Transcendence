@@ -27,6 +27,8 @@ RUN pnpm build
 # Copier le client Prisma généré dans dist pour que les imports relatifs fonctionnent
 RUN cp -r src/generated dist/
 
+COPY public/ ./public/
+
 # Supprimer les fichiers de développement non nécessaires
 RUN rm -rf src/ tsconfig.json
 

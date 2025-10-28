@@ -1,18 +1,15 @@
 # Stage 1: Build the frontend
 FROM node:20-alpine AS builder
 WORKDIR /app
-
 COPY package.json pnpm-lock.yaml ./
 RUN npm install -g pnpm && pnpm install
-
 COPY . .
 RUN pnpm build
 
-# Stage 2: Serve with Nginx
-FROM nginx:alpine
+# Stage 2: Copy build artifacts into shared volume
+FROM alpine:latest
+VOLUME ["/usr/share/frontend"]
+COPY --from=builder /app/dist /tmp/dist
 
-# Copy compiled frontend build from builder stage
-COPY --from=builder /app/dist /usr/share/frontend
-
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# This entrypoint runs each time the container starts
+CMD ["sh", "-c", "cp -r /tmp/dist/* /usr/share/frontend/ && echo '✅ Frontend build copied to shared volume'"]

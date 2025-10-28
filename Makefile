@@ -6,7 +6,7 @@ apiVolume 		= ./app/api
 frontendVolume 	= ./app/frontend
 folderVolume = ./app
 API_DOCKER_VOLUME	= transcendence_api
-FRONTEND_DOCKER_VOLUME	= transcendence_frontend
+FRONTEND_DOCKER_VOLUME	= transcendence_frontend_dist
 
 ### DEV SYNC ###
 backendNodeModules = ./dev_backend/node_modules
@@ -58,7 +58,6 @@ dev-re: dev-fclean dev
 
 prod:
 	mkdir -p $(apiVolume)
-	mkdir -p $(frontendVolume)
 	docker compose -f $(DockerComposeProdFile) up -d --build
 
 prod-up:
