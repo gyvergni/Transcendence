@@ -62,7 +62,7 @@ export class Ball {
     }
 
     async setupCountDown(scene: BABYLON.Scene) {
-        var fontData = await (await fetch("../../public/fonts/MaximumImpact_Regular.json")).json()
+        var fontData = await (await fetch("./fonts/MaximumImpact_Regular.json")).json()
 
         this.countDown3 = BABYLON.MeshBuilder.CreateText("myText", "3", fontData, { size: 1, resolution: 64, depth: 0.1 }, scene, (window as any).earcut.default);
         this.countDown2 = BABYLON.MeshBuilder.CreateText("myText", "2", fontData, { size: 1, resolution: 64, depth: 0.1 }, scene, (window as any).earcut.default);
@@ -96,8 +96,8 @@ export class Ball {
             this.bounced = true;
         }
         // Paddle collision
-        this.checkPaddleCollision(p_left, -10, -9.5);
-        this.checkPaddleCollision(p_right, 10, 9.5);
+        this.checkPaddleCollision(p_left, -10 + BallSize * 0.05 , -9.5);
+        this.checkPaddleCollision(p_right, 10 - BallSize * 0.05, 9.5);
 
         // Score and reset
         if (this.mesh.position.x <= -11) {
@@ -156,7 +156,7 @@ export class Ball {
         const bz = this.mesh.position.z;
         const bx = this.mesh.position.x;
 
-        const hit = (limitX < hitX) ? (bx - BallSize * 0.1 <= hitX && bx >= limitX) : (bx + BallSize * 0.1 >= hitX && bx <= limitX);
+        const hit = (limitX < hitX) ? (bx <= hitX && bx >= limitX) : (bx >= hitX && bx <= limitX);
         const within = (bz + BallSize * 0.1 > (pz - paddle_size/2)) && (bz - BallSize * 0.1 < (pz + paddle_size/2));
 
         if (hit && within && ((hitX < 0 && this.dirX < 0) || (hitX > 0 && this.dirX > 0))) {

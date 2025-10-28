@@ -87,7 +87,7 @@ export class Game {
     }
 
 	async createText() {
-		var fontData = await (await fetch("../../public/fonts/MaximumImpact_Regular.json")).json();
+		var fontData = await (await fetch("./fonts/MaximumImpact_Regular.json")).json();
 
 		var name1 = null;
 		var name2 = null;
