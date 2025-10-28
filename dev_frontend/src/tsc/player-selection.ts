@@ -117,7 +117,7 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
         input.value = "";
         updateDropdown("");
       } else {
-        alert(getTranslatedKey("error.guest.delete.failed") + `: ${result.message}`);
+        alert(getTranslatedKey("error.guest.delete_failed") + `: ${result.message}`);
       }
     }
   })
