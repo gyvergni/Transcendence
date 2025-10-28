@@ -8,7 +8,7 @@ const temp = false;
 export function verifySignupInputDatas(input: any) {
 	if (input.username && input.username.match(/[^a-zA-Z0-9_]/))
 		return getTranslatedKey("signup.username.invalid-chars");
-	if (input.username && input.username.length < 3 || input.username.length > 20)
+	if (input.username && input.username.length < 3 || input.username.length > 10)
 		return getTranslatedKey("signup.username.length");
 	if (input.password && input.password.length < 6)
 		return getTranslatedKey("signup.password.length");

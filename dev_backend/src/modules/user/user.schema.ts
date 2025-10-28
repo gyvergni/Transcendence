@@ -10,8 +10,8 @@ export const createUserSchema = {
             invalid_type_error: "Pseudo must be a string"
         }).min(3, {
             message: "Pseudo must be at least 3 characters",
-        }).max(20, {
-            message: "Pseudo must not exceed 20 characters"
+        }).max(10, {
+            message: "Pseudo must not exceed 10 characters"
         }),
         password: z.string({
             required_error: "Password is required",
@@ -164,8 +164,8 @@ export const changeUsernameSchema = {
             invalid_type_error: "New pseudo must be a string"
         }).min(3, {
             message: "New pseudo must be at least 3 characters"
-        }).max(20, {
-            message: "New pseudo must not exceed 20 characters",
+        }).max(10, {
+            message: "New pseudo must not exceed 10 characters",
 			
         }),
     }),

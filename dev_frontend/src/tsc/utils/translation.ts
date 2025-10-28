@@ -128,7 +128,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"signup.verify-pw": "Verify Password",
 		"signup.signup-btn": "Sign Up",
 		"signup.pass-mismatch": "Password and verify password do not match",
-		"signup.username.length": "Username must be between 3 and 20 characters",
+		"signup.username.length": "Username must be between 3 and 10 characters",
 		"signup.username.invalid-chars": "Username contains invalid characters",
 		"signup.password.length": "Password must be at least 6 characters long",
 
@@ -410,7 +410,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"signup.verify-pw": "Vérifier le mot de passe",
 		"signup.signup-btn": "S'inscrire",
 		"signup.pass-mismatch": "Le mot de passe et la vérification ne correspondent pas",
-		"signup.username.length": "Le pseudo doit contenir entre 3 et 20 caractères",
+		"signup.username.length": "Le pseudo doit contenir entre 3 et 10 caractères",
 		"signup.username.invalid-chars": "Le pseudo contient des caractères invalides",
 		"signup.password.length": "Le mot de passe doit contenir au moins 6 caractères",
 
@@ -690,7 +690,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"signup.verify-pw": "Verificar contraseña",
 		"signup.signup-btn": "Registrarse",
 		"signup.pass-mismatch": "La contraseña y la verificación no coinciden",
-		"signup.username.length": "El nombre de usuario debe tener entre 3 y 20 caracteres",
+		"signup.username.length": "El nombre de usuario debe tener entre 3 y 10 caracteres",
 		"signup.username.invalid-chars": "El nombre de usuario contiene caracteres inválidos",
 		"signup.password.length": "La contraseña debe tener al menos 6 caracteres",
 		

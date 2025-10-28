@@ -21,7 +21,7 @@ export const getGuestListSchema = {
 export const createGuestSchema = {
     tags: ["guest"],
     body: z.object({
-        pseudo: z.string().min(1, "Pseudo is required").max(20, "Pseudo must be 20 characters or less").describe("Pseudo of the guest"),
+        pseudo: z.string().min(3, "Pseudo is required").max(10, "Pseudo must be 10 characters or less").describe("Pseudo of the guest"),
     }),
     response: {
         201: z.object({
