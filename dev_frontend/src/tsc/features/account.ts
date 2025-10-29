@@ -99,7 +99,6 @@ export async function loadAccountInfo() {
 		} else {
 			toggle2FA.setAttribute("data-i18n", "account.butt.2FA.enable");
 			toggle2FA.textContent = getTranslatedKey("account.butt.2FA.enable");
-			// toggle2FA.dataset.i18n = 'account.butt.2FA.enable';
 			toggle2FA.classList.remove("bg-red-500");
 			toggle2FA.classList.remove("hover:bg-red-700");
 			toggle2FA.classList.add("bg-green-500");
@@ -228,7 +227,6 @@ export async function account2FAHandler() {
 			const successDiv = document.querySelector("#div-disable-2fa-success") as HTMLDivElement;
 			if (errorDiv) errorDiv.textContent = "";
             if (successDiv) successDiv.textContent = "";
-			// const res = await disable2FA();
 		} else {
 			const form2fa = document.querySelector("#edit-2fa-setup-form-container")! as HTMLDivElement;
 			const tokenInput = form2fa.querySelector("#input-2fa-token") as HTMLInputElement;
