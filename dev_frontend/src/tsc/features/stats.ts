@@ -6,6 +6,7 @@ import { getApiErrorText } from "../utils/utilsApi.js";
 import { toggleBackButton } from "../display/animations";
 import uiManager from "../main";
 import {getTranslatedKey, setLang, currentLang, translateName} from "../utils/translation";
+import { handleMatchDetail } from "./match";
 
 export type MatchStatsResponse = {
     id: number;
@@ -98,7 +99,7 @@ function renderSummary(data: MatchStatsResponse, info: DashboardContext) {
     }
 }
 
-function renderGameAverages(data: MatchStatsResponse, info: DashboardContext) {
+function renderGameStats(data: MatchStatsResponse, info: DashboardContext) {
     const totalMatches = data.matchHistory.length;
     if (totalMatches === 0) {
         document.getElementById("avg-inputs")!.textContent = "—";
@@ -148,8 +149,6 @@ function renderGameAverages(data: MatchStatsResponse, info: DashboardContext) {
     document.getElementById("total-inputs")!.textContent = String(totalInputs);
     document.getElementById("total-wallBounces")!.textContent = String(totalWallBounces);
     document.getElementById("total-hits")!.textContent = String(totalHits);
-    document.getElementById("total-pointswon")!.textContent = String(totalPointsWon);
-    document.getElementById("total-pointslost")!.textContent = String(totalPointsLost);
     document.getElementById("tournaments-played")!.textContent = String(totalTournaments);
     document.getElementById("tournaments-finals")!.textContent = String(tournamentFinals);
     document.getElementById("tournaments-won")!.textContent = String(tournamentsWon);
@@ -217,7 +216,7 @@ function renderMatchupChart(info: DashboardContext, opponentGuest: string, match
             datasets: [{
                 label: `${info.currentMainGuest} vs ${opponentGuest}`,
                 data: [wins, losses],
-                backgroundColor: ["#22c55e", "#ef4444"],
+                backgroundColor: ["rgb(126, 231, 165)" ,"rgb(237, 103, 103)"],
             }]
         },
         options:
@@ -339,7 +338,7 @@ async function handleMainGuestChange(info: DashboardContext, matchupSelect: HTML
         return;
     renderSummary(stats, info);
     renderHistory(stats.matchHistory, info);
-    renderGameAverages(stats, info);
+    renderGameStats(stats, info);
     if (info.selectedMatchup) {
         matchupSelect.value = info.selectedMatchup;
         renderMatchupChart(info, info.selectedMatchup, stats.matchHistory);

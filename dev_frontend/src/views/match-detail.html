@@ -1,74 +1,74 @@
-<h2 class="text-[clamp(1rem,2vw,1.5rem)] mb-3 font-bold text-center text-purple-300 drop-shadow-lg" data-i18n="match.title">
-  Match Detail
+<h2 class="text-2xl mb-3 font-bold text-center text-purple-300 drop-shadow-lg" data-i18n="match.title">
+    Match Detail
 </h2>
 
 <div id="match-detail" class="flex flex-col w-full h-[85vh] rounded-xl p-2 overflow-hidden text-[clamp(0.6rem,1vw,0.9rem)] transition-all duration-300 ease-in-out">
 
-  <!-- Header -->
-  <div class="flex justify-between items-center mb-2 flex-none text-sm">
-    <h3 id="match-title" class="font-bold tracking-wide text-cyan-300" data-i18n="match.detail"></h3>
-  </div>
-
-  <!-- Top: Settings & Stats -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-1 mb-2 flex-none">
-    <div id="match-settings" class="bg-cyan-900/20 rounded-md p-1 border border-cyan-400/30 backdrop-blur-md justify-center">
-      <h4 class="font-semibold mb-1 text-cyan-300" data-i18n="match.game-settings"></h4>
-      <ul id="settings-list" class="space-y-0.5 justify-center">
-        <li><span data-i18n="match.settings-gamemode"></span> <span id="game-mode"></span></li>
-        <li><span data-i18n="match.settings-ballsize"></span> <span id="ball-size"></span></li>
-        <li><span data-i18n="match.settings-ballspeed"></span> <span id="ball-speed"></span></li>
-        <li><span data-i18n="match.settings-paddlesize"></span> <span id="paddle-size"></span></li>
-        <li><span data-i18n="match.settings-paddlespeed"></span> <span id="paddle-speed"></span></li>
-      </ul>
-    </div>
-    <div id="match-stats-summary" class="bg-cyan-900/20 rounded-md p-1 border border-cyan-400/30 backdrop-blur-md">
-      <h4 class="font-semibold mb-1 text-cyan-300" data-i18n="match.stats"></h4>
-      <ul id="stats-list" class="space-y-0.5">
-        <li><span data-i18n="match.totalhits"></span> <span id="total-hits"></span></li>
-        <li><span data-i18n="match.totaltime"></span> <span id="total-time"></span></li>
-        <li><span data-i18n="match.longestrally"></span> <span id="longest-rally"></span></li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- Player stats -->
-  <div id="match-player-stats" class="mb-2 flex-none">
-    <table class="table-auto w-full text-[clamp(0.6rem,0.9vw,0.8rem)] border border-cyan-400/30 backdrop-blur-md bg-cyan-900/20">
-      <thead>
-        <tr class="border-b border-cyan-400/30 text-cyan-300">
-          <th class="px-1 py-0.5" data-i18n="match.player">Player</th>
-          <th class="px-1 py-0.5" data-i18n="match.score">Score</th>
-          <th class="px-1 py-0.5" data-i18n="match.wb">Wall bounces</th>
-          <th class="px-1 py-0.5" data-i18n="match.inputs">Inputs</th>
-        </tr>
-      </thead>
-      <tbody id="table.entries" class="text-center">
-        <tr>
-          <td id="player1.name"></td>
-          <td id="player1.score"></td>
-          <td id="player1.wallbounces"></td>
-          <td id="player1.inputs"></td>
-        </tr>
-        <tr>
-          <td id="player2.name"></td>
-          <td id="player2.score"></td>
-          <td id="player2.wallbounces"></td>
-          <td id="player2.inputs"></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Main content area: Timeline & boxes -->
-  <div class="grid flex-1 gap-2 min-h-0">
-
-    <!-- Timeline chart -->
-    <div class="bg-cyan-900/20 border border-cyan-400/30 rounded-md p-1 flex flex-col backdrop-blur-md min-h-0">
-      <h4 class="font-semibold mb-1 text-cyan-300 flex-none" data-i18n="match.graph-title">Point Timeline</h4>
-      <div class="flex-1 relative min-h-0">
-        <canvas id="match-points-timeline" class="w-full h-full"></canvas>
-      </div>
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-2 flex-none text-sm">
+        <h3 id="match-title" class="font-bold tracking-wide text-cyan-300" data-i18n="match.detail"></h3>
     </div>
 
-  </div>
+    <!-- Top: Settings & Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-1 mb-2 flex-none">
+        <div id="match-settings" class="bg-cyan-900/20 rounded-md p-1 border border-cyan-400/30 backdrop-blur-md justify-center">
+            <h4 class="font-semibold mb-1 text-cyan-300" data-i18n="match.game-settings"></h4>
+            <ul id="settings-list" class="space-y-0.5 justify-center">
+                <li><span data-i18n="match.settings-gamemode"></span> <span id="game-mode" class="text-purple-300"></span></li>
+                <li><span data-i18n="match.settings-ballsize"></span> <span id="ball-size" class="text-purple-300"></span></li>
+                <li><span data-i18n="match.settings-ballspeed"></span> <span id="ball-speed" class="text-purple-300"></span></li>
+                <li><span data-i18n="match.settings-paddlesize"></span> <span id="paddle-size" class="text-purple-300"></span></li>
+                <li><span data-i18n="match.settings-paddlespeed"></span> <span id="paddle-speed" class="text-purple-300"></span></li>
+            </ul>
+        </div>
+        <div id="match-stats-summary" class="bg-cyan-900/20 rounded-md p-1 border border-cyan-400/30 backdrop-blur-md">
+            <h4 class="font-semibold mb-1 text-cyan-300" data-i18n="match.stats"></h4>
+            <ul id="stats-list" class="space-y-0.5">
+                <li><span data-i18n="match.totalhits"></span> <span id="total-hits" class="text-purple-300"></span></li>
+                <li><span data-i18n="match.totaltime"></span> <span id="total-time" class="text-purple-300"></span></li>
+                <li><span data-i18n="match.longestrally"></span> <span id="longest-rally" class="text-purple-300"></span></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Player stats -->
+    <div id="match-player-stats" class="mb-2 flex-none">
+        <table class="table-auto w-full text-sm border border-cyan-400/30 backdrop-blur-md bg-cyan-900/20">
+            <thead>
+                <tr class="border-b border-cyan-400/30 text-cyan-300">
+                    <th class="px-1 py-0.5" data-i18n="match.player">Player</th>
+                    <th class="px-1 py-0.5" data-i18n="match.score">Score</th>
+                    <th class="px-1 py-0.5" data-i18n="match.wb">Wall bounces</th>
+                    <th class="px-1 py-0.5" data-i18n="match.inputs">Inputs</th>
+                </tr>
+            </thead>
+            <tbody id="table.entries" class="text-center">
+                <tr>
+                    <td class="text-cyan-200" id="player1.name"></td>
+                    <td class="text-cyan-200" id="player1.score"></td>
+                    <td class="text-cyan-200" id="player1.wallbounces"></td>
+                    <td class="text-cyan-200" id="player1.inputs"></td>
+                </tr>
+                <tr>
+                    <td class="text-purple-200" id="player2.name"></td>
+                    <td class="text-purple-200" id="player2.score"></td>
+                    <td class="text-purple-200" id="player2.wallbounces"></td>
+                    <td class="text-purple-200" id="player2.inputs"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Main content area: Timeline & boxes -->
+    <div class="grid flex-1 gap-2 min-h-0">
+
+        <!-- Timeline chart -->
+        <div class="bg-cyan-900/20 border border-cyan-400/30 rounded-md p-1 flex flex-col backdrop-blur-md min-h-0">
+            <h4 class="font-semibold mb-1 text-cyan-300 flex-none" data-i18n="match.graph-title">Point Timeline</h4>
+            <div class="flex-1 relative min-h-0">
+                <canvas id="match-points-timeline" class="w-full h-full"></canvas>
+            </div>
+        </div>
+
+    </div>
 </div>

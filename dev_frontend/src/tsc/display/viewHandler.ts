@@ -59,29 +59,29 @@ export async function setupPause(match: MatchSetup)
 	uiManager.setIsAnimating(false);
 	setLang(currentLang); 
 	document.querySelectorAll("[data-view]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const option = (btn as HTMLElement).dataset.view;
-      if (option === "resume") {
+        btn.addEventListener("click", () => {
+            const option = (btn as HTMLElement).dataset.view;
+            if (option === "resume") {
 		match.game!.clock.resumeTimer();
 		match!.game!.pause = false;
 		setGameView();
-	  }
-      else if (option === "quit")
-	  {
+	    }
+            else if (option === "quit")
+	    {
 		match!.game?.endGame();
 		match!.game = null;
 		setContentView("views/home.html");
-	  }
-    });
-  })
+	    }
+        });
+    })
 }
 
 
 //Transition to gameScreen
 
 export function setGameView() {
-  uiManager.setCurrentView("game");
-  animateContentBoxOut();
+    uiManager.setCurrentView("game");
+    animateContentBoxOut();
 }
 
 // Setup login form behavior
@@ -191,7 +191,7 @@ function setupAccountEvents() {
 	passwordForm?.addEventListener("submit", (e) => editPassword(e, passwordForm));
 
 	// Edit A2F
-	document.querySelector("#toggle-2fa")?.addEventListener("click",  () => account2FAHandler());
+	document.querySelector("#toggle-2fa")?.addEventListener("click",    () => account2FAHandler());
 	document.querySelector("#edit-2fa-cancel-btn")?.addEventListener("click", () => {
 		toggleBackButton(true, () => {
 			setContentView("views/profile.html");
@@ -285,7 +285,7 @@ function setupProfileEvents() {
 		// animate the content box into view (it was expanded above)
 		animateContentBoxIn();
 		await setContentView("views/stats-dashboard.html");
-        initStatsView(null);
+                initStatsView(null);
 	});
 
 	accountBtn.addEventListener("click", () => {
@@ -300,46 +300,46 @@ function setupProfileEvents() {
 }
 
 async function setQuickMatchView() {
-  const container = document.getElementById("player-select-container")!;
-  container.innerHTML = "";
+    const container = document.getElementById("player-select-container")!;
+    container.innerHTML = "";
 
-  uiManager.contentBox.classList.add("max-w-3xl");
+    uiManager.contentBox.classList.add("max-w-3xl");
 
-  toggleBackButton(true, async () => {
-    uiManager.contentBox.classList.remove("max-w-3xl");
-    await setContentView("views/home.html");
-  });
+    toggleBackButton(true, async () => {
+        uiManager.contentBox.classList.remove("max-w-3xl");
+        await setContentView("views/home.html");
+    });
 
-  const startBtn = document.getElementById("start-btn");
-  const player1Config = new PlayerConfig("human");
-  const player2Config = new PlayerConfig("human");
-  
-  let match = new MatchSetup();
-  
-  //uiManager.match = match;
-  const player1 = await createPlayerSlot("player1-select", player1Config, match);
-  const player2 = await createPlayerSlot("player2-select", player2Config, match);
-  player1Config.position = 0; //left
-  player2Config.position = 1; //right
-  container.appendChild(player1);
-  container.appendChild(player2);
-  
-  setLang(currentLang);
+    const startBtn = document.getElementById("start-btn");
+    const player1Config = new PlayerConfig("human");
+    const player2Config = new PlayerConfig("human");
+    
+    let match = new MatchSetup();
+    
+    //uiManager.match = match;
+    const player1 = await createPlayerSlot("player1-select", player1Config, match);
+    const player2 = await createPlayerSlot("player2-select", player2Config, match);
+    player1Config.position = 0; //left
+    player2Config.position = 1; //right
+    container.appendChild(player1);
+    container.appendChild(player2);
+    
+    setLang(currentLang);
 
-  startBtn?.addEventListener("click", async () => {
-    if (!match.isReady()) {
-      alert(getTranslatedKey("error.views.notlockedin"));
-      return;
-    }
+    startBtn?.addEventListener("click", async () => {
+        if (!match.isReady()) {
+            alert(getTranslatedKey("error.views.notlockedin"));
+            return;
+        }
 
-    setGameView();
-    await startMatch(match, 0);
+        setGameView();
+        await startMatch(match, 0);
 	if (match.game?.pause === false)
 	{	
-        postMatchStats(match.stats!);
+                postMatchStats(match.stats!);
 		await setupGameEndScreen(match);
 	}
-  });
+        });
 }
 
 function setupFriendsEvents() {
@@ -364,20 +364,25 @@ function setupFriendsEvents() {
 
 	root.addEventListener("click", async (e) => {
 		const removeBtn = (e.target as HTMLElement).closest(".remove-friend-btn") as HTMLButtonElement;
-		if (removeBtn) {
+		if (removeBtn)
+        {
 			await deleteFriend(e, root, tpl, search);
 			return ;
-		} else {
+		}
+        else
+        {
             uiManager.contentBox.classList.remove("rounded-xl");
 		    uiManager.contentBox.classList.add("max-w-7xl", "w-full", "p-6", "rounded-none");
 		    // Set back button to revert layout back to profile when closing stats
-		    toggleBackButton(true, async () => {
+		    toggleBackButton(true, async () =>
+            {
 			    uiManager.contentBox.classList.remove("max-w-7xl", "w-full", "p-6", "rounded-none");
 			    uiManager.contentBox.classList.add("rounded-xl");
 			    await setContentView("views/friends.html");
 		    });
 			const friendBtn = (e.target as HTMLElement).closest("li") as HTMLLIElement;
-			if (friendBtn) {
+			if (friendBtn)
+            {
 				const friendPseudo = friendBtn.getAttribute("data-pseudo");
 				if (!friendPseudo)
                     return;
@@ -387,7 +392,8 @@ function setupFriendsEvents() {
 		}
 	});
 
-	addBtn?.addEventListener("click", () => {
+	addBtn?.addEventListener("click", () =>
+    {
 		toggleBackButton(false);
 		document.querySelector("#add-friend-form-container")?.classList.replace("hidden", "flex");
 	});
@@ -403,12 +409,14 @@ function setupFriendsEvents() {
 	});
 
 	const addFriendForm = document.querySelector("#add-friend-form") as HTMLFormElement;
-	addFriendForm.addEventListener("submit", async (e) => {
+	addFriendForm.addEventListener("submit", async (e) =>
+    {
 		await addFriend(e, addFriendForm);
 		await renderFriends(root, tpl, search.value);
 	});
 
-	reloadBtn?.addEventListener("click", async () => {
+	reloadBtn?.addEventListener("click", async () =>
+    {
 		await renderFriends(root, tpl, search.value);
 	});
 }

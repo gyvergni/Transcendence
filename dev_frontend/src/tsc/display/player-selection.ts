@@ -12,7 +12,7 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
 
 	await guestsManager.fetchGuests(null);
 
-const selectionBox = temp.querySelector(".player-select") as HTMLElement;
+    const selectionBox = temp.querySelector(".player-select") as HTMLElement;
 	if (!selectionBox) throw new Error("Could not find .player-select in template");
 
 	selectionBox.id = id;
@@ -97,11 +97,14 @@ const selectionBox = temp.querySelector(".player-select") as HTMLElement;
 		return;
 	} else {
 			const result = await guestsManager.deleteGuest(name);
-			if (result.succes == true) {
+			if (result.succes == true)
+            {
 				registeredUsers = guestsManager.guests.map(guest => guest.pseudo);
 				input.value = "";
 				updateDropdown("");
-			} else {
+			}
+            else
+            {
 				alert(getTranslatedKey("error.guest.delete_failed") + `: ${result.message}`);
 			}
 		}

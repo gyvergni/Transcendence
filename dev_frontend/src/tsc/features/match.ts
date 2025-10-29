@@ -67,7 +67,7 @@ export async function handleMatchDetail(match: MatchStatsResponse["matchHistory"
 
     const pointsOrderSplit = ms.pointsOrder.split("");
     const labels = pointsOrderSplit.map((winner, i) => winner === "1" ? i + 1 + ": " + translateName(match.player1Username) : i  + 1 + ": " +  translateName(match.player2Username));
-    const colors = pointsOrderSplit.map(winner => winner === "1" ? "#eb69e2ff" : "#05c9b8ff");
+    const colors = pointsOrderSplit.map(winner => winner === "1" ? "#7df9ff" :"rgb(236, 154, 250)");
 
     const timeOrderSplit = ms.timeOrder.split(",");
     const durations = timeOrderSplit.map(t => +t / 1000);
@@ -101,7 +101,7 @@ export async function handleMatchDetail(match: MatchStatsResponse["matchHistory"
                 title: { display: true, text: getTranslatedKey("match.timeline-xlabel"), color: "#ffffffff", font: { weight: "bold", size: 14 },},
                 ticks: { color: (ctx) => {
                         const index = ctx.index;
-                        return pointsOrderSplit[index] === "1" ? "#eb69e2ff" : "#05c9b8ff";
+                        return pointsOrderSplit[index] === "1" ? "#7df9ff" :"rgb(236, 154, 250)";
                     },
                     callback: (value, index) => {
                         return labels[index]; // Show player name directly

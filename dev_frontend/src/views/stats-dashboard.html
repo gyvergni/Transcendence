@@ -14,23 +14,23 @@
   <!-- Summary Boxes - Adjusted for better spacing -->
   <div class="grid grid-cols-5 gap-4">
     <div class="flex flex-col items-center justify-center bg-cyan-900/50 border border-cyan-400/20 rounded-lg p-3">
-      <span class="uppercase text-sm" data-i18n="stats.summtotal">Total</span>
+      <span class="uppercase text-xs" data-i18n="stats.summtotal">Total</span>
       <span id="stat-total" class="text-xl font-bold text-cyan-400">—</span>
     </div>
     <div class="flex flex-col items-center justify-center bg-green-900/50 border border-green-400/20 rounded-lg p-3">
-      <span class="uppercase text-sm" data-i18n="stats.summwins">Wins</span>
+      <span class="uppercase text-xs" data-i18n="stats.summwins">Wins</span>
       <span id="stat-wins" class="text-xl font-bold text-green-400">—</span>
     </div>
     <div class="flex flex-col items-center justify-center bg-red-900/50 border border-red-400/20 rounded-lg p-3">
-      <span class="uppercase text-sm" data-i18n="stats.summlosses">Losses</span>
+      <span class="uppercase text-xs" data-i18n="stats.summlosses">Losses</span>
       <span id="stat-losses" class="text-xl font-bold text-red-400">—</span>
     </div>
     <div class="flex flex-col items-center justify-center bg-purple-900/50 border border-purple-400/20 rounded-lg p-3">
-      <span class="uppercase text-sm" data-i18n="stats.summwinp">Win%</span>
+      <span class="uppercase text-xs" data-i18n="stats.summwinp">Win%</span>
       <span id="stat-winrate" class="text-xl font-bold text-purple-400">—</span>
     </div>
     <div class="flex flex-col items-center justify-center bg-slate-900/50 border border-slate-400/20 rounded-lg p-3">
-      <span class="uppercase text-sm" data-i18n="stats.summlongrally">Longest rally</span>
+      <span class="uppercase text-xs" data-i18n="stats.summlongrally">Longest rally</span>
       <span id="stat-longestrally" class="text-xl font-bold text-slate-400">—</span>
     </div>
   </div>
@@ -64,35 +64,33 @@
       <div class="grid grid-cols-3 gap-4 flex-1">
         <!-- Tournaments -->
         <div class="bg-cyan-900/20 border border-cyan-400/20 rounded-xl p-4">
-          <h3 class="font-semibold text-purple-300 mb-3" data-i18n="stats.tournament"></h3>
+          <h3 class="font-semibold text-purple-300 mb-3 text-sm" data-i18n="stats.tournament"></h3>
           <div class="flex flex-col gap-2">
-            <div class="flex justify-between"><span data-i18n="stats.t-played">Played</span><span id="tournaments-played" class="font-semibold">—</span></div>
-        <div class="flex justify-between"><span data-i18n="stats.t-finals">Finals</span><span id="tournaments-finals" class="font-semibold">—</span></div>
-        <div class="flex justify-between"><span data-i18n="stats.t-won">Won</span><span id="tournaments-won" class="font-semibold">—</span></div>
+            <div class="text-xs flex justify-between"><span data-i18n="stats.t-played">Played</span><span id="tournaments-played" class="text-xs font-semibold text-purple-300">—</span></div>
+        <div class="text-xs flex justify-between"><span data-i18n="stats.t-finals">Finals</span><span id="tournaments-finals" class="text-xs font-semibold text-purple-300">—</span></div>
+        <div class="text-xs flex justify-between"><span data-i18n="stats.t-won">Won</span><span id="tournaments-won" class="text-xs font-semibold text-purple-300">—</span></div>
       </div>
     </div>
 
     <!-- Averages -->
     <div class="bg-cyan-900/20 border border-cyan-400/20 rounded-xl p-3 hover:shadow-cyan-400/10 hover:shadow-lg transition">
-      <h3 class="font-semibold text-purple-300 mb-2 text-[clamp(0.8rem,1.2vw,1rem)]" data-i18n="stats.averages">Averages</h3>
+      <h3 class="font-semibold text-purple-300 mb-2 text-sm" data-i18n="stats.averages">Averages</h3>
       <div class="flex flex-col space-y-1">
-        <div class="flex justify-between"><span data-i18n="stats.avg-inputs">Inputs</span><span id="avg-inputs" class="font-semibold">—</span></div>
-        <div class="flex justify-between"><span data-i18n="stats.avg-length">Length</span><span id="avg-length" class="font-semibold">—</span></div>
-        <div class="flex justify-between"><span data-i18n="stats.avg-wb">Wall Bounces</span><span id="avg-wallBounces" class="font-semibold">—</span></div>
+        <div class="text-xs flex justify-between"><span data-i18n="stats.avg-inputs">Inputs</span><span id="avg-inputs" class="text-xs text-purple-300">—</span></div>
+        <div class="text-xs flex justify-between"><span data-i18n="stats.avg-length">Length</span><span id="avg-length" class="text-xs font-semibold text-purple-300">—</span></div>
+        <div class="text-xs flex justify-between"><span data-i18n="stats.avg-wb">Wall Bounces</span><span id="avg-wallBounces" class="text-xs font-semibold text-purple-300">—</span></div>
       </div>
     </div>
 
     <!-- General -->
     <div class="bg-cyan-900/20 border border-cyan-400/20 rounded-xl p-3 hover:shadow-cyan-400/10 hover:shadow-lg transition">
-      <h3 class="font-semibold text-purple-300 mb-2 text-[clamp(0.8rem,1.2vw,1rem)]" data-i18n="stats.general">General</h3>
+      <h3 class="font-semibold text-purple-300 mb-2 text-sm" data-i18n="stats.general">General</h3>
       <div class="flex flex-col space-y-1">
-        <div class="flex justify-between"><span data-i18n="stats.total-time">Time</span><span id="total-time" class="font-semibold">—</span></div>
-        <div class="flex justify-between"><span data-i18n="stats.total-inputs">Inputs</span><span id="total-inputs" class="font-semibold">—</span></div>
-        <div class="flex justify-between"><span data-i18n="stats.total-wallBounces">Wall bounces</span><span id="total-wallBounces" class="font-semibold">—</span></div>
-        <div class="flex justify-between"><span data-i18n="stats.total-hits">Hits</span><span id="total-hits" class="font-semibold">—</span></div>
-        <div class="flex justify-between"><span data-i18n="stats.total-ptswon">Pts Won</span><span id="total-pointswon" class="font-semibold">—</span></div>
-        <div class="flex justify-between"><span data-i18n="stats.total-ptslost">Pts Lost</span><span id="total-pointslost" class="font-semibold">—</span></div>
-      </div>
+        <div class="text-xs flex justify-between"><span data-i18n="stats.total-time">Time</span><span id="total-time" class="text-xs font-semibold text-purple-300">—</span></div>
+        <div class="text-xs flex justify-between"><span data-i18n="stats.total-inputs">Inputs</span><span id="total-inputs" class="text-xs font-semibold text-purple-300">—</span></div>
+        <div class="text-xs flex justify-between"><span data-i18n="stats.total-wallBounces">Wall bounces</span><span id="total-wallBounces" class="text-xs font-semibold text-purple-300">—</span></div>
+        <div class="text-xs flex justify-between"><span data-i18n="stats.total-hits">Hits</span><span id="total-hits" class="text-xs font-semibold text-purple-300">—</span></div>
+    </div>
     </div>
   </div>
 
