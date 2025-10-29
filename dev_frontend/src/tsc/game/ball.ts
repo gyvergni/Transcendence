@@ -96,8 +96,8 @@ export class Ball {
             this.bounced = true;
         }
         // Paddle collision
-        this.checkPaddleCollision(p_left, -10 + BallSize * 0.05 , -9.5);
-        this.checkPaddleCollision(p_right, 10 - BallSize * 0.05, 9.5);
+        this.checkPaddleCollision(p_left, -10 + BallSize * 0.05 , -9.5 + BallSize * 0.05);
+        this.checkPaddleCollision(p_right, 10 - BallSize * 0.05, 9.5 - BallSize * 0.05);
 
         // Score and reset
         if (this.mesh.position.x <= -11) {
@@ -157,7 +157,7 @@ export class Ball {
         const bx = this.mesh.position.x;
 
         const hit = (limitX < hitX) ? (bx <= hitX && bx >= limitX) : (bx >= hitX && bx <= limitX);
-        const within = (bz + BallSize * 0.1 > (pz - paddle_size/2)) && (bz - BallSize * 0.1 < (pz + paddle_size/2));
+        const within = (bz + BallSize * 0.05 > (pz - paddle_size/2)) && (bz - BallSize * 0.05 < (pz + paddle_size/2));
 
         if (hit && within && ((hitX < 0 && this.dirX < 0) || (hitX > 0 && this.dirX > 0))) {
             if (this.speed < BallSpeedLimit)

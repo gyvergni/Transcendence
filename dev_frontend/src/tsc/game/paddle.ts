@@ -15,9 +15,9 @@ export class Paddle {
     }
 
     move(up: boolean, down: boolean) {
-        if (up && this.mesh.position.z < 5)
+        if (up && this.mesh.position.z < 5 - paddle_size/4)
             this.mesh.position.z += 0.1 * (PaddleSpeed/10);
-        if (down && this.mesh.position.z > -5)
+        if (down && this.mesh.position.z > -5 + paddle_size/4)
             this.mesh.position.z -= 0.1 * (PaddleSpeed/10);
     }
 
