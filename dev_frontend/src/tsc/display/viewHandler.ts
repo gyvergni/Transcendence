@@ -117,6 +117,7 @@ function setupLoginEvents() {
 	cancel2FABtn?.addEventListener("click", () => {
 		toggleBackButton(false);
 		document.querySelector("#login-2fa-div")?.classList.add("hidden");
+		document.querySelector("#login-2fa-div")?.classList.remove("flex")
 	});
 
 	const form2FA = document.querySelector("#login-2fa-form") as HTMLFormElement;

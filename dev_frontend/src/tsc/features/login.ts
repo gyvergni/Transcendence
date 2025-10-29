@@ -72,6 +72,7 @@ export async function loginUser(e: Event, form: HTMLFormElement) {
 function showLogin2FADiv() {
 	const div2FA = document.querySelector("#login-2fa-div") as HTMLDivElement;
 	if (div2FA) {
+		div2FA.classList.add("flex");
 		div2FA.classList.remove("hidden");
 		const input = document.querySelector("#login-2fa-token") as HTMLInputElement;
 		const errorDiv = document.querySelector("#login-2fa-error") as HTMLDivElement;
@@ -121,6 +122,7 @@ export async function submitLogin2FA(e: Event, form: HTMLFormElement) {
 		if (success) {
 			const div2FA = document.querySelector("#login-2fa-div")! as HTMLDivElement;
 			div2FA.classList.add("hidden");
+			div2FA.classList.remove("flex");
 
 			const contentBox = document.querySelector("#content-box")! as HTMLElement;
 			contentBox.classList.remove("w-[430px]");
