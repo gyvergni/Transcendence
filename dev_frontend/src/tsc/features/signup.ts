@@ -1,50 +1,71 @@
 import { setContentView } from "../display/viewHandler.js";
-import { API_BASE_URL, getApiErrorText, parseApiErrorMessage } from "../utils/utilsApi.js";
+import { API_BASE_URL, getApiErrorText } from "../utils/utilsApi.js";
 import { loginWithWebSocket } from "./auth.js";
 import { getTranslatedKey } from "../utils/translation.js";
 
 const temp = false;
 
 export function verifySignupInputDatas(input: any) {
+	const errors: { field: 'username' | 'password' | 'both-passwords', message: string }[] = [];
+	
 	if (input.username && input.username.match(/[^a-zA-Z0-9_]/))
-		return getTranslatedKey("signup.username.invalid-chars");
-	if (input.username && input.username.length < 3 || input.username.length > 10)
-		return getTranslatedKey("signup.username.length");
+		errors.push({ field: 'username', message: getTranslatedKey("signup.username.invalid-chars") });
+	if (input.username && (input.username.length < 3 || input.username.length > 10))
+		errors.push({ field: 'username', message: getTranslatedKey("signup.username.length") });
 	if (input.password && input.password.length < 6)
-		return getTranslatedKey("signup.password.length");
-	return "true";
+		errors.push({ field: 'both-passwords', message: getTranslatedKey("signup.password.length") });
+	
+	if (errors.length > 0) {
+		return errors[0];
+	}
+	return null;
 }
 
 export async function signupUser(e: Event, form: HTMLFormElement) {
 	e.preventDefault();
-	form.classList.add("was-validated");
 	try {
 		const usernameDiv = document.querySelector('#signup-username')!;
 		const passwordDiv = document.querySelector('#signup-password')!;
 		const passwordVerifyDiv = document.querySelector('#signup-verify-password')!;
-		usernameDiv.classList.remove("wrong-signup-input");
-		passwordDiv.classList.remove("wrong-signup-input");
-		passwordVerifyDiv.classList.remove("wrong-signup-input");
+		usernameDiv.classList.remove("!border-red-600");
+		passwordDiv.classList.remove("!border-red-600");
+		passwordVerifyDiv.classList.remove("!border-red-600");
 
 		const formData = new FormData(form);
 		const username = formData.get("signup-username");
 		const password = formData.get("signup-password");
 		const verifyPassword = formData.get("signup-verify-password");
 		const errorDiv = document.querySelector("#login-error-message") as HTMLDivElement;
-		if (!username || !password) {
+		
+		// Check if fields are empty
+		if (!username || !password || !verifyPassword) {
 			errorDiv.textContent = getTranslatedKey("login.username-password.required");
-			usernameDiv.classList.add("wrong-signup-input")
-			return ;
-		} else if (password !== verifyPassword) {
-			errorDiv.textContent = getTranslatedKey("signup.pass-mismatch");
-			passwordDiv.classList.add("wrong-signup-input");
-			passwordVerifyDiv.classList.add("wrong-signup-input");
+			if (!username) usernameDiv.classList.add("!border-red-600");
+			if (!password) passwordDiv.classList.add("!border-red-600");
+			if (!verifyPassword) passwordVerifyDiv.classList.add("!border-red-600");
 			return ;
 		}
+		
+		// Check if passwords match
+		if (password !== verifyPassword) {
+			errorDiv.textContent = getTranslatedKey("signup.pass-mismatch");
+			passwordDiv.classList.add("!border-red-600");
+			passwordVerifyDiv.classList.add("!border-red-600");
+			return ;
+		}
+		
+		// Validate input data
 		const valid = verifySignupInputDatas({username, password});
-		if (valid != "true") {
-			errorDiv.textContent = valid;
-			usernameDiv.classList.add("wrong-signup-input");
+		if (valid !== null) {
+			errorDiv.textContent = valid.message;
+			if (valid.field === 'username') {
+				usernameDiv.classList.add("!border-red-600");
+			} else if (valid.field === 'password') {
+				passwordDiv.classList.add("!border-red-600");
+			} else if (valid.field === 'both-passwords') {
+				passwordDiv.classList.add("!border-red-600");
+				passwordVerifyDiv.classList.add("!border-red-600");
+			}
 			return ;
 		}
 
@@ -66,7 +87,7 @@ export async function signupUser(e: Event, form: HTMLFormElement) {
 			}
 			if (signupResponse.status === 409) {
 				const usernameDiv = document.querySelector('#signup-username')!;
-				usernameDiv.classList.add("wrong-signup-input");
+				usernameDiv.classList.add("!border-red-600");
 			}
 			return ;
 		}

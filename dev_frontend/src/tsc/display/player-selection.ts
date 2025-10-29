@@ -1,6 +1,13 @@
-import { verifySignupInputDatas } from "../features/signup.js";
 import { PlayerConfig, MatchSetup, GameTypeManager } from "../utils/models.js";
 import { currentLang, getTranslatedKey, setLang } from "../utils/translation.js";
+
+function verifyGuestUsernameInputDatas(username: string) {
+	if (username.match(/[^a-zA-Z0-9_]/))
+		return "signup.username.invalid-chars";
+	if (username.length < 3 || username.length > 10)
+		return "signup.username.length";
+	return "true";
+}
 
 async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: GameTypeManager): Promise<HTMLElement> {
 	const html = await fetch("views/player-selection.html").then(res => res.text());
@@ -66,7 +73,7 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
 		if (guestsManager.pseudoExists(name)) {
 			alert(getTranslatedKey("error.guest.add.already_exists"));
 	} else {
-			const err = verifySignupInputDatas({ username: name });
+			const err = verifyGuestUsernameInputDatas(name);
 			if (err && err != "true") {
 				alert(getTranslatedKey(err));
 		} else {

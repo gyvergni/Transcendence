@@ -3,7 +3,6 @@ import { toggleBackButton } from "../display/animations.js";
 import { setContentView } from "../display/viewHandler.js";
 import { a2fStatus, checkTokenValidity } from "./auth.js";
 import { getTranslatedKey } from "../utils/translation.js";
-import { verifySignupInputDatas } from "./signup.js";
 
 export async function accountEditAvatar() {
 	const fileInput = document.querySelector("#account-avatar-file") as HTMLInputElement | null;
@@ -109,6 +108,14 @@ export async function loadAccountInfo() {
 	}
 }
 
+function verifyIgUsernameInputData(igUsername: string) {
+	if (igUsername.match(/[^a-zA-Z0-9_]/))
+		return getTranslatedKey("signup.username.invalid-chars");
+	if (igUsername.length < 3 || igUsername.length > 10)
+		return getTranslatedKey("signup.username.length");
+	return "true";
+}
+
 export async function editIgUsername(e: Event, form: HTMLFormElement) {
 	e.preventDefault();
 	try {
@@ -123,7 +130,7 @@ export async function editIgUsername(e: Event, form: HTMLFormElement) {
 			console.error("Password is required");
 			return ;
 		}
-		const valid = verifySignupInputDatas({username: igUsername});
+		const valid = verifyIgUsernameInputData(igUsername);
 		if (valid != "true") {
 			const errorDiv = document.querySelector("#edit-igUsername-error") as HTMLDivElement;
 			errorDiv.textContent = valid;
@@ -154,6 +161,12 @@ export async function editIgUsername(e: Event, form: HTMLFormElement) {
 	}
 }
 
+function verifyPasswordInputData(password: string) {
+	if (password.length < 6)
+		return getTranslatedKey("signup.password.length");
+	return "true";
+}
+
 export async function editPassword(e: Event, form: HTMLFormElement) {
 	e.preventDefault();
 	try {
@@ -176,7 +189,7 @@ export async function editPassword(e: Event, form: HTMLFormElement) {
 			return ;
 		}
 
-		const valid = verifySignupInputDatas({username: "validUsername", password: newPassword});
+		const valid = verifyPasswordInputData(newPassword);
 		if (valid != "true") {
 			errorDiv.textContent = valid;
 			return ;

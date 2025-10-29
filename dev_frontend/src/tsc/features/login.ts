@@ -7,14 +7,23 @@ let pendingSessionId: string | null = null;
 
 export async function loginUser(e: Event, form: HTMLFormElement) {
 	e.preventDefault();
-	form.classList.add("was-validated"); 
 	try {
+		const usernameInput = document.querySelector('#login-username') as HTMLInputElement;
+		const passwordInput = document.querySelector('#login-password') as HTMLInputElement;
+		const errorDiv = document.querySelector("#login-error-message") as HTMLDivElement;
+		
+		// Reset borders
+		usernameInput.classList.remove("!border-red-600");
+		passwordInput.classList.remove("!border-red-600");
+		
 		const formData = new FormData(form);
 		const username = formData.get("login-username");
 		const password = formData.get("login-password");
-		const errorDiv = document.querySelector("#login-error-message") as HTMLDivElement;
+		
 		if (!username || !password) {
 			errorDiv.textContent = getTranslatedKey("login.username-password.required");
+			if (!username) usernameInput.classList.add("!border-red-600");
+			if (!password) passwordInput.classList.add("!border-red-600");
 			return;
 		}
 		const loginResponse = await fetch(API_BASE_URL + "/users/login", {
@@ -32,6 +41,9 @@ export async function loginUser(e: Event, form: HTMLFormElement) {
 			} catch {
 				errorDiv.textContent = getTranslatedKey("error.internal");
 			}
+			// Add red border on login error
+			usernameInput.classList.add("!border-red-600");
+			passwordInput.classList.add("!border-red-600");
 			return;
 		}
 

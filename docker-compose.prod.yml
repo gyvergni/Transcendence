@@ -1,9 +1,12 @@
+name: transcendence
+
 networks:
   transcendence:
     driver: bridge
 
 services:
   api:
+    container_name: api
     build: 
       context: ./dev_backend
       dockerfile: Dockerfile.prod
@@ -20,9 +23,11 @@ services:
 
 
   frontend:
+    container_name: frontend
     build:
       context: ./dev_frontend
       dockerfile: Dockerfile.prod
+    image: image_prod_frontend
     volumes:
       - frontend_dist:/usr/share/frontend
     networks:
@@ -30,9 +35,11 @@ services:
     restart: "no"
 
   nginx:
+    container_name: nginx
     build:
       context: ./nginx
       dockerfile: Dockerfile.prod
+    image: image_prod_nginx
     depends_on:
       - frontend
       - api

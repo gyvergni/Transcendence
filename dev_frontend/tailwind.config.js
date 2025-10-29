@@ -1,5 +1,8 @@
 module.exports = {
 	content: ["./src/**/*.{html,js, css, ts, png}"],
+	corePlugins: {
+		preflight: true,
+	},
 	theme: {
 	  extend: {
 		translate:
