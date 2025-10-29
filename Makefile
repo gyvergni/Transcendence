@@ -6,11 +6,17 @@ folderVolume = ./app
 FRONTEND_DOCKER_VOLUME	= transcendence_frontend_dist
 DOCKER_NETWORK	= transcendence_transcendence
 
-prod:
+check-env:
+	@if [ ! -f ./backend/.env.prod ]; then \
+		echo "Error: File ./backend/.env.prod is missing!"; \
+		exit 1; \
+	fi
+
+prod: check-env
 	mkdir -p $(apiVolume)
 	docker compose -f $(DockerComposeProdFile) up -d --build
 
-prod-up:
+prod-up: check-env
 	docker compose -f $(DockerComposeProdFile) up -d --build
 
 prod-down:
@@ -36,4 +42,4 @@ prod-fclean: prod-clean
 prod-re: prod-fclean prod
 
 
-.PHONY: prod prod-up prod-down prod-stop prod-start prod-clean prod-fclean prod-re
+.PHONY: prod prod-up prod-down prod-stop prod-start prod-clean prod-fclean prod-re check-env

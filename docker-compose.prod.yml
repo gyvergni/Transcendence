@@ -8,11 +8,11 @@ services:
   api:
     container_name: api
     build: 
-      context: ./dev_backend
+      context: ./backend
       dockerfile: Dockerfile.prod
     image: image_prod_api
     env_file:
-      - dev_backend/.env.prod
+      - backend/.env.prod
     volumes:
       - ./app/api:/app/data
     expose:
@@ -25,7 +25,7 @@ services:
   frontend:
     container_name: frontend
     build:
-      context: ./dev_frontend
+      context: ./frontend
       dockerfile: Dockerfile.prod
     image: image_prod_frontend
     volumes:

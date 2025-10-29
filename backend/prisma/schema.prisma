@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model friends {
+  id                             Int   @id @default(autoincrement())
+  user_id                        Int
+  friend_id                      Int
+  users_friends_friend_idTousers users @relation("friends_friend_idTousers", fields: [friend_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users_friends_user_idTousers   users @relation("friends_user_idTousers", fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([user_id, friend_id], map: "sqlite_autoindex_friends_1")
+}
+
+model guests {
+  id         Int        @id @default(autoincrement())
+  active     Boolean    @default(true)
+  user_id    Int
+  pseudo     String
+  users      users      @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  identities identities @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  //@@unique([user_id, pseudo], map: "sqlite_autoindex_guests_1")
+}
+
+model identities {
+  id                                            Int            @id @default(autoincrement())
+  guests                                        guests?
+  matchHistory_matchHistory_player2Toidentities matchHistory[] @relation("matchHistory_player2Toidentities")
+  matchHistory_matchHistory_player1Toidentities matchHistory[] @relation("matchHistory_player1Toidentities")
+  stats                                         stats?
+  users                                         users?
+}
+
+model matchHistory {
+  id                                          Int        @id @default(autoincrement())
+  player1_id                                  Int
+  player2_id                                  Int
+  player1_score                               Int
+  player2_score                               Int
+  date                                        DateTime   @default(now())
+  ballSize                                    Int
+  ballSpeed                                   Int
+  paddleSize                                  Int
+  paddleSpeed                                 Int
+  gameMode                                    String
+  totalHits                                   Int
+  longestRallyHits                            Int
+  longestRallyTime                            Int
+  timeDuration                                Int
+  pointsOrder                                 String
+  timeOrder                                   String  
+  wallBounce1                                 Int
+  wallBounce2                                 Int
+  totalInputs1                                Int
+  totalInputs2                                Int
+  identities_matchHistory_player2Toidentities identities @relation("matchHistory_player2Toidentities", fields: [player2_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  identities_matchHistory_player1Toidentities identities @relation("matchHistory_player1Toidentities", fields: [player1_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model stats {
+  id         Int        @id @default(autoincrement())
+  //user_id    Int        @unique(map: "sqlite_autoindex_stats_1")
+  wins        Int?       @default(0)
+  losses       Int?       @default(0)
+  identities identities @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model users {
+  id                               Int        @id @default(autoincrement())
+  pseudo                           String     @unique(map: "sqlite_autoindex_users_1")
+  password                         String
+  game_username                    String     
+  avatar                           String     @default("default_avatar.png")
+  status                           Boolean?   @default(false)
+  friends_friends_friend_idTousers friends[]  @relation("friends_friend_idTousers")
+  friends_friends_user_idTousers   friends[]  @relation("friends_user_idTousers")
+  guests                           guests[]
+  identities                       identities @relation(fields: [id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  twoFactorAuth                    twoFactorAuth?
+}
+
+model twoFactorAuth {
+  id       Int    @id @default(autoincrement())
+  user_id  Int   @unique
+  status   Boolean @default(false)
+  secret   String?
+  user     users  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}

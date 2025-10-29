@@ -1,0 +1,38 @@
+<!-- 🏁 Tournament End Screen -->
+<div class="flex flex-col items-center justify-center w-full space-y-8 text-[clamp(0.8rem,1.5vw,1.2rem)]">
+
+    <!-- 🪩 Title -->
+    <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-center text-purple-300 drop-shadow-lg tracking-wide"
+            data-i18n="tournament.endTitle">
+        <!-- i18n title -->
+    </h2>
+
+    <!-- 🏆 Champion Container -->
+    <div class="bg-cyan-900/20 border border-cyan-400/30 rounded-xl p-8 
+                            backdrop-blur-md w-[min(90%,500px)] text-center
+                            shadow-[0_0_20px_rgba(56,189,248,0.3)] 
+                            hover:shadow-[0_0_30px_rgba(56,189,248,0.5)]
+                            transition duration-300 ease-in-out  ">
+        <p id="champion-name" 
+             class="text-[clamp(2rem,4vw,3rem)] font-extrabold text-cyan-300 tracking-wider drop-shadow-lg uppercase">
+            <!-- Champion name injected dynamically -->
+        </p>
+    </div>
+
+    <!-- 🛸 Decorative line -->
+    <div class="w-[min(80%,400px)] h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"></div>
+
+    <!-- 🔘 Return Button -->
+    <button id="home-btn"
+        class="bg-cyan-400/10 border border-cyan-400/30 rounded-lg
+            px-8 py-3 font-bold text-cyan-200 uppercase tracking-wider
+            hover:bg-cyan-500/20 hover:text-white hover:border-cyan-300
+            transition duration-300 ease-in-out
+            shadow-[0_0_15px_rgba(56,189,248,0.2)] 
+            hover:shadow-[0_0_25px_rgba(56,189,248,0.5)]
+            backdrop-blur-md "
+        data-i18n="tournament.return">
+        Return
+    </button>
+
+</div>
