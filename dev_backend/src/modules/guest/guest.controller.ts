@@ -1,7 +1,6 @@
-import fastify, { FastifyReply, FastifyRequest } from "fastify";
+import { FastifyReply, FastifyRequest } from "fastify";
 import { httpError } from "../utils/http";
 import { StatusCodes } from "http-status-codes";
-import { PrismaClient, Prisma } from "../../generated/prisma";
 import { findUserByPseudo } from "../user/user.service";
 
 import { CreateGuestBody, DeleteGuestBody } from "./guest.schema";

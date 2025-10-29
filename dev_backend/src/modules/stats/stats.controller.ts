@@ -1,13 +1,9 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { server } from "../..";
 import { httpError } from "../utils/http";
 import { StatusCodes } from "http-status-codes";
-import { PrismaClient, Prisma } from "../../generated/prisma";
 
-import { getGuestListByPseudoHandler } from "../guest/guest.controller";
 import { getGuestList } from "../guest/guest.service";
-import { addMatchSchema } from "./stats.schema";
-import { addMatch, checkIdentityExists, getStats } from "./stats.service";
+import { addMatch, getStats } from "./stats.service";
 import { findUserByPseudo } from "../user/user.service";
 
 function isValidMatchScore(player1Score: number, player2Score: number) {

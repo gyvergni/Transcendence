@@ -1,7 +1,6 @@
-import { animateContentBoxIn, toggleBackButton } from "../display/animations";
+import { toggleBackButton } from "../display/animations";
 import { setContentView } from "../display/viewHandler";
 import { API_BASE_URL, getApiErrorText } from "../utils/utilsApi";
-import uiManager from "../main";
 import { getTranslatedKey } from "../utils/translation";
 
 type Friend = {

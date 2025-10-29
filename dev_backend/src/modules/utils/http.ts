@@ -1,4 +1,3 @@
-import { error } from "console";
 import { FastifyReply } from "fastify";
 import { StatusCodes } from "http-status-codes";
 import { z } from "zod";

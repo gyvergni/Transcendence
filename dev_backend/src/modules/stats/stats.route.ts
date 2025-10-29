@@ -1,4 +1,4 @@
-import fastify, { FastifyInstance } from "fastify";
+import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod"
 import { addMatchSchema, getStatsSchema } from "./stats.schema";
 import { addMatchHandler, getStatsHandler } from "./stats.controller";

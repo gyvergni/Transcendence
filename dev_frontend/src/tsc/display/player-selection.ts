@@ -1,5 +1,5 @@
 import { verifySignupInputDatas } from "../features/signup.js";
-import { PlayerConfig, MatchSetup, GameTypeManager, Guest } from "../utils/models.js";
+import { PlayerConfig, MatchSetup, GameTypeManager } from "../utils/models.js";
 import { currentLang, getTranslatedKey, setLang } from "../utils/translation.js";
 
 async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: GameTypeManager): Promise<HTMLElement> {

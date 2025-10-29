@@ -1,4 +1,4 @@
-import { API_BASE_URL, getApiErrorText, parseApiErrorMessage } from "../utils/utilsApi.js";
+import { API_BASE_URL, getApiErrorText} from "../utils/utilsApi.js";
 import { toggleBackButton } from "../display/animations.js";
 import { setContentView } from "../display/viewHandler.js";
 import { a2fStatus, checkTokenValidity } from "./auth.js";

@@ -5,7 +5,7 @@ import Chart from "chart.js/auto";
 import { getApiErrorText } from "../utils/utilsApi.js";
 import { toggleBackButton } from "../display/animations";
 import uiManager from "../main";
-import {getTranslatedKey, setLang, currentLang, translateName} from "../utils/translation";
+import {getTranslatedKey, translateName} from "../utils/translation";
 import { handleMatchDetail } from "./match";
 
 export type MatchStatsResponse = {

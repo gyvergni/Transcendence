@@ -4,7 +4,6 @@ networks:
 
 services:
   api:
-    container_name: api
     build: 
       context: ./dev_backend
       dockerfile: Dockerfile.prod

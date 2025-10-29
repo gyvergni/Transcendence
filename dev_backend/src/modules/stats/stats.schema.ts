@@ -1,6 +1,5 @@
 import {z} from 'zod';
 import { errorResponses } from '../utils/http';
-import { platform } from 'os';
 
 export const addMatchSchema = {
     tags: ['stats'],

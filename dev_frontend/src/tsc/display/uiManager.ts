@@ -1,7 +1,5 @@
-import {animateContentBoxOut, animateContentBoxIn} from "./animations.js";
-import {setContentView} from "./viewHandler.js";
 import {MatchSetup} from "../utils/models.js";
-import { LanguageSetting, loadSettings } from "../features/settings.js";
+import { loadSettings } from "../features/settings.js";
 
 
 export class UIManager {

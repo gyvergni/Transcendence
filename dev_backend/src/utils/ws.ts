@@ -1,5 +1,4 @@
-import { log } from "console";
-import fastify, { FastifyInstance } from "fastify";
+import { FastifyInstance } from "fastify";
 import { loginUser, logoutUser } from "../modules/user/user.service";
 
 export async function wsRoute(server: FastifyInstance) {

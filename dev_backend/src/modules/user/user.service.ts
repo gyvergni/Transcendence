@@ -1,4 +1,3 @@
-import { id } from "zod/v4/locales";
 import prisma from "../../utils/prisma";
 import { CreateUserBody } from "./user.schema";
 import bcrypt from "bcrypt";

@@ -1,6 +1,5 @@
 import {z} from 'zod';
 import { errorResponses } from '../utils/http';
-import { getAvatarHandler } from './user.controller';
 
 export const createUserSchema = {
     tags: ["users"],

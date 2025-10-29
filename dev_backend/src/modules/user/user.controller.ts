@@ -2,7 +2,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { server } from "../..";
 import { httpError } from "../utils/http";
 import { StatusCodes } from "http-status-codes";
-import { PrismaClient, Prisma } from "../../generated/prisma";
+import { Prisma } from "../../generated/prisma";
 import bcrypt from "bcrypt";
 import { createUser, findUserByPseudo, loginUser, findUsers, addFriend, updatePassword, logoutUser, deleteFriend, updateUsername, updateAvatar, twoFactorAuthStatus, findFriends } from "./user.service";
 import { CreateUserBody, LoginUserInput, AddFriendInput, ChangePasswordInput, ChangeUsernameInput } from "./user.schema";

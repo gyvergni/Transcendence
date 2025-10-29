@@ -1,4 +1,4 @@
-import fastify, { FastifyInstance } from "fastify";
+import { FastifyInstance } from "fastify";
 import { ZodTypeProvider } from "fastify-type-provider-zod";
 
 import { createUserSchema, loginUserSchema, getUsersSchema, changePasswordSchema, logoutUserSchema, changeUsernameSchema, changeAvatarSchema, getMeSchema, editFriendSchema, twoFactorAuthStatusSchema, twoFactorAuthSetupSchema, twoFactorAuthEnableSchema, twoFactorAuthDisableSchema, twoFactorAuthVerifySchema, validateJwtTokenSchema, twoFactorAuthLoginVerifySchema, getFriendsSchema, getAvatarSchema } from "./user.schema";
