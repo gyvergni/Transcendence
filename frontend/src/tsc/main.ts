@@ -1,9 +1,13 @@
 import {UIManager} from "./display/uiManager.js";
 import {setContentView} from "./display/viewHandler.js";
-import { checkTokenValidity } from "./features/auth.js";
+import { checkTokenValidity, markWebSocketCloseAsIntentional } from "./features/auth.js";
 import {Lang, setLang} from "./utils/translation.js"
 const uiManager = new UIManager();
 export default uiManager;
+
+window.addEventListener("beforeunload", () => {
+	markWebSocketCloseAsIntentional();
+});
 
 // Initial DOM setup
 document.addEventListener("DOMContentLoaded",  async () => {
