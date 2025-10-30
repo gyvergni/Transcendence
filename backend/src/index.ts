@@ -79,7 +79,7 @@ server.register(require('@fastify/static'), {
 
 server.register(require('@fastify/multipart'), {
 	limits: {
-		fileSize: 10 * 1024 * 1024, // 10 MB
+		fileSize: 5 * 1024 * 1024, // 5 MB
 	},
 });
 

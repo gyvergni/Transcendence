@@ -49,7 +49,9 @@ const translations: Record<Lang, Record<string, string>> =
 		"account.butt.d2FA": "Disable 2FA",
 		"account.2FA.disable.success": "2FA has been successfully disabled.",
 		"account.2FA.password_and_token_required": "Password and token are required",
-		"account.avatar.upload.too-large": "Avatar file is too large. Maximum size is 10MB.",
+		"account.avatar.upload.too-large": "Avatar file is too large. Maximum size is 5MB.",
+		"account.avatar.upload.invalid-type": "Only valid PNG and JPG images are allowed.",
+		"account.avatar.upload.error": "Failed to upload avatar. Please try again.",
 
 		//ai-selection.html
 		"ai.easy-title": "For beginners. AI moves slowly and reacts late.",
@@ -336,7 +338,9 @@ const translations: Record<Lang, Record<string, string>> =
 		"account.butt.d2FA": "Désactiver l'A2F",
 		"account.2FA.disable.success": "L'A2F a été désactivée avec succès.",
 		"account.2FA.password_and_token_required": "Le mot de passe et le token sont requis",
-		"account.avatar.upload.too-large": "Le fichier avatar est trop volumineux. Taille maximale : 10MB.",
+		"account.avatar.upload.too-large": "Le fichier avatar est trop volumineux. Taille maximale : 5MB.",
+		"account.avatar.upload.invalid-type": "Seules les images PNG et JPG valides sont autorisées.",
+		"account.avatar.upload.error": "Échec du téléchargement de l'avatar. Veuillez réessayer.",
 
 		//ai-selection.html
 		"ai.easy-title": "Pour les débutants. L'IA se déplace lentement et réagit tard.",
@@ -621,7 +625,9 @@ const translations: Record<Lang, Record<string, string>> =
 		"account.butt.d2FA": "Desactivar 2FA",
 		"account.2FA.disable.success": "2FA se ha desactivado con éxito.",
 		"account.2FA.password_and_token_required": "Se requieren contraseña y token",
-		"account.avatar.upload.too-large": "El archivo del avatar es demasiado grande. Tamaño máximo: 10MB.",
+		"account.avatar.upload.too-large": "El archivo del avatar es demasiado grande. Tamaño máximo: 5MB.",
+		"account.avatar.upload.invalid-type": "Solo se permiten imágenes válidas en formato PNG y JPG.",
+		"account.avatar.upload.error": "Error al cargar el avatar. Por favor, inténtalo de nuevo.",
 
 		//ai-selection.html
 		"ai.easy-title": "Para principiantes. La IA se mueve lentamente y reacciona tarde.",

@@ -9,6 +9,7 @@ import { CreateUserBody, LoginUserInput, AddFriendInput, ChangePasswordInput, Ch
 import { getGuestList } from "../guest/guest.service";
 import { path } from "../../index"
 import { createPendingLoginSession } from "../a2f";
+import { sanitizeAndValidateImage } from "../utils/imageValidation";
 
 const { pipeline } = require('node:stream/promises');
 const fs = require('node:fs');
@@ -420,15 +421,29 @@ export async function changeAvatarHandler(req: FastifyRequest, reply: FastifyRep
 			});
 		}
 	
-		const ext : string = path.extname(data.filename).toLowerCase();
-		const fileName = 'avatar_' + currentUser.id + ext;
+		// Valider et nettoyer l'image
+		const validation = await sanitizeAndValidateImage(data);
+		
+		if (!validation.valid || !validation.buffer) {
+			return httpError({
+				reply,
+				message: validation.error || "Invalid image file",
+				code: StatusCodes.BAD_REQUEST,
+				errorKey: "account.avatar.upload.invalid-type",
+			});
+		}
+
+		// Sauvegarder l'image nettoyée (toujours en PNG après traitement Sharp)
+		const fileName = 'avatar_' + currentUser.id + '.png';
 		const filePath = path.join(__dirname, '../../../public/avatars', fileName);
-	
-		await pipeline(data.file, fs.createWriteStream(filePath));
+		
+		// Écrire le buffer nettoyé sur le disque
+		await fs.promises.writeFile(filePath, validation.buffer);
 	
 		await updateAvatar(currentUser.id, fileName);
         return reply.code(StatusCodes.OK).send({message: "Avatar changed successfully", avatarUrl: `/public/avatars/${fileName}`});
     } catch (e) {
+		console.error("Avatar upload error:", e);
         return httpError({
             reply,
             message: "Failed to change avatar",
