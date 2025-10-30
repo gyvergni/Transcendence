@@ -211,6 +211,7 @@ function setupAccountEvents() {
 		});
 		setContentView("views/account.html");
 		document.querySelector("#edit-2fa-form-container")?.classList.add("hidden");
+		document.querySelector("#edit-2fa-form-container")?.classList.remove("flex");
 	});
 
 	document.querySelector("#disable-2fa-cancel-btn")?.addEventListener("click", () => {
@@ -219,6 +220,7 @@ function setupAccountEvents() {
 		});
 		setContentView("views/account.html");
 		document.querySelector("#disable-2fa-form-container")?.classList.add("hidden");
+		document.querySelector("#disable-2fa-form-container")?.classList.remove("flex");
 	});
 	const form2FA = document.querySelector("#edit-2fa-form") as HTMLFormElement;
 	form2FA?.addEventListener("submit", (e) => enable2FA(e, form2FA));

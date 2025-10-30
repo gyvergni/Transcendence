@@ -262,7 +262,7 @@ export async function account2FAHandler() {
 			const tokenInput = form2faDisable.querySelector("#disable-2fa-token") as HTMLInputElement;
 			passwordInput.value = "";
 			tokenInput.value = "";
-			form2faDisable.classList.remove("hidden");
+			form2faDisable.classList.replace("hidden", "flex");
 			toggleBackButton(false);
 			const errorDiv = document.querySelector("#div-disable-2fa-error") as HTMLDivElement;
 			const successDiv = document.querySelector("#div-disable-2fa-success") as HTMLDivElement;
@@ -272,7 +272,7 @@ export async function account2FAHandler() {
 			const form2fa = document.querySelector("#edit-2fa-setup-form-container")! as HTMLDivElement;
 			const tokenInput = form2fa.querySelector("#input-2fa-token") as HTMLInputElement;
 			tokenInput.value = "";
-			form2fa.classList.remove("hidden")
+			form2fa.classList.replace("hidden", "flex");
 			toggleBackButton(false);
 			const res = await setup2FA();
 		}
@@ -380,6 +380,7 @@ export async function enable2FA(e: Event, form: HTMLFormElement) {
 			loadAccountInfo();
 			   if (form2fa) {
 				form2fa.classList.add("hidden");
+				form2fa.classList.remove("flex");
 			}
 			toggleBackButton(true, () => {
 				setContentView("views/profile.html");
@@ -434,6 +435,7 @@ export async function disable2FA(e: Event, form: HTMLFormElement) {
 			loadAccountInfo();
 			if (form2faDisable) {
 				form2faDisable.classList.add("hidden");
+				form2faDisable.classList.remove("flex");
 			}
 			toggleBackButton(true, () => {
 				setContentView("views/profile.html");

@@ -12,7 +12,6 @@ export async function loginUser(e: Event, form: HTMLFormElement) {
 		const passwordInput = document.querySelector('#login-password') as HTMLInputElement;
 		const errorDiv = document.querySelector("#login-error-message") as HTMLDivElement;
 		
-		// Reset borders
 		usernameInput.classList.remove("!border-red-600");
 		passwordInput.classList.remove("!border-red-600");
 		
@@ -41,7 +40,6 @@ export async function loginUser(e: Event, form: HTMLFormElement) {
 			} catch {
 				errorDiv.textContent = getTranslatedKey("error.internal");
 			}
-			// Add red border on login error
 			usernameInput.classList.add("!border-red-600");
 			passwordInput.classList.add("!border-red-600");
 			return;

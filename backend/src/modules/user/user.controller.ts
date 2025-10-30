@@ -421,7 +421,6 @@ export async function changeAvatarHandler(req: FastifyRequest, reply: FastifyRep
 			});
 		}
 	
-		// Valider et nettoyer l'image
 		const validation = await sanitizeAndValidateImage(data);
 		
 		if (!validation.valid || !validation.buffer) {
@@ -433,11 +432,9 @@ export async function changeAvatarHandler(req: FastifyRequest, reply: FastifyRep
 			});
 		}
 
-		// Sauvegarder l'image nettoyée (toujours en PNG après traitement Sharp)
 		const fileName = 'avatar_' + currentUser.id + '.png';
 		const filePath = path.join(__dirname, '../../../public/avatars', fileName);
 		
-		// Écrire le buffer nettoyé sur le disque
 		await fs.promises.writeFile(filePath, validation.buffer);
 	
 		await updateAvatar(currentUser.id, fileName);
