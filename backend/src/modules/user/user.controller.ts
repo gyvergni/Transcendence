@@ -17,6 +17,14 @@ export async function createUserHandler(req: FastifyRequest<{Body: CreateUserBod
     const body = req.body;
 
     try {
+		if (body.pseudo && body.pseudo.match(/[^a-zA-Z0-9_]/)) {
+			return httpError({
+				reply,
+				message: "Pseudo contains invalid characters",
+				code: StatusCodes.BAD_REQUEST,
+				errorKey: "error.user.invalid_username_characters"
+			});
+		}
         const user = await createUser(body);
         return reply.code(StatusCodes.CREATED).send({id: user.id, pseudo: user.pseudo,
             message: "User created successfully"});
@@ -321,6 +329,14 @@ export async function changeUsernameHandler(req: FastifyRequest<{Body: ChangeUse
             errorKey: "error.user.username_reserved",
         });
     }
+	if (body.newPseudo && body.newPseudo.match(/[^a-zA-Z0-9_]/)) {
+		return httpError({
+			reply,
+			message: "Pseudo contains invalid characters",
+			code: StatusCodes.BAD_REQUEST,
+			errorKey: "error.user.invalid_username_characters"
+		});
+	}
     try {
         const currentUser = req.user;
 

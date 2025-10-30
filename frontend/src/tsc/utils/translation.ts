@@ -229,6 +229,7 @@ const translations: Record<Lang, Record<string, string>> =
 
 		// Error messages
 		"error.guest.not_found": "Guest not found",
+		"error.guest.invalid_username_characters": "Guest username contains invalid characters",
 		"error.guest.fetch_failed": "Failed to fetch guests",
 		"error.guest.username_reserved": "This username is reserved and cannot be used",
 		"error.guest.add.already_exists": "Guest with this username already exists",
@@ -249,6 +250,7 @@ const translations: Record<Lang, Record<string, string>> =
 		
 		"error.user.not_found": "User not found",
 		"error.user.duplicate_username": "Username already exists",
+		"error.user.invalid_username_characters": "Username contains invalid characters",
 		"error.user.create_failed": "Failed to create user",
 		"error.user.fetch_failed": "Failed to fetch users",
 		"error.user.invalid_old_password": "Invalid old password",
@@ -513,6 +515,7 @@ const translations: Record<Lang, Record<string, string>> =
 
 		// Error messages
 		"error.guest.not_found": "Invité introuvable",
+		"error.guest.invalid_username_characters": "Le pseudo de l'invité contient des caractères invalides",
 		"error.guest.fetch_failed": "Échec de la récupération des invités",
 		"error.guest.username_reserved": "Ce pseudo est réservé et ne peut pas être utilisé",
 		"error.guest.add.already_exists": "Un invité avec ce pseudo existe déjà",
@@ -533,6 +536,7 @@ const translations: Record<Lang, Record<string, string>> =
 		
 		"error.user.not_found": "Utilisateur introuvable",
 		"error.user.duplicate_username": "Le pseudo existe déjà",
+		"error.user.invalid_username_characters": "Le pseudo contient des caractères invalides",
 		"error.user.create_failed": "Échec de la création de l'utilisateur",
 		"error.user.fetch_failed": "Échec de la récupération des utilisateurs",
 		"error.user.invalid_old_password": "Ancien mot de passe invalide",
@@ -796,6 +800,7 @@ const translations: Record<Lang, Record<string, string>> =
 
 		// Error messages
 		"error.guest.not_found": "Invitado no encontrado",
+		"error.guest.invalid_username_characters": "El nombre de usuario del invitado contiene caracteres inválidos",
 		"error.guest.fetch_failed": "Error al obtener invitados",
 		"error.guest.username_reserved": "Este nombre está reservado y no puede usarse",
 		"error.guest.add.already_exists": "Ya existe un invitado con este nombre",
@@ -817,6 +822,7 @@ const translations: Record<Lang, Record<string, string>> =
 
 		"error.user.not_found": "Usuario no encontrado",
 		"error.user.duplicate_username": "El pseudo ya existe",
+		"error.user.invalid_username_characters": "El pseudo contiene caracteres inválidos",
 		"error.user.create_failed": "Error al crear usuario",
 		"error.user.fetch_failed": "Error al obtener usuarios",
 		"error.user.invalid_old_password": "Contraseña antigua inválida",
