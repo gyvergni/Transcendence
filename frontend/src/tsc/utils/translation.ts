@@ -11,7 +11,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"home.menu": "Main Menu",
 		"home.qmatch": "Quick Match",
 		"home.tournament": "Tournament",
-		"home.settings": "Settings",
+		"home.settings": "Game Settings",
 		"home.profile": "Profile",
 
 		//account.html
@@ -299,7 +299,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"home.menu": "Menu Principal",
 		"home.qmatch": "Partie Rapide",
 		"home.tournament": "Tournoi",
-		"home.settings": "Paramètres",
+		"home.settings": "Paramètres du Jeu",
 		"home.profile": "Profil",
 		
 		//account.html
@@ -586,7 +586,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"home.menu": "Menú Principal",
 		"home.qmatch": "Partida Rápida",
 		"home.tournament": "Torneo",
-		"home.settings": "Ajustes",
+		"home.settings": "Ajustes del Juego",
 		"home.profile": "Perfil",
 
 		//account.html
