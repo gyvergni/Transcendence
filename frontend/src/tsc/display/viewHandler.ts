@@ -371,21 +371,21 @@ function setupFriendsEvents() {
 		}
         else
         {
-            uiManager.contentBox.classList.remove("rounded-xl");
-		    uiManager.contentBox.classList.add("max-w-7xl", "w-full", "p-6", "rounded-none");
-		    // Set back button to revert layout back to profile when closing stats
-		    toggleBackButton(true, async () =>
-            {
-			    uiManager.contentBox.classList.remove("max-w-7xl", "w-full", "p-6", "rounded-none");
-			    uiManager.contentBox.classList.add("rounded-xl");
-			    await setContentView("views/friends.html");
-		    });
 			const friendBtn = (e.target as HTMLElement).closest("li") as HTMLLIElement;
 			if (friendBtn)
             {
 				const friendPseudo = friendBtn.getAttribute("data-pseudo");
 				if (!friendPseudo)
                     return;
+				uiManager.contentBox.classList.remove("rounded-xl");
+				uiManager.contentBox.classList.add("max-w-7xl", "w-full", "p-6", "rounded-none");
+				// Set back button to revert layout back to profile when closing stats
+				toggleBackButton(true, async () =>
+				{
+					uiManager.contentBox.classList.remove("max-w-7xl", "w-full", "p-6", "rounded-none");
+					uiManager.contentBox.classList.add("rounded-xl");
+					await setContentView("views/friends.html");
+				});
                 await setContentView("views/stats-dashboard.html");
 			    initStatsView(friendPseudo);
 			}
