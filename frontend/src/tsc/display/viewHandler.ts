@@ -166,9 +166,15 @@ function setupAccountEvents() {
 	// Edit IG username
 	document.querySelector("#account-edit-igUsername")?.addEventListener("click", () => {
 		toggleBackButton(false);
+		igUsernameForm?.reset();
+		const errorDiv = document.querySelector("#edit-igUsername-error") as HTMLDivElement;
+        if (errorDiv) errorDiv.textContent = "";
 		document.querySelector("#edit-igUsername-form-container")?.classList.replace("hidden", "flex");
 	});
 	document.querySelector("#edit-igUsername-cancel-btn")?.addEventListener("click", () => {
+		igUsernameForm?.reset();
+		const errorDiv = document.querySelector("#edit-igUsername-error") as HTMLDivElement;
+        if (errorDiv) errorDiv.textContent = "";
 		toggleBackButton(true, () => {
 			setContentView("views/profile.html");
 		});
@@ -180,9 +186,15 @@ function setupAccountEvents() {
 	// Edit password
 	document.querySelector("#account-edit-password")?.addEventListener("click", () => {
 		toggleBackButton(false);
+		passwordForm?.reset();
+        const errorDiv = document.querySelector("#edit-password-error") as HTMLDivElement;
+        if (errorDiv) errorDiv.textContent = "";
 		document.querySelector("#edit-password-form-container")?.classList.replace("hidden", "flex");
 	});
 	document.querySelector("#edit-password-cancel-btn")?.addEventListener("click", () => {
+		passwordForm?.reset();
+        const errorDiv = document.querySelector("#edit-password-error") as HTMLDivElement;
+        if (errorDiv) errorDiv.textContent = "";
 		toggleBackButton(true, () => {
 			setContentView("views/profile.html");
 		});
