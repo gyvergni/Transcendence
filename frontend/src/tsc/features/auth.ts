@@ -119,7 +119,7 @@ function connectWebSocket(): Promise<boolean> {
                     disconnectWebSocket();
                     reject(new Error(`WebSocket auth error: ${data.message}`));
                 } else {
-                    console.warn("⚠️ Unexpected message type:", data.type);
+                    console.warn("Unexpected message type:", data.type);
                     resolve(true);
                 }
             } catch (error) {

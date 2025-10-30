@@ -40,16 +40,8 @@ export class Game {
 	private resolveEnd!: (match: MatchSetup) => void;
 	private promiseEnd: Promise<MatchSetup>;
 
-	//stat track
-	type: string
-
     constructor(canvas: HTMLCanvasElement, match_setup: MatchSetup, type: number)
 	{
-		this.type = "Quickmatch";
-		if (type === 1)
-			this.type = "Tournament semi";
-		else if (type === 2)
-			this.type = "Tournament finale";
 		this.gameover = false;
 		this.pause = false;
         this.canvas = canvas;
@@ -186,10 +178,10 @@ export class Game {
         // Ball Material
         const bmaterial = new BABYLON.StandardMaterial("material", this.scene);
         bmaterial.diffuseColor = new BABYLON.Color3(Bcolor_r/255, Bcolor_g/255, Bcolor_b/255);
-
-        // Color3(r, g, b);
-        this.p_left = new Paddle(this.scene, -10);
-        this.p_right = new Paddle(this.scene, 10);
+        
+        // Paddles
+        this.p_left = new Paddle(this.scene, -10, this.clock);
+        this.p_right = new Paddle(this.scene, 10, this.clock);
         this.ball = new Ball(this.scene, this.clock);
 
 		// new player creation
@@ -280,8 +272,10 @@ export class Game {
     update()
 	{
 		if (this.pause == true)
-			return;
-
+        {
+            this.clock.paddle_pause = true;
+            return;
+        }
 		this.clock.updateGameTimer();
 
 		this.player1.update();

@@ -4,7 +4,6 @@ DockerComposeProdFile   = ./docker-compose.prod.yml
 apiVolume 		= ./app/api
 folderVolume = ./app
 FRONTEND_DOCKER_VOLUME	= transcendence_frontend_dist
-DOCKER_NETWORK	= transcendence_transcendence
 
 check-env:
 	@if [ ! -f ./backend/.env.prod ]; then \
@@ -34,7 +33,6 @@ prod-clean: prod-down
 
 prod-fclean: prod-clean
 	docker volume rm $(FRONTEND_DOCKER_VOLUME) || true
-	docker network rm $(DOCKER_NETWORK) || true
 	rm -rdf $(apiVolume)
 	rm -rdf $(folderVolume)
 	docker volume prune --all --force

@@ -124,7 +124,7 @@ export class Ball {
         if (new Date().getTime() - this.clock.ballDelayStart >= 500) 
             this.particleSystem.stop();
 
-        if (new Date().getTime() - this.clock.ballDelayStart >= 2000)
+        if (new Date().getTime() - this.clock.ballDelayStart > 2666)
         {
             if(this.countDown1)
                 this.countDown1.position.y = -2;
@@ -132,17 +132,26 @@ export class Ball {
             this.mesh.position.z += this.dirZ / 100;
         }
         else {
-            if (new Date().getTime() - this.clock.ballDelayStart >= 34 && new Date().getTime() - this.clock.ballDelayStart < 666) {
-                if(this.countDown3)
+            if (new Date().getTime() - this.clock.ballDelayStart < 666)
+            {
+                if (this.countDown3)
+                    this.countDown3.position.y = -2;
+                if (this.countDown2)
+                    this.countDown2.position.y = -2;
+                if (this.countDown1)
+                    this.countDown1.position.y = -2;
+            }
+            if (new Date().getTime() - this.clock.ballDelayStart >= 666 && new Date().getTime() - this.clock.ballDelayStart < 1332) {
+                if (this.countDown3)
                     this.countDown3.position.y = 5;
             }
-            else if (new Date().getTime() - this.clock.ballDelayStart >= 666 && new Date().getTime() - this.clock.ballDelayStart < 1332) {
+            else if (new Date().getTime() - this.clock.ballDelayStart >= 1332 && new Date().getTime() - this.clock.ballDelayStart < 2000) {
                 if(this.countDown3)
                     this.countDown3.position.y = -2;
                 if(this.countDown2)
                     this.countDown2.position.y = 5;
             }
-            else if (new Date().getTime() - this.clock.ballDelayStart >= 1332) {
+            else if (new Date().getTime() - this.clock.ballDelayStart >= 2000) {
                 if(this.countDown2)
                     this.countDown2.position.y = -2;
                 if(this.countDown1)

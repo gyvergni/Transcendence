@@ -89,7 +89,7 @@ export class AIPlayer implements PlayerType {
 			return;
 		}
 		// Predict where ball will intercept this paddle, with some randomness
-		this.padTargetZ = this.predictZ() + (Math.random() - 0.5) * (paddle_size * 1.2);
+		this.padTargetZ = this.predictZ(1) + (Math.random() - 0.5) * (paddle_size * 1.2);
 	}
 
 	behaviour_hard() {
@@ -102,10 +102,10 @@ export class AIPlayer implements PlayerType {
         offset = (Math.random() - 0.5) * (paddle_size * 1.2);
     else
         offset = (Math.random() - 0.5) * (paddle_size * 0.6);
-    this.padTargetZ = this.predictZ() + offset;
+    this.padTargetZ = this.predictZ(10) + offset;
     }
 
-    predictZ(): number
+    predictZ(maxWallBounce: number): number
     {
 		// Predict where the ball will intersect this paddle's X coordinate
         let z = this.ball.mesh.position.z;
@@ -114,12 +114,12 @@ export class AIPlayer implements PlayerType {
         let dirZ = this.ball.dirZ;
         let distToWall;
         let targetX: number;
-
+        let wallBounces: number = 0;
         if (this.side == "left")
             targetX = -10
         else
             targetX = 10;
-        while ((dirX < 0 && x > targetX) || (dirX > 0 && x < targetX)) {
+        while (((dirX < 0 && x > targetX) || (dirX > 0 && x < targetX)) && wallBounces++ <= maxWallBounce) {
             // distance until next wall hit
             if (dirZ > 0)
                 distToWall = 5 - z

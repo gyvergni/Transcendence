@@ -9,6 +9,7 @@ export class Clock {
 	pointTimerStart: number = 0;
 
 	ballDelayStart: number = 0;
+    paddle_pause: boolean = false;
 
 	start() 
 	{
