@@ -1,94 +1,65 @@
+# Transcendence
 
-# Lancement du serveur
+Full-stack 3D Pong game: Frontend TypeScript + Tailwind + Babylon.js, Backend Fastify + Prisma/SQLite, Nginx reverse proxy with self-signed TLS. Simple deployment via Docker Compose.
 
-## Étapes pour lancer le serveur backend (dans `dev_backend`)
+## Prerequisites
+- Docker and Docker Compose
+- Make
 
-1. Installer les dépendances  
-   ```bash
-   pnpm install
-   ```
-2. Générer le client Prisma  
-   ```bash
-   npx prisma migrate dev --name init
-   ```
-3. Démarrer le serveur en mode développement  
-   ```bash
-   pnpm dev
-   ```
+## Quick Start (production via Docker)
+1) Create the `backend/.env.prod` file
+```
+JWT_SECRET="change_me_please"
+DATABASE_URL="file:/app/data/prod.db"
+```
 
----
-      
-## Étapes pour lancer le frontend (dans `dev_front`)
+2) Launch the infrastructure (Makefile)
+```
+make prod
+```
 
-<<<<<<< HEAD
-## Étapes pour lancer le front (dans `dev_front`)
+3) Access the app
+- URL: https://127.0.0.1:8443
+- Accept the security exception (self-signed certificate)
 
-=======
->>>>>>> origin/fullstack
-1. Installer les dépendances  
-   ```bash
-   pnpm install
-   ```
-<<<<<<< HEAD
-2. Démarrer le serveur en mode développement  
-   ```bash
-   pnpm run dev
-   ```
+## Available Make Commands
+- `make prod` or `make prod-up`: Build and start all containers in detached mode
+- `make prod-down`: Stop and remove containers
+- `make prod-stop`: Stop containers without removing them
+- `make prod-start`: Restart stopped containers (without rebuild)
+- `make prod-clean`: Stop containers + clean unused images and containers
+- `make prod-fclean`: Full cleanup (volumes, networks, data) ⚠️ **Deletes all data**
+- `make prod-re`: Complete rebuild
 
----
+Notes:
+- SQLite data is persisted under `./app/api` (mounted in the container at `/app/data`).
 
-## Structure des fichiers typescript dans `dev_front/src/tsc`
+## Architecture and Access
+The backend API (port 3000) is **not directly exposed** outside the Docker infrastructure. All access goes through the Nginx reverse proxy (port 8443 on the host):
+- Frontend: served by Nginx from the shared volume
+- API: proxied by Nginx to `http://api:3000` (internal Docker network)
+- WebSocket: proxied by Nginx to `ws://api:3000` (internal Docker network)
 
-animation.ts : fonctions d'animations du UI
+To access the backend directly (e.g., Swagger, debugging), you need to map port 3000 in `docker-compose.prod.yml` (see section below).
 
-main.ts: fonction main appelée par index.html qui initialise le UIManager et lance les boucles d'interactions
+## Entry Points
+- API: `/api`
+  - Health check: `GET /api/healthcheck`
+  - Static files: `/api/public/...` (e.g., avatars)
+- WebSocket: `/ws` (JWT token auth)
 
-player-select.ts : gestion des boîtes de sélection de joueur (ou IA)
+## Accessing Swagger Documentation (for dev)
+The Swagger route (`/docs`) is enabled on the backend API, but is not exposed by Nginx in production. To access it for development purposes, map the backend port 3000 to the host, then open the API service local page.
 
-tournament.ts: gestion des tournois, écrans et logique de match-making
-
-ui-manager.ts: définition de la classe ui-manager qui contient les éléments de UI afin de les utiliser dans les autres fichiers
-
-views.ts: setup des évènements liées à chaque vue
-
----
-
-## API calls à setup
-
-Dans views.ts/setupLoginEvents() => api login
-
-Dans views.ts/setupSignUpEvents() => api create profile
-
-Dans player-select.ts/setupPlayerSelect() => GET guests / POST guest
-
-Une fois que la logique game / front sera établie: POST les stats du guest et POST les stats du match dans historique
-
-Une fois que dashboard sera fait: GET toutes les stats du guest et historique des matchs. (En attendant tu peux déjà setup toutes les variables des stats dans un fichier dashboard.ts et je ferai l'affichage)
-
-Une fois que l'avatar sera setup: GET l'avatar
-
-
----
-## Routes à implémenter
-
-### Users
-
-- `PUT /users/change-username` ?
-
-### Guest
-
-- `DELETE /guest/:id/delete`
-
-### Stats
-
- - `A Faire`
-
-### Match History
-
- - `A Faire`
-=======
-2. Démarrer le serveur en mode développement    
-   ```bash
-   pnpm run dev
-   ```
->>>>>>> origin/fullstack
+Simple option: add the `ports` section to the `api` service in `docker-compose.prod.yml` (temporarily for dev):
+```yaml
+services:
+  api:
+    # ...existing config...
+    ports:
+      - "3000:3000"
+```
+Redeploy then open:
+```
+http://127.0.0.1:3000/docs
+```

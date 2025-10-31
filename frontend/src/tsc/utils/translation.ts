@@ -11,7 +11,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"home.menu": "Main Menu",
 		"home.qmatch": "Quick Match",
 		"home.tournament": "Tournament",
-		"home.settings": "Settings",
+		"home.settings": "Game Settings",
 		"home.profile": "Profile",
 
 		//account.html
@@ -49,7 +49,9 @@ const translations: Record<Lang, Record<string, string>> =
 		"account.butt.d2FA": "Disable 2FA",
 		"account.2FA.disable.success": "2FA has been successfully disabled.",
 		"account.2FA.password_and_token_required": "Password and token are required",
-		"account.avatar.upload.too-large": "Avatar file is too large. Maximum size is 10MB.",
+		"account.avatar.upload.too-large": "Avatar file is too large. Maximum size is 5MB.",
+		"account.avatar.upload.invalid-type": "Only valid PNG and JPG images are allowed.",
+		"account.avatar.upload.error": "Failed to upload avatar. Please try again.",
 
 		//ai-selection.html
 		"ai.easy-title": "For beginners. AI moves slowly and reacts late.",
@@ -229,6 +231,7 @@ const translations: Record<Lang, Record<string, string>> =
 
 		// Error messages
 		"error.guest.not_found": "Guest not found",
+		"error.guest.invalid_username_characters": "Guest username contains invalid characters",
 		"error.guest.fetch_failed": "Failed to fetch guests",
 		"error.guest.username_reserved": "This username is reserved and cannot be used",
 		"error.guest.add.already_exists": "Guest with this username already exists",
@@ -249,6 +252,7 @@ const translations: Record<Lang, Record<string, string>> =
 		
 		"error.user.not_found": "User not found",
 		"error.user.duplicate_username": "Username already exists",
+		"error.user.invalid_username_characters": "Username contains invalid characters",
 		"error.user.create_failed": "Failed to create user",
 		"error.user.fetch_failed": "Failed to fetch users",
 		"error.user.invalid_old_password": "Invalid old password",
@@ -295,7 +299,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"home.menu": "Menu Principal",
 		"home.qmatch": "Partie Rapide",
 		"home.tournament": "Tournoi",
-		"home.settings": "Paramètres",
+		"home.settings": "Paramètres du Jeu",
 		"home.profile": "Profil",
 		
 		//account.html
@@ -334,7 +338,9 @@ const translations: Record<Lang, Record<string, string>> =
 		"account.butt.d2FA": "Désactiver l'A2F",
 		"account.2FA.disable.success": "L'A2F a été désactivée avec succès.",
 		"account.2FA.password_and_token_required": "Le mot de passe et le token sont requis",
-		"account.avatar.upload.too-large": "Le fichier avatar est trop volumineux. Taille maximale : 10MB.",
+		"account.avatar.upload.too-large": "Le fichier avatar est trop volumineux. Taille maximale : 5MB.",
+		"account.avatar.upload.invalid-type": "Seules les images PNG et JPG valides sont autorisées.",
+		"account.avatar.upload.error": "Échec du téléchargement de l'avatar. Veuillez réessayer.",
 
 		//ai-selection.html
 		"ai.easy-title": "Pour les débutants. L'IA se déplace lentement et réagit tard.",
@@ -513,6 +519,7 @@ const translations: Record<Lang, Record<string, string>> =
 
 		// Error messages
 		"error.guest.not_found": "Invité introuvable",
+		"error.guest.invalid_username_characters": "Le pseudo de l'invité contient des caractères invalides",
 		"error.guest.fetch_failed": "Échec de la récupération des invités",
 		"error.guest.username_reserved": "Ce pseudo est réservé et ne peut pas être utilisé",
 		"error.guest.add.already_exists": "Un invité avec ce pseudo existe déjà",
@@ -533,6 +540,7 @@ const translations: Record<Lang, Record<string, string>> =
 		
 		"error.user.not_found": "Utilisateur introuvable",
 		"error.user.duplicate_username": "Le pseudo existe déjà",
+		"error.user.invalid_username_characters": "Le pseudo contient des caractères invalides",
 		"error.user.create_failed": "Échec de la création de l'utilisateur",
 		"error.user.fetch_failed": "Échec de la récupération des utilisateurs",
 		"error.user.invalid_old_password": "Ancien mot de passe invalide",
@@ -578,7 +586,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"home.menu": "Menú Principal",
 		"home.qmatch": "Partida Rápida",
 		"home.tournament": "Torneo",
-		"home.settings": "Ajustes",
+		"home.settings": "Ajustes del Juego",
 		"home.profile": "Perfil",
 
 		//account.html
@@ -617,7 +625,9 @@ const translations: Record<Lang, Record<string, string>> =
 		"account.butt.d2FA": "Desactivar 2FA",
 		"account.2FA.disable.success": "2FA se ha desactivado con éxito.",
 		"account.2FA.password_and_token_required": "Se requieren contraseña y token",
-		"account.avatar.upload.too-large": "El archivo del avatar es demasiado grande. Tamaño máximo: 10MB.",
+		"account.avatar.upload.too-large": "El archivo del avatar es demasiado grande. Tamaño máximo: 5MB.",
+		"account.avatar.upload.invalid-type": "Solo se permiten imágenes válidas en formato PNG y JPG.",
+		"account.avatar.upload.error": "Error al cargar el avatar. Por favor, inténtalo de nuevo.",
 
 		//ai-selection.html
 		"ai.easy-title": "Para principiantes. La IA se mueve lentamente y reacciona tarde.",
@@ -796,6 +806,7 @@ const translations: Record<Lang, Record<string, string>> =
 
 		// Error messages
 		"error.guest.not_found": "Invitado no encontrado",
+		"error.guest.invalid_username_characters": "El nombre de usuario del invitado contiene caracteres inválidos",
 		"error.guest.fetch_failed": "Error al obtener invitados",
 		"error.guest.username_reserved": "Este nombre está reservado y no puede usarse",
 		"error.guest.add.already_exists": "Ya existe un invitado con este nombre",
@@ -817,6 +828,7 @@ const translations: Record<Lang, Record<string, string>> =
 
 		"error.user.not_found": "Usuario no encontrado",
 		"error.user.duplicate_username": "El pseudo ya existe",
+		"error.user.invalid_username_characters": "El pseudo contiene caracteres inválidos",
 		"error.user.create_failed": "Error al crear usuario",
 		"error.user.fetch_failed": "Error al obtener usuarios",
 		"error.user.invalid_old_password": "Contraseña antigua inválida",

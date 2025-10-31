@@ -75,6 +75,14 @@ export async function createGuestHandler(req: FastifyRequest<{Body: CreateGuestB
 			errorKey: "error.guest.username_reserved"
         });
     }
+	if (body.pseudo && body.pseudo.match(/[^a-zA-Z0-9_]/)) {
+		return httpError({
+			reply,
+			message: "Pseudo contains invalid characters",
+			code: StatusCodes.BAD_REQUEST,
+			errorKey: "error.guest.invalid_username_characters"
+		});
+	}
     try {
         const currentUser = req.user;
 

@@ -86,6 +86,11 @@ export function PaddleSizeSetting() {
 export function PaddleColorSetting() {
 	const paddleColorButtons = document.querySelectorAll<HTMLDivElement>("[data-pdl-color]");
 	paddleColorButtons.forEach((btn) => {
+
+		if (btn.getAttribute("data-pdl-color") == settings.paddleColor) {
+			btn.setAttribute("class", "w-11 h-11 rounded cursor-pointer bg-white border-2 border-transparent hover:ring-2 hover:ring-white");
+		} // change for this to be the right color and make it update properly when clicking
+
 		btn.addEventListener("click", () => {
 			const color = btn.getAttribute("data-pdl-color");
 			if (color) {

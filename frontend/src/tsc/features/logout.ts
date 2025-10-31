@@ -15,6 +15,7 @@ export async function logoutUser() {
 			return;
 		}
 		localStorage.removeItem("accessToken");
+		localStorage.removeItem("pong-settings");
 		setContentView("views/login.html");
 		disconnectWebSocket();
 	} catch (error) {

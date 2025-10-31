@@ -188,7 +188,7 @@ export class GuestsManager {
 				},
 				body: JSON.stringify({ pseudo: pseudo })
 			});
-			if (!response.ok)
+			if (!response.ok && response.status !== 400 && response.status !== 409)
 				return ( { succes: false, message: getTranslatedKey("error.network") });
 			const data = await response.json();
 			if (response.status === 400) {
@@ -219,7 +219,7 @@ export class GuestsManager {
 				},
 				body: JSON.stringify({ guestPseudo: pseudo })
 			});
-			if (!response.ok)
+			if (!response.ok && response.status !== 404)
 				return ( { succes: false, message: getTranslatedKey("error.network") });
 			const data = await response.json();
 			if (response.status === 404) {

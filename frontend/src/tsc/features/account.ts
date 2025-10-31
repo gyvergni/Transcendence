@@ -12,6 +12,25 @@ export async function accountEditAvatar() {
 	fileInput.onchange = async () => {
 		const file = fileInput.files?.[0];
 		if (!file) return ;
+
+		// Validation côté client
+		const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+		if (!allowedTypes.includes(file.type)) {
+			alert(getTranslatedKey("account.avatar.upload.invalid-type"));
+			console.error("Invalid file type. Only PNG and JPG are allowed.");
+			fileInput.value = ''; // Reset input
+			return;
+		}
+
+		// Vérifier la taille (5MB max côté client)
+		const maxSize = 5 * 1024 * 1024; // 5MB
+		if (file.size > maxSize) {
+			alert(getTranslatedKey("account.avatar.upload.too-large"));
+			console.error("File too large. Maximum size is 5MB.");
+			fileInput.value = ''; // Reset input
+			return;
+		}
+
 		const formData = new FormData();
 		formData.append('file', file);
 
@@ -23,18 +42,27 @@ export async function accountEditAvatar() {
 			body: formData
 		});
 		if (response.status === 413) {
-			console.error("Failed to upload avatar: File too large, 10MB max");
+			console.error("Failed to upload avatar: File too large, 5MB max");
 			alert(getTranslatedKey("account.avatar.upload.too-large"));
+			fileInput.value = ''; // Reset input
 			return ;
 		}
 		if (!response.ok) {
-			try { console.error("Failed to upload avatar:", getApiErrorText(await response.json())); } catch {}
+			try { 
+				const errorData = await response.json();
+				alert(getApiErrorText(errorData));
+				console.error("Failed to upload avatar:", getApiErrorText(errorData)); 
+			} catch {
+				alert(getTranslatedKey("account.avatar.upload.error"));
+			}
+			fileInput.value = ''; // Reset input
 			return ;
 		}
 		const data = await response.json();
 		const avatarUrl = API_BASE_URL + data.avatarUrl + '?t=' + Date.now(); // Cache busting
 		const avatarImg = document.querySelector("#account-avatar-img")! as HTMLImageElement;
 		avatarImg.src = avatarUrl;
+		fileInput.value = ''; // Reset input après succès
 	}
 }
 
@@ -234,7 +262,7 @@ export async function account2FAHandler() {
 			const tokenInput = form2faDisable.querySelector("#disable-2fa-token") as HTMLInputElement;
 			passwordInput.value = "";
 			tokenInput.value = "";
-			form2faDisable.classList.remove("hidden");
+			form2faDisable.classList.replace("hidden", "flex");
 			toggleBackButton(false);
 			const errorDiv = document.querySelector("#div-disable-2fa-error") as HTMLDivElement;
 			const successDiv = document.querySelector("#div-disable-2fa-success") as HTMLDivElement;
@@ -244,7 +272,7 @@ export async function account2FAHandler() {
 			const form2fa = document.querySelector("#edit-2fa-setup-form-container")! as HTMLDivElement;
 			const tokenInput = form2fa.querySelector("#input-2fa-token") as HTMLInputElement;
 			tokenInput.value = "";
-			form2fa.classList.remove("hidden")
+			form2fa.classList.replace("hidden", "flex");
 			toggleBackButton(false);
 			const res = await setup2FA();
 		}
@@ -352,6 +380,7 @@ export async function enable2FA(e: Event, form: HTMLFormElement) {
 			loadAccountInfo();
 			   if (form2fa) {
 				form2fa.classList.add("hidden");
+				form2fa.classList.remove("flex");
 			}
 			toggleBackButton(true, () => {
 				setContentView("views/profile.html");
@@ -406,6 +435,7 @@ export async function disable2FA(e: Event, form: HTMLFormElement) {
 			loadAccountInfo();
 			if (form2faDisable) {
 				form2faDisable.classList.add("hidden");
+				form2faDisable.classList.remove("flex");
 			}
 			toggleBackButton(true, () => {
 				setContentView("views/profile.html");

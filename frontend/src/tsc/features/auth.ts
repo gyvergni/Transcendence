@@ -15,7 +15,34 @@ export async function authenticateWithWebSocket(token: string): Promise<boolean>
             console.error("JWT token validation failed");
             return false;
         }
-        await connectWebSocket();
+		if (!token) {
+			console.error("No access token found");
+			return false;
+		}
+        await connectWebSocket(token);
+        return true;
+
+    } catch (error) {
+        console.error("Authentication failed:", error);
+        return false;
+    }
+}
+
+async function authenticateWithWebSocketTemp(token: string): Promise<boolean> {
+	try {
+        const response = await fetch(API_BASE_URL + "/users/auth/validate-jwt-token", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            console.error("JWT token validation failed");
+            return false;
+        }
+        await connectWebSocket(token);
         return true;
 
     } catch (error) {
@@ -42,17 +69,15 @@ export async function checkTokenValidity(): Promise<boolean> {
     return true;
 }
 
+
 export async function loginWithWebSocket(accessToken: string): Promise<boolean> {
-    // Stocker le token temporairement
-    localStorage.setItem("accessToken", accessToken);
-    
-    const isAuthenticated = await authenticateWithWebSocket(accessToken);
+    const isAuthenticated = await authenticateWithWebSocketTemp(accessToken);
     
     if (!isAuthenticated) {
-        localStorage.removeItem("accessToken");
+		localStorage.removeItem("accessToken");
         return false;
     }
-
+	localStorage.setItem("accessToken", accessToken);
     return true;
 }
 
@@ -60,9 +85,9 @@ let websocket: WebSocket | null = null;
 let authTimeout: NodeJS.Timeout | null = null;
 let isAuthResponseReceived = false;
 let pingInterval: NodeJS.Timeout | null = null;
+let isIntentionalClose = false;
 
-
-function connectWebSocket(): Promise<boolean> {
+function connectWebSocket(token: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
         if (websocket && websocket.readyState === WebSocket.OPEN) {
             resolve(true);
@@ -73,11 +98,12 @@ function connectWebSocket(): Promise<boolean> {
             websocket.close();
         }
 
-        websocket = new WebSocket("wss://127.0.0.1:8443/ws");
+		const wsPath = "wss://127.0.0.1:8443/ws";
+        websocket = new WebSocket(wsPath);
         isAuthResponseReceived = false;
+        isIntentionalClose = false;
 
         websocket.onopen = () => {
-            const token = localStorage.getItem("accessToken");
             if (token) {
                 websocket?.send(JSON.stringify({ type: "auth", token }));
                 
@@ -137,23 +163,49 @@ function connectWebSocket(): Promise<boolean> {
                 clearTimeout(authTimeout);
                 authTimeout = null;
             }
+            
+            const wasAuthenticated = isAuthResponseReceived;
+            
             websocket = null;
             isAuthResponseReceived = false;
             
-            if (!isAuthResponseReceived) {
+            if (!wasAuthenticated) {
                 reject(new Error("WebSocket connection closed before authentication"));
+            } else if (isIntentionalClose) {
+                isIntentionalClose = false;
+            } else {
+                console.error("WebSocket connection lost unexpectedly - redirecting to login");
+                localStorage.removeItem("accessToken");
+                setContentView("views/login.html");
             }
         };
 
         websocket.onerror = (error) => {
             console.error("WebSocket error:", error);
+            
+            if (pingInterval) {
+                clearInterval(pingInterval);
+                pingInterval = null;
+            }
+            
             if (authTimeout) {
                 clearTimeout(authTimeout);
                 authTimeout = null;
             }
-            reject(new Error("WebSocket connection error"));
+            
+            if (isAuthResponseReceived && !isIntentionalClose) {
+                console.error("WebSocket error after authentication - redirecting to login");
+                localStorage.removeItem("accessToken");
+                setContentView("views/login.html");
+            } else if (!isAuthResponseReceived) {
+                reject(new Error("WebSocket connection error"));
+            }
         };
     });
+}
+
+export function markWebSocketCloseAsIntentional() {
+	isIntentionalClose = true;
 }
 
 export function disconnectWebSocket() {
@@ -168,6 +220,7 @@ export function disconnectWebSocket() {
     }
     
     if (websocket) {
+        isIntentionalClose = true;
         websocket.close();
         websocket = null;
     }

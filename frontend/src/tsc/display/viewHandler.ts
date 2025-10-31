@@ -167,9 +167,15 @@ function setupAccountEvents() {
 	// Edit IG username
 	document.querySelector("#account-edit-igUsername")?.addEventListener("click", () => {
 		toggleBackButton(false);
+		igUsernameForm?.reset();
+		const errorDiv = document.querySelector("#edit-igUsername-error") as HTMLDivElement;
+        if (errorDiv) errorDiv.textContent = "";
 		document.querySelector("#edit-igUsername-form-container")?.classList.replace("hidden", "flex");
 	});
 	document.querySelector("#edit-igUsername-cancel-btn")?.addEventListener("click", () => {
+		igUsernameForm?.reset();
+		const errorDiv = document.querySelector("#edit-igUsername-error") as HTMLDivElement;
+        if (errorDiv) errorDiv.textContent = "";
 		toggleBackButton(true, () => {
 			setContentView("views/profile.html");
 		});
@@ -181,9 +187,15 @@ function setupAccountEvents() {
 	// Edit password
 	document.querySelector("#account-edit-password")?.addEventListener("click", () => {
 		toggleBackButton(false);
+		passwordForm?.reset();
+        const errorDiv = document.querySelector("#edit-password-error") as HTMLDivElement;
+        if (errorDiv) errorDiv.textContent = "";
 		document.querySelector("#edit-password-form-container")?.classList.replace("hidden", "flex");
 	});
 	document.querySelector("#edit-password-cancel-btn")?.addEventListener("click", () => {
+		passwordForm?.reset();
+        const errorDiv = document.querySelector("#edit-password-error") as HTMLDivElement;
+        if (errorDiv) errorDiv.textContent = "";
 		toggleBackButton(true, () => {
 			setContentView("views/profile.html");
 		});
@@ -200,6 +212,7 @@ function setupAccountEvents() {
 		});
 		setContentView("views/account.html");
 		document.querySelector("#edit-2fa-form-container")?.classList.add("hidden");
+		document.querySelector("#edit-2fa-form-container")?.classList.remove("flex");
 	});
 
 	document.querySelector("#disable-2fa-cancel-btn")?.addEventListener("click", () => {
@@ -208,6 +221,7 @@ function setupAccountEvents() {
 		});
 		setContentView("views/account.html");
 		document.querySelector("#disable-2fa-form-container")?.classList.add("hidden");
+		document.querySelector("#disable-2fa-form-container")?.classList.remove("flex");
 	});
 	const form2FA = document.querySelector("#edit-2fa-form") as HTMLFormElement;
 	form2FA?.addEventListener("submit", (e) => enable2FA(e, form2FA));
@@ -372,21 +386,21 @@ function setupFriendsEvents() {
 		}
         else
         {
-            uiManager.contentBox.classList.remove("rounded-xl");
-		    uiManager.contentBox.classList.add("max-w-7xl", "w-full", "p-6", "rounded-none");
-		    // Set back button to revert layout back to profile when closing stats
-		    toggleBackButton(true, async () =>
-            {
-			    uiManager.contentBox.classList.remove("max-w-7xl", "w-full", "p-6", "rounded-none");
-			    uiManager.contentBox.classList.add("rounded-xl");
-			    await setContentView("views/friends.html");
-		    });
 			const friendBtn = (e.target as HTMLElement).closest("li") as HTMLLIElement;
 			if (friendBtn)
             {
 				const friendPseudo = friendBtn.getAttribute("data-pseudo");
 				if (!friendPseudo)
                     return;
+				uiManager.contentBox.classList.remove("rounded-xl");
+				uiManager.contentBox.classList.add("max-w-7xl", "w-full", "p-6", "rounded-none");
+				// Set back button to revert layout back to profile when closing stats
+				toggleBackButton(true, async () =>
+				{
+					uiManager.contentBox.classList.remove("max-w-7xl", "w-full", "p-6", "rounded-none");
+					uiManager.contentBox.classList.add("rounded-xl");
+					await setContentView("views/friends.html");
+				});
                 await setContentView("views/stats-dashboard.html");
 			    initStatsView(friendPseudo);
 			}
