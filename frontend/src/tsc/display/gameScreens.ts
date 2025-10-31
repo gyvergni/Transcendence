@@ -1,5 +1,5 @@
 
-import { animateContentBoxIn, animateContentBoxOut } from "./animations";
+import { animateContentBoxIn, animateContentBoxOut, toggleBackButton } from "./animations";
 import { setContentView, setupPause } from "./viewHandler";
 import { MatchSetup, TournamentManager } from "../utils/models";
 import { setGameView } from "./viewHandler";
@@ -8,6 +8,7 @@ import uiManager from "../main";
 
 export async function setupTournamentWaitingRoom(tournament: TournamentManager): Promise<void> {
     animateContentBoxIn();
+    toggleBackButton(false);
     await setContentView("views/t-waitingscreen.html");
     return new Promise<void>((resolve) => {
         const resumeBtn = document.getElementById("ready-btn");
@@ -51,7 +52,8 @@ export async function setupTournamentWaitingRoom(tournament: TournamentManager):
 
 export async function setupTournamentEndScreen(tournament: TournamentManager): Promise<void> {
     animateContentBoxIn();
-    await setContentView("views/tournament-end.html");
+    await setContentView("views/t-end.html");
+    toggleBackButton(false);
     return new Promise<void>((resolve) => {
         const homeBtn = document.getElementById("home-btn");
         if (!homeBtn) {
@@ -73,6 +75,8 @@ export async function setupTournamentEndScreen(tournament: TournamentManager): P
 export async function setupGameEndScreen(match: MatchSetup): Promise<void> {
     animateContentBoxIn();
     await setContentView("views/game-end.html");
+
+    toggleBackButton(false);
     return new Promise<void>((resolve) => {
         const homeBtn = document.getElementById("home-btn");
         if (!homeBtn) {

@@ -24,7 +24,7 @@ async function loadHTML(path: string): Promise<string> {
 }
 
 // Inject content into the content box and initialize events
-export async function setContentView(viewPath: string): Promise<void> {
+export async function setContentView(viewPath: string, options: {push?: boolean, replace?: boolean, statsPseudo?:string | null} = {push : true, replace : false, statsPseudo : null}): Promise<void> {
 	if (!uiManager.contentInner) {
 		console.error("Missing content-box in DOM");
 		return;
@@ -43,8 +43,11 @@ export async function setContentView(viewPath: string): Promise<void> {
 	else if (viewPath.includes("tournament")) setupTournament();
 	else if (viewPath.includes("account")) setupAccountEvents();
 	else if (viewPath.includes("friends")) setupFriendsEvents();
-    history.pushState({view: viewPath}, "#" + viewPath);
-    
+    else if (viewPath.includes("stats")) initStatsView(options.statsPseudo);
+    if (options.replace == true)
+        history.replaceState({view: viewPath}, "", "#" + viewPath);
+    else if (options.push == true && history.state?.view !== viewPath)
+        history.pushState({view: viewPath}, "" ,"#" + viewPath);
 }
 
 export async function setupPause(match: MatchSetup)
@@ -63,16 +66,16 @@ export async function setupPause(match: MatchSetup)
         btn.addEventListener("click", () => {
             const option = (btn as HTMLElement).dataset.view;
             if (option === "resume") {
-		match.game!.clock.resumeTimer();
-		match!.game!.pause = false;
-		setGameView();
-	    }
+		        match.game!.clock.resumeTimer();
+		        match!.game!.pause = false;
+		        setGameView();
+	        }
             else if (option === "quit")
-	    {
-		match!.game?.endGame();
-		match!.game = null;
-		setContentView("views/home.html");
-	    }
+	        {
+		        match!.game?.endGame();
+		        match!.game = null;
+		        setContentView("views/home.html");
+	        }
         });
     })
 }
@@ -88,7 +91,6 @@ export function setGameView() {
 // Setup login form behavior
 function setupLoginEvents() {
 	const contentBox = document.querySelector("#content-box")! as HTMLElement;
-	contentBox.classList.add("w-[430px]");
 	uiManager.setCurrentView("login");
 	toggleBackButton(false);
 	const form = document.querySelector("#login-form") as HTMLFormElement;
@@ -154,7 +156,7 @@ function setupAccountEvents() {
 	uiManager.setCurrentView("account");
 	animateContentBoxIn();
 	toggleBackButton(true, () => {
-		setContentView("views/profile.html");
+		history.back();
 	});
 	// loadAccountInfos;
 
@@ -177,7 +179,7 @@ function setupAccountEvents() {
 		const errorDiv = document.querySelector("#edit-igUsername-error") as HTMLDivElement;
         if (errorDiv) errorDiv.textContent = "";
 		toggleBackButton(true, () => {
-			setContentView("views/profile.html");
+			history.back();
 		});
 		document.querySelector("#edit-igUsername-form-container")?.classList.replace("flex", "hidden");
 	});
@@ -197,7 +199,7 @@ function setupAccountEvents() {
         const errorDiv = document.querySelector("#edit-password-error") as HTMLDivElement;
         if (errorDiv) errorDiv.textContent = "";
 		toggleBackButton(true, () => {
-			setContentView("views/profile.html");
+			history.back();
 		});
 		document.querySelector("#edit-password-form-container")?.classList.replace("flex", "hidden");
 	});
@@ -208,7 +210,7 @@ function setupAccountEvents() {
 	document.querySelector("#toggle-2fa")?.addEventListener("click",    () => account2FAHandler());
 	document.querySelector("#edit-2fa-cancel-btn")?.addEventListener("click", () => {
 		toggleBackButton(true, () => {
-			setContentView("views/profile.html");
+			history.back();
 		});
 		setContentView("views/account.html");
 		document.querySelector("#edit-2fa-form-container")?.classList.add("hidden");
@@ -217,7 +219,7 @@ function setupAccountEvents() {
 
 	document.querySelector("#disable-2fa-cancel-btn")?.addEventListener("click", () => {
 		toggleBackButton(true, () => {
-			setContentView("views/profile.html");
+			history.back();
 		});
 		setContentView("views/account.html");
 		document.querySelector("#disable-2fa-form-container")?.classList.add("hidden");
@@ -237,7 +239,7 @@ function setupSignupEvents() {
 
 	toggleBackButton(true, () => 
 	{
-		setContentView("views/login.html");
+		history.back();
 	})
 
 	form?.addEventListener("submit", (e) => signupUser(e, form));
@@ -271,7 +273,7 @@ function setupSettingsEvents() {
 	uiManager.setCurrentView("settings");
 	toggleBackButton(true, () => 
 	{
-		setContentView("views/home.html");
+		history.back();
 	})
 	const gameSettings = getSettings();
 }
@@ -285,22 +287,17 @@ function setupProfileEvents() {
 	uiManager.setCurrentView("profile");
 	toggleBackButton(true, () =>
 	{
-		setContentView("views/home.html");
+		history.back();
 	});
 	statsBtn.addEventListener("click", async () => {
 		// Expand the content box to act as a near-fullscreen dashboard
-		uiManager.contentBox.classList.remove("rounded-xl");
-		uiManager.contentBox.classList.add("max-w-7xl", "w-full", "p-6", "rounded-none");
 		// Set back button to revert layout back to profile when closing stats
 		toggleBackButton(true, async () => {
-			uiManager.contentBox.classList.remove("max-w-7xl", "w-full", "p-6", "rounded-none");
-			uiManager.contentBox.classList.add("rounded-xl");
-			await setContentView("views/profile.html");
+			history.back();
 		});
 		// animate the content box into view
 		animateContentBoxIn();
 		await setContentView("views/stats-dashboard.html");
-                initStatsView(null);
 	});
 
 	accountBtn.addEventListener("click", () => {
@@ -318,11 +315,8 @@ async function setQuickMatchView() {
     const container = document.getElementById("player-select-container")!;
     container.innerHTML = "";
 
-    uiManager.contentBox.classList.add("max-w-3xl");
-
     toggleBackButton(true, async () => {
-        uiManager.contentBox.classList.remove("max-w-3xl");
-        await setContentView("views/home.html");
+        history.back();
     });
 
     const startBtn = document.getElementById("start-btn");
@@ -351,7 +345,7 @@ async function setQuickMatchView() {
         await startMatch(match, 0);
 	if (match.game?.pause === false)
 	{	
-                postMatchStats(match.stats!);
+        postMatchStats(match.stats!);
 		await setupGameEndScreen(match);
 	}
         });
@@ -362,7 +356,7 @@ function setupFriendsEvents() {
 	animateContentBoxIn();
 	uiManager.setCurrentView("friends");
 	toggleBackButton(true, () => {
-		setContentView("views/profile.html");
+		history.back();
 	});
 
 	const root = document.querySelector("#friends-list")! as HTMLElement;
@@ -392,17 +386,12 @@ function setupFriendsEvents() {
 				const friendPseudo = friendBtn.getAttribute("data-pseudo");
 				if (!friendPseudo)
                     return;
-				uiManager.contentBox.classList.remove("rounded-xl");
-				uiManager.contentBox.classList.add("max-w-7xl", "w-full", "p-6", "rounded-none");
 				// Set back button to revert layout back to profile when closing stats
 				toggleBackButton(true, async () =>
 				{
-					uiManager.contentBox.classList.remove("max-w-7xl", "w-full", "p-6", "rounded-none");
-					uiManager.contentBox.classList.add("rounded-xl");
-					await setContentView("views/friends.html");
+					history.back();
 				});
-                await setContentView("views/stats-dashboard.html");
-			    initStatsView(friendPseudo);
+                await setContentView("views/stats-dashboard.html", {statsPseudo : friendPseudo});
 			}
 		}
 	});
@@ -418,7 +407,7 @@ function setupFriendsEvents() {
 		const form = document.querySelector("#add-friend-form")! as HTMLFormElement;
 		form.reset();
 		toggleBackButton(true, () => {
-			setContentView("views/profile.html");
+			history.back();
 		});
 		document.querySelector("#add-friend-form-container")?.classList.replace("flex", "hidden");
 	});

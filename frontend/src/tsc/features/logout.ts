@@ -16,7 +16,7 @@ export async function logoutUser() {
 		}
 		localStorage.removeItem("accessToken");
 		localStorage.removeItem("pong-settings");
-		setContentView("views/login.html");
+		setContentView("views/login.html", {replace: true});
 		disconnectWebSocket();
 	} catch (error) {
 		console.error("Logout failed:", error);

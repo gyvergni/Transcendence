@@ -105,9 +105,6 @@ export async function signupUser(e: Event, form: HTMLFormElement) {
 		}
 		const data = await loginResponse.json();
 		localStorage.setItem("accessToken", data.accessToken);
-		const contentBox = document.querySelector("#content-box")! as HTMLElement;
-		contentBox.classList.remove("w-[430px]");
-
 		const success = await loginWithWebSocket(data.accessToken);
 		if (!success) {
 			errorDiv!.textContent = "Connection failed. WebSocket required for login. Try to login.";

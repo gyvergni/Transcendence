@@ -9,10 +9,7 @@ import {currentLang, setLang} from "../utils/translation.js";
 export async function setupTournament() {
     uiManager.setCurrentView("tournament");
 
-    uiManager.contentBox.classList.remove("max-w-md", "flexbox");
-    uiManager.contentBox.classList.add("max-w-4xl");
-
-    toggleBackButton(true, () => setContentView("views/home.html"));
+    toggleBackButton(true, () => history.back());
 
     const container = document.getElementById("player-select-container");
     if (!container) return;

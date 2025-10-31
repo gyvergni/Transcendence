@@ -181,7 +181,7 @@ export async function editIgUsername(e: Event, form: HTMLFormElement) {
 		}
 		loadAccountInfo();
 		toggleBackButton(true, () => {
-			setContentView("views/profile.html");
+			history.back();
 		});
 		document.querySelector("#edit-igUsername-form-container")?.classList.replace("flex", "hidden");
 	} catch (error) {
@@ -237,7 +237,7 @@ export async function editPassword(e: Event, form: HTMLFormElement) {
 			return ;
 		}
 		toggleBackButton(true, () => {
-			setContentView("views/profile.html");
+			history.back();
 		});
 		document.querySelector("#edit-password-form-container")?.classList.replace("flex", "hidden");
 	} catch (error) {
@@ -383,7 +383,7 @@ export async function enable2FA(e: Event, form: HTMLFormElement) {
 				form2fa.classList.remove("flex");
 			}
 			toggleBackButton(true, () => {
-				setContentView("views/profile.html");
+				history.back();
 			});
 		}, 2000);
 	} catch (error) {
@@ -438,7 +438,7 @@ export async function disable2FA(e: Event, form: HTMLFormElement) {
 				form2faDisable.classList.remove("flex");
 			}
 			toggleBackButton(true, () => {
-				setContentView("views/profile.html");
+				history.back();
 			});
 		}, 2000);
 	} catch (error) {

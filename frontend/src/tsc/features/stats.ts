@@ -159,11 +159,13 @@ function renderHistory(matchHistory: MatchStatsResponse["matchHistory"], info: D
     container.innerHTML = "";
 
     matchHistory.slice(0, 10).forEach(m => {
-        const won = (m.player1Username === info.currentMainGuest && m.player1Score > m.player2Score) ||
-                    (m.player2Username === info.currentMainGuest && m.player2Score > m.player1Score);
+        const won =
+            (m.player1Username === info.currentMainGuest && m.player1Score > m.player2Score) ||
+            (m.player2Username === info.currentMainGuest && m.player2Score > m.player1Score);
 
-        const borderColor = won ? 'border-green-500' : 'border-red-500';
-        const hoverColor = won ? 'hover:bg-green-500/30' : 'hover:bg-red-500/30';
+        const borderColor = won ? "border-green-500" : "border-red-500";
+        const hoverColor = won ? "hover:bg-green-500/30" : "hover:bg-red-500/30";
+
         const li = document.createElement("li");
         li.className = `
             match-item
@@ -173,24 +175,38 @@ function renderHistory(matchHistory: MatchStatsResponse["matchHistory"], info: D
             cursor-pointer transition-colors
         `;
 
-        li.innerHTML = `
-            <div class="flex justify-between text-sm font-medium text-white">
-                <span>${translateName(m.player1Username)} vs ${translateName(m.player2Username)}</span>
-                <span class="font-semibold">${m.player1Score} - ${m.player2Score}</span>
-            </div>
-            <div class="text-xs text-gray-300 mt-1">
-                ${getTranslatedKey("stats.mode")}: ${getTranslatedKey("stats." + m.matchSettings.gameMode)} | ${m.date}
-            </div>
-        `;
+        // --- first line: player names and score
+        const topLine = document.createElement("div");
+        topLine.className = "flex justify-between text-sm font-medium text-white";
 
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = `${translateName(m.player1Username)} vs ${translateName(m.player2Username)}`;
+
+        const scoreSpan = document.createElement("span");
+        scoreSpan.className = "font-semibold";
+        scoreSpan.textContent = `${m.player1Score} - ${m.player2Score}`;
+
+        topLine.append(nameSpan, scoreSpan);
+
+        // --- second line: metadata
+        const bottomLine = document.createElement("div");
+        bottomLine.className = "text-xs text-gray-300 mt-1";
+
+        // safer: build full text manually
+        bottomLine.textContent = `${getTranslatedKey("stats.mode")}: ${getTranslatedKey("stats." + m.matchSettings.gameMode)} | ${m.date}`;
+
+        // --- add click event
         li.addEventListener("click", async () => {
             await setContentView("../views/match-detail.html");
             handleMatchDetail(m, info);
         });
 
+        // --- append to li
+        li.append(topLine, bottomLine);
         container.appendChild(li);
     });
 }
+
 
 function renderMatchupChart(info: DashboardContext, opponentGuest: string, matchHistory: MatchStatsResponse["matchHistory"]) {
     const canvas = document.getElementById("guests-bar") as HTMLCanvasElement;
@@ -280,8 +296,6 @@ export async function loadDashboard(info: DashboardContext)
 {
 
     toggleBackButton(true, async () => {
-        uiManager.contentBox.classList.remove("max-w-7xl", "w-full", "p-6", "rounded-none");
-        uiManager.contentBox.classList.add("rounded-xl");
         if (info.friendPseudo)
             await setContentView("views/friends.html");
         else

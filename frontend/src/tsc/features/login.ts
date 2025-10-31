@@ -53,9 +53,7 @@ export async function loginUser(e: Event, form: HTMLFormElement) {
 				return ;
 			} else {
 				errorDiv!.textContent = "";
-				const contentBox = document.querySelector("#content-box")! as HTMLElement;
-				contentBox.classList.remove("w-[430px]");
-				setContentView("views/home.html");
+				setContentView("views/home.html", {replace:true});
 			}
 		} else {
 			pendingSessionId = data.loginSessionId;
@@ -122,9 +120,7 @@ export async function submitLogin2FA(e: Event, form: HTMLFormElement) {
 			div2FA.classList.add("hidden");
 			div2FA.classList.remove("flex");
 
-			const contentBox = document.querySelector("#content-box")! as HTMLElement;
-			contentBox.classList.remove("w-[430px]");
-			setContentView("views/home.html");
+			setContentView("views/home.html", {replace : true});
 		} else {
 			const errorDiv = document.querySelector("#login-2fa-error") as HTMLDivElement;
 			errorDiv.textContent = getTranslatedKey("websocket.connection_failed");

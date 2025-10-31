@@ -129,7 +129,7 @@ export async function addFriend(e: Event, form: HTMLFormElement) {
 		}
 		await fetchFriends();
 		toggleBackButton(true, () => {
-			setContentView("views/profile.html");
+			history.back();
 		});
 		document.querySelector("#add-friend-error")!.textContent = "";
 		document.querySelector("#add-friend-form-container")?.classList.replace("flex", "hidden");
