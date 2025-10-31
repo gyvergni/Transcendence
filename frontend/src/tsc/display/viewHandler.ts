@@ -43,7 +43,8 @@ export async function setContentView(viewPath: string): Promise<void> {
 	else if (viewPath.includes("tournament")) setupTournament();
 	else if (viewPath.includes("account")) setupAccountEvents();
 	else if (viewPath.includes("friends")) setupFriendsEvents();
-	// allow views to attach feature-specific logic (e.g. stats scripts)
+    history.pushState({view: viewPath}, "#" + viewPath);
+    
 }
 
 export async function setupPause(match: MatchSetup)

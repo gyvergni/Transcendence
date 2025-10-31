@@ -19,5 +19,10 @@ document.addEventListener("DOMContentLoaded",  async () => {
 		lang = (settings.language as Lang) || "en";
 	}
 	setLang(lang);
+    window.addEventListener("popstate", (event) => {
+        const viewName = event.state?.view || "views/home.html";
+        if (!event.state?.view.includes("login"))
+            setContentView(viewName);
+    });
 	setContentView("views/home.html");
 });
