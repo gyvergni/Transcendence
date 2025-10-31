@@ -87,6 +87,7 @@ export function setGameView() {
 
 // Setup login form behavior
 function setupLoginEvents() {
+	localStorage.removeItem("pong-settings");
 	const contentBox = document.querySelector("#content-box")! as HTMLElement;
 	contentBox.classList.add("w-[430px]");
 	uiManager.setCurrentView("login");
