@@ -1,2 +1,2 @@
-backend/.env.prod
+.env
 app/

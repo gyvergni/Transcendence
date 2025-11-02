@@ -6,8 +6,8 @@ folderVolume = ./app
 FRONTEND_DOCKER_VOLUME	= transcendence_frontend_dist
 
 check-env:
-	@if [ ! -f ./backend/.env.prod ]; then \
-		echo "Error: File ./backend/.env.prod is missing!"; \
+	@if [ ! -f ./.env ]; then \
+		echo "Error: File ./.env is missing!"; \
 		exit 1; \
 	fi
 

@@ -98,7 +98,7 @@ function connectWebSocket(token: string): Promise<boolean> {
             websocket.close();
         }
 
-		const wsPath = "wss://127.0.0.1:8443/ws";
+		const wsPath = `${window.location.origin}/ws`;
         websocket = new WebSocket(wsPath);
         isAuthResponseReceived = false;
         isIntentionalClose = false;

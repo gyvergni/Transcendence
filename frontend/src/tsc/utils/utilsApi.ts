@@ -1,7 +1,7 @@
 import { getTranslatedKey } from "./translation.js";
 import { checkTokenValidity } from "../features/auth.js";
 
-export const API_BASE_URL = "https://127.0.0.1:8443/api";
+export const API_BASE_URL = `${window.location.origin}/api`;
 
 export function parseApiErrorMessage(message: string): string {
 	return message.replace(/body\/\w+\s+/g, "");

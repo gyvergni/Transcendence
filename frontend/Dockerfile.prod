@@ -4,6 +4,10 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
 RUN npm install -g pnpm && pnpm install
 COPY . .
+
+ARG IP
+ENV IP=${IP}
+
 RUN pnpm build
 
 # Stage 2: Copy build artifacts into shared volume

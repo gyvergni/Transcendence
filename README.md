@@ -7,19 +7,32 @@ Full-stack 3D Pong game: Frontend TypeScript + Tailwind + Babylon.js, Backend Fa
 - Make
 
 ## Quick Start (production via Docker)
-1) Create the `backend/.env.prod` file
-```
-JWT_SECRET="change_me_please"
-DATABASE_URL="file:/app/data/prod.db"
+1) Create the `.env` file at the root of the project
+```env
+BACKEND_PORT=3000
+FRONTENT_PORT=8443
+NGINX_PORT=443
+
+IP=127.0.0.1
+DATABASE_URL=file:/app/data/db.sqlite
+JWT_SECRET=change_me_please
 ```
 
+**Configuration variables:**
+- `BACKEND_PORT`: Backend API internal port (default: 3000)
+- `FRONTENT_PORT`: Host port to access the application (default: 8443)
+- `NGINX_PORT`: Nginx internal port (default: 443)
+- `IP`: IP address for server_name (localhost + this IP accepted)
+- `DATABASE_URL`: SQLite database path
+- `JWT_SECRET`: Secret key for JWT token generation (⚠️ change in production!)
+
 2) Launch the infrastructure (Makefile)
-```
+```bash
 make prod
 ```
 
 3) Access the app
-- URL: https://127.0.0.1:8443
+- URL: `https://localhost:8443` or `https://<IP>:8443` (using IP from .env)
 - Accept the security exception (self-signed certificate)
 
 ## Available Make Commands
@@ -32,15 +45,20 @@ make prod
 - `make prod-re`: Complete rebuild
 
 Notes:
-- SQLite data is persisted under `./app/api` (mounted in the container at `/app/data`).
+- SQLite data is persisted under `./app/api` (mounted in the container at `/app/data`)
+- User avatars are stored in a Docker named volume `api_public` (persisted between restarts)
 
 ## Architecture and Access
-The backend API (port 3000) is **not directly exposed** outside the Docker infrastructure. All access goes through the Nginx reverse proxy (port 8443 on the host):
-- Frontend: served by Nginx from the shared volume
-- API: proxied by Nginx to `http://api:3000` (internal Docker network)
-- WebSocket: proxied by Nginx to `ws://api:3000` (internal Docker network)
+The backend API is **not directly exposed** outside the Docker infrastructure. All access goes through the Nginx reverse proxy:
+- **Frontend**: Served by Nginx from the shared volume (`frontend_dist`)
+- **API**: Proxied by Nginx to `http://api:${BACKEND_PORT}` (internal Docker network)
+- **WebSocket**: Proxied by Nginx to `ws://api:${BACKEND_PORT}` (internal Docker network)
+- **Static files** (avatars): Served from `/api/public/` route, stored in `api_public` volume
 
-To access the backend directly (e.g., Swagger, debugging), you need to map port 3000 in `docker-compose.prod.yml` (see section below).
+**Security:**
+- Nginx has a default server block that returns 444 (connection closed) for any request not matching `localhost` or the IP defined in `.env`
+- Only authorized server names can access the application
+- Frontend dynamically uses `window.location.origin` for API calls (no hardcoded IP)
 
 ## Entry Points
 - API: `/api`
@@ -49,17 +67,46 @@ To access the backend directly (e.g., Swagger, debugging), you need to map port 
 - WebSocket: `/ws` (JWT token auth)
 
 ## Accessing Swagger Documentation (for dev)
-The Swagger route (`/docs`) is enabled on the backend API, but is not exposed by Nginx in production. To access it for development purposes, map the backend port 3000 to the host, then open the API service local page.
+The Swagger route (`/docs`) is enabled on the backend API, but is not exposed by Nginx in production. To access it for development purposes, temporarily expose the backend port.
 
-Simple option: add the `ports` section to the `api` service in `docker-compose.prod.yml` (temporarily for dev):
+Add the `ports` section to the `api` service in `docker-compose.prod.yml`:
 ```yaml
 services:
   api:
     # ...existing config...
     ports:
-      - "3000:3000"
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
 ```
 Redeploy then open:
 ```
-http://127.0.0.1:3000/docs
+http://127.0.0.1:<BACKEND_PORT>/docs
+```
+
+## Environment Variables Usage
+
+All configuration is centralized in the `.env` file at the project root:
+
+**Build-time variables** (passed as `args` to Dockerfiles):
+- `BACKEND_PORT`: Used to set the exposed port in backend Dockerfile
+- `NGINX_PORT`: Used to set the exposed port in nginx Dockerfile
+- `IP`: Injected into frontend bundle for initial config (now unused, using `window.location.origin`)
+
+**Runtime variables** (passed as `environment` to containers):
+- `DATABASE_URL`: Backend database connection
+- `JWT_SECRET`: Backend JWT authentication
+- `IP`: Nginx server_name configuration (via `envsubst`)
+- `BACKEND_PORT`: Nginx proxy_pass configuration (via `envsubst`)
+
+**Port mapping:**
+- `${FRONTENT_PORT}:${NGINX_PORT}`: Maps host port to nginx container port
+
+## Volumes
+
+- `frontend_dist`: Named volume for frontend build artifacts (shared between frontend and nginx)
+- `api_public`: Named volume for user-uploaded files (avatars, persisted across restarts)
+- `./app/api`: Bind mount for SQLite database (persistent on host)
+
+To backup user avatars:
+```bash
+docker cp api:/app/public ./backup_public
 ```

@@ -1,55 +1,67 @@
-name: transcendence
+  name: transcendence
 
-networks:
-  transcendence:
-    driver: bridge
+  networks:
+    transcendence:
+      driver: bridge
 
-services:
-  api:
-    container_name: api
-    build: 
-      context: ./backend
-      dockerfile: Dockerfile.prod
-    image: image_prod_api
-    env_file:
-      - backend/.env.prod
-    volumes:
-      - ./app/api:/app/data
-    expose:
-      - "3000"
-    networks:
-      - transcendence
-    restart: always
+  services:
+    api:
+      container_name: api
+      build: 
+        context: ./backend
+        dockerfile: Dockerfile.prod
+        args:
+          BACKEND_PORT: ${BACKEND_PORT}
+      image: image_prod_api
+      environment:
+        - DATABASE_URL=${DATABASE_URL}
+        - JWT_SECRET=${JWT_SECRET}
+      volumes:
+        - ./app/api:/app/data
+        - api_public:/app/public
+      expose:
+        - "${BACKEND_PORT}"
+      networks:
+        - transcendence
+      restart: always
 
 
-  frontend:
-    container_name: frontend
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.prod
-    image: image_prod_frontend
-    volumes:
-      - frontend_dist:/usr/share/frontend
-    networks:
-      - transcendence
-    restart: "no"
+    frontend:
+      container_name: frontend
+      build:
+        context: ./frontend
+        dockerfile: Dockerfile.prod
+        args:
+          IP: ${IP}
+      image: image_prod_frontend
+      volumes:
+        - frontend_dist:/usr/share/frontend
+      networks:
+        - transcendence
+      restart: "no"
 
-  nginx:
-    container_name: nginx
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile.prod
-    image: image_prod_nginx
-    depends_on:
-      - frontend
-      - api
-    ports:
-      - "8443:443"
-    volumes:
-      - frontend_dist:/var/www/html
-    networks:
-      - transcendence
-    restart: always
+    nginx:
+      container_name: nginx
+      build:
+        context: ./nginx
+        dockerfile: Dockerfile.prod
+        args:
+          NGINX_PORT: ${NGINX_PORT}
+      image: image_prod_nginx
+      environment:
+        - IP=${IP}
+        - BACKEND_PORT=${BACKEND_PORT}
+      depends_on:
+        - frontend
+        - api
+      ports:
+        - "${FRONTENT_PORT}:${NGINX_PORT}"
+      volumes:
+        - frontend_dist:/var/www/html
+      networks:
+        - transcendence
+      restart: always
 
-volumes:
-  frontend_dist:
+  volumes:
+    frontend_dist:
+    api_public:

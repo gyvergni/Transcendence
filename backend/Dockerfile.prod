@@ -35,8 +35,9 @@ RUN rm -rf src/ tsconfig.json
 # Créer le dossier pour la base de données
 RUN mkdir -p /app/data
 
-# Exposer le port
-EXPOSE 3000
+# Exposer le port (défini par variable d'environnement)
+ARG BACKEND_PORT
+EXPOSE ${BACKEND_PORT}
 
 # Script de démarrage qui fait la migration puis lance l'app
 CMD ["sh", "-c", "pnpm prisma migrate deploy && node dist/index.js"]
