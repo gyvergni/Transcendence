@@ -32,6 +32,9 @@ export class Game {
 	groundRight: BABYLON.Mesh;
 	match: MatchSetup;
 
+	name1: any;
+	name2: any;
+
 	clock: Clock;
 
     loadedTexturesL: any[] = [];
@@ -52,6 +55,9 @@ export class Game {
 		this.match = match_setup;
 		this.player1Config = match_setup.players[0];
         this.player2Config = match_setup.players[1];
+
+		this.name1 = null;
+		this.name2 = null;
 
         this.groundLeft = BABYLON.MeshBuilder.CreateGround("ground", {width: 10, height: 11}, this.scene);
 		this.groundRight = BABYLON.MeshBuilder.CreateGround("ground", {width: 10, height: 11}, this.scene);
@@ -81,26 +87,23 @@ export class Game {
 	async createText() {
 		var fontData = await (await fetch("./fonts/MaximumImpact_Regular.json")).json();
 
-		var name1 = null;
-		var name2 = null;
-
 		if (this.match.players[0].name)
         {
             const player1name = translateName(this.match.players[0].name);
-			name1 = BABYLON.MeshBuilder.CreateText("myText", player1name, fontData, { size: 1, resolution: 64, depth: 0.1 }, this.scene, (window as any).earcut.default);
+			this.name1 = BABYLON.MeshBuilder.CreateText("myText", player1name, fontData, { size: 1, resolution: 64, depth: 0.1 }, this.scene, (window as any).earcut.default);
         }
         if (this.match.players[1].name)
         {
             const player2name = translateName(this.match.players[1].name);
-			name2 = BABYLON.MeshBuilder.CreateText("myText", player2name, fontData, { size: 1, resolution: 64, depth: 0.1 }, this.scene, (window as any).earcut.default);
+			this.name2 = BABYLON.MeshBuilder.CreateText("myText", player2name, fontData, { size: 1, resolution: 64, depth: 0.1 }, this.scene, (window as any).earcut.default);
         }
-        if (name1) {
-			name1.position.y = 5;
-			name1.position.x = -5;
+        if (this.name1) {
+			this.name1.position.y = 5;
+			this.name1.position.x = -5;
 		}
-		if (name2) {
-			name2.position.y = 5;
-			name2.position.x = 5;
+		if (this.name2) {
+			this.name2.position.y = 5;
+			this.name2.position.x = 5;
 		}
 	}
 
@@ -293,6 +296,20 @@ export class Game {
 		return this.promiseEnd;
 	}
 
+	dropMesh()
+	{
+		this.groundLeft.dispose();
+		this.groundRight.dispose();
+		this.name1.dispose();
+		this.name2.dispose();
+		this.p_left.mesh.dispose();
+		this.p_right.mesh.dispose();
+		this.ball.mesh.dispose();
+		this.ball.countDown3.dispose();
+		this.ball.countDown2.dispose();
+		this.ball.countDown1.dispose();
+	}
+
 	endGame()
 	{
 		if (this.ball.score1 == 5)
@@ -308,5 +325,7 @@ export class Game {
 		if (this.pause === false)
 			getMatchStats(this.match);
         this.resolveEnd(this.match);
+
+		this.dropMesh();
 	}
 }
