@@ -13,4 +13,4 @@ COPY ./conf/default.conf /etc/nginx/conf.d/default.conf.template
 ARG NGINX_PORT
 EXPOSE ${NGINX_PORT}
 
-CMD ["/bin/sh", "-c", "envsubst '${IP} ${BACKEND_PORT}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+CMD ["/bin/sh", "-c", "envsubst '${IP} ${BACKEND_PORT} ${NGINX_PORT}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]

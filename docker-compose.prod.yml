@@ -51,6 +51,7 @@
       environment:
         - IP=${IP}
         - BACKEND_PORT=${BACKEND_PORT}
+        - NGINX_PORT=${NGINX_PORT}
       depends_on:
         - frontend
         - api
