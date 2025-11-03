@@ -1,8 +1,11 @@
 import {MatchSetup} from "../utils/models.js";
 import { loadSettings } from "../features/settings.js";
+import { DashboardContext, MatchStatsResponse } from "../features/stats.js";
 
 
 export class UIManager {
+    private friendsPseudo: string | null = null;
+    private matchDetail: {match: MatchStatsResponse["matchHistory"][0] | null, info: DashboardContext | null} = {match: null, info: null}
 	public doorLeft = document.getElementById("door-left")!;
 	public doorRight = document.getElementById("door-right")!;
 	public contentInner = document.getElementById("content-inner")!;
@@ -17,6 +20,7 @@ export class UIManager {
 	async setCurrentView(view: string): Promise<void> {
 		currentView = view;
 		loadSettings();
+        return ;
 	}
 
 	public getIsAnimating() {
@@ -25,7 +29,32 @@ export class UIManager {
 
 	public setIsAnimating(value: boolean) {
 		isAnimating = value;
+        return ;
 	}
+
+    public getFriendsPseudo()
+    {
+        return this.friendsPseudo;
+    }
+
+    public setFriendsPseudo(friendsPseudo: string | null)
+    {
+        this.friendsPseudo = friendsPseudo;
+        return ;
+    }
+
+    public getMatchDetail()
+    {
+        let md = this.matchDetail;
+        return md;
+    }
+
+    public setMatchDetail(match: MatchStatsResponse["matchHistory"][0], info: DashboardContext | null)
+    {
+        this.matchDetail.match = match;
+        this.matchDetail.info = info;
+        return ;
+    }
 }
 
 
