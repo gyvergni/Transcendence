@@ -377,6 +377,7 @@ function populateDropdown(select: HTMLSelectElement, options: string[], defaultT
 export async function initStatsView() {
     let accountRes;
     const friendsPseudo = uiManager.getFriendsPseudo();
+    console.log("friendsPseudo: " + friendsPseudo);
     if (friendsPseudo != null)
         accountRes = await fetch(`${API_BASE_URL}/users/${friendsPseudo}`, { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } }); 
     else

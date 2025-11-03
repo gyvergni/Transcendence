@@ -13,9 +13,8 @@ export async function handleMatchDetail(match: MatchStatsResponse["matchHistory"
         `${p1name} vs ${p2name} - ${match.date}`;
 
     // Close button
-    document.getElementById("back-btn")!.onclick = async () => {
+    document.getElementById("back-btn")!.onclick = () => {
         history.back();
-        await loadDashboard(info);
     }
 
     // ---------------- SETTINGS ----------------
