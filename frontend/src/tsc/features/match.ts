@@ -1,25 +1,10 @@
 import { getTranslatedKey, translateName } from '../utils/translation.js';
-import { API_BASE_URL } from '../utils/utilsApi.js';
 import Chart from 'chart.js/auto';
 import { DashboardContext, loadDashboard, MatchStatsResponse } from './stats.js';
-import { setContentView } from '../display/viewHandler.js';
 
-type Player = { id:string; name:string; wallBounces:number; timeTop:number; timeBottom:number; score?:string };
-type MatchDetail = { matchId:string; duration:number; players:Player[] };
-async function fetchJson(url:string) {
-  try {
-    const res = await fetch(url, { headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` } });
-    if (!res.ok) throw new Error('Network');
-    return await res.json();
-  } catch (e) {
-    console.warn('fetch failed', e);
-    return null;
-  }
-}
-
-
-export async function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0], info: DashboardContext) {
-    const modal = document.getElementById("match-detail")!;
+export async function handleMatchDetail(match: MatchStatsResponse["matchHistory"][0] | null, info: DashboardContext | null) {
+    if (match == null || info == null)
+        return;
     const p1name = translateName(match.player1Username);
     const p2name = translateName(match.player2Username);
     
@@ -29,8 +14,7 @@ export async function handleMatchDetail(match: MatchStatsResponse["matchHistory"
 
     // Close button
     document.getElementById("back-btn")!.onclick = async () => {
-        modal.style.display = "none";
-        setContentView("../views/stats-dashboard.html");
+        history.back();
         await loadDashboard(info);
     }
 

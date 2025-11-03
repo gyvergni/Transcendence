@@ -12,7 +12,7 @@ window.addEventListener("beforeunload", () => {
 window.addEventListener("popstate", async (event) => {
     const stateView = event.state?.view as string | undefined;
     const isAuth = await checkTokenValidity();
-    console.log("current view: " + uiManager.getCurrentView());
+    console.log("current view: " + uiManager.getCurrentView() + "\ntarget view: " + stateView);
     if (!isAuth) {
         // Unauthenticated: back to login or to signup if we just went back from there
         if (uiManager.getCurrentView().includes("login") && stateView?.includes("signup"))
@@ -27,8 +27,8 @@ window.addEventListener("popstate", async (event) => {
         history.replaceState({view: "views/home.html"}, "", "#" + "views/home.html");
         return ;
     }
-    if (uiManager.getCurrentView().includes("game") || uiManager.getCurrentView().includes("pause") || uiManager.getCurrentView().includes("waiting") || uiManager.getCurrentView().includes("end"))
-        return ;
+    if (uiManager.getCurrentView().includes("game") || uiManager.getCurrentView().includes("pause") || uiManager.getCurrentView().includes("waiting") || uiManager.getCurrentView().includes("-end") || stateView.includes("-end"))
+        return;
    //normal pop, no push to preserve history
     await setContentView(stateView, { push: false });
 });

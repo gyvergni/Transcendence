@@ -7,7 +7,6 @@ import { startTournament } from "../game/pong.js";
 import {currentLang, setLang} from "../utils/translation.js";
 
 export async function setupTournament() {
-    uiManager.setCurrentView("tournament");
 
     toggleBackButton(true, () => history.back());
 

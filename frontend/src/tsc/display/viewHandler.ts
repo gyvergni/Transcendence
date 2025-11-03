@@ -15,6 +15,7 @@ import { getTranslatedKey, setLang, currentLang } from "../utils/translation.js"
 import { addFriend, deleteFriend, renderFriends } from "../features/friends.js";
 import { setupGameEndScreen } from "./gameScreens.js";
 import { initStatsView } from "../features/stats.js";
+import { handleMatchDetail } from "../features/match.js";
 
 async function loadHTML(path: string): Promise<string> {
 	const res = await fetch(path);
@@ -24,16 +25,22 @@ async function loadHTML(path: string): Promise<string> {
 }
 
 // Inject content into the content box and initialize events
-export async function setContentView(viewPath: string, options: {push?: boolean, replace?: boolean, statsPseudo?:string | null} = {push : true, replace : false, statsPseudo : null}): Promise<void> {
+export async function setContentView(viewPath: string, options: {push?: boolean, replace?: boolean} = {push : true, replace : false}): Promise<void> {
 	if (!uiManager.contentInner) {
 		console.error("Missing content-box in DOM");
 		return;
 	}
+    console.log("current view: " + uiManager.getCurrentView() + "\nviewPath: " + viewPath);
 
 	const html = await loadHTML(viewPath);
 	uiManager.contentInner.innerHTML = html;
-	uiManager.setCurrentView(viewPath);
+	if (!viewPath.includes("-end") && !viewPath.includes("waiting") && !viewPath.includes("pause") && !viewPath.includes("game"))
+        uiManager.setCurrentView(viewPath);
 	setLang(currentLang);
+    if (options.replace == true)
+        history.replaceState({view: viewPath}, "", "#" + viewPath);
+    else if (options.push == true && history.state?.view !== viewPath)
+        history.pushState({view: viewPath}, "" ,"#" + viewPath);
 	if (viewPath.includes("login")) setupLoginEvents();
 	else if (viewPath.includes("home")) setupHomeEvents();
 	else if (viewPath.includes("settings")) setupSettingsEvents();
@@ -43,11 +50,8 @@ export async function setContentView(viewPath: string, options: {push?: boolean,
 	else if (viewPath.includes("tournament")) setupTournament();
 	else if (viewPath.includes("account")) setupAccountEvents();
 	else if (viewPath.includes("friends")) setupFriendsEvents();
-    else if (viewPath.includes("stats")) initStatsView(options.statsPseudo);
-    if (options.replace == true)
-        history.replaceState({view: viewPath}, "", "#" + viewPath);
-    else if (options.push == true && history.state?.view !== viewPath)
-        history.pushState({view: viewPath}, "" ,"#" + viewPath);
+    else if (viewPath.includes("stats")) initStatsView();
+    else if (viewPath.includes("match-detail")) handleMatchDetail(uiManager.getMatchDetail().match, uiManager.getMatchDetail().info);
 }
 
 export async function setupPause(match: MatchSetup)
@@ -285,7 +289,6 @@ function setupProfileEvents() {
 	const logoutBtn = document.querySelector("#logout-btn")!;
 	const friendsBtn = document.querySelector("#friends-btn")!;
 	
-	uiManager.setCurrentView("profile");
 	toggleBackButton(true, () =>
 	{
 		history.back();
@@ -298,6 +301,7 @@ function setupProfileEvents() {
 		});
 		// animate the content box into view
 		animateContentBoxIn();
+        uiManager.setFriendsPseudo(null);
 		await setContentView("views/stats-dashboard.html");
 	});
 
@@ -355,7 +359,6 @@ async function setQuickMatchView() {
 function setupFriendsEvents() {
 	checkTokenValidity();
 	animateContentBoxIn();
-	uiManager.setCurrentView("friends");
 	toggleBackButton(true, () => {
 		history.back();
 	});
@@ -388,11 +391,12 @@ function setupFriendsEvents() {
 				if (!friendPseudo)
                     return;
 				// Set back button to revert layout back to profile when closing stats
+                uiManager.setFriendsPseudo(friendPseudo);
 				toggleBackButton(true, async () =>
 				{
 					history.back();
 				});
-                await setContentView("views/stats-dashboard.html", {statsPseudo : friendPseudo});
+                await setContentView("views/stats-dashboard.html");
 			}
 		}
 	});

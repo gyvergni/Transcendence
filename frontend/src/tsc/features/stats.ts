@@ -158,7 +158,7 @@ function renderHistory(matchHistory: MatchStatsResponse["matchHistory"], info: D
     const container = document.getElementById("match-history")!;
     container.innerHTML = "";
 
-    matchHistory.slice(0, 10).forEach(m => {
+    matchHistory.forEach(m => {
         const won =
             (m.player1Username === info.currentMainGuest && m.player1Score > m.player2Score) ||
             (m.player2Username === info.currentMainGuest && m.player2Score > m.player1Score);
@@ -197,8 +197,8 @@ function renderHistory(matchHistory: MatchStatsResponse["matchHistory"], info: D
 
         // --- add click event
         li.addEventListener("click", async () => {
+            uiManager.setMatchDetail(m, info);
             await setContentView("../views/match-detail.html");
-            handleMatchDetail(m, info);
         });
 
         // --- append to li
@@ -296,10 +296,7 @@ export async function loadDashboard(info: DashboardContext)
 {
 
     toggleBackButton(true, async () => {
-        if (info.friendPseudo)
-            await setContentView("views/friends.html");
-        else
-            await setContentView("views/profile.html");
+        history.back();
     });
     const gm = new GuestsManager();
     await gm.fetchGuests(info.accountPseudo);
@@ -377,10 +374,11 @@ function populateDropdown(select: HTMLSelectElement, options: string[], defaultT
 }
 
 // -------------------- INIT --------------------
-export async function initStatsView(friendPseudo: string | null = null) {
+export async function initStatsView() {
     let accountRes;
-    if (friendPseudo)
-        accountRes = await fetch(`${API_BASE_URL}/users/${friendPseudo}`, { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } }); 
+    const friendsPseudo = uiManager.getFriendsPseudo();
+    if (friendsPseudo != null)
+        accountRes = await fetch(`${API_BASE_URL}/users/${friendsPseudo}`, { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } }); 
     else
         accountRes = await fetch(`${API_BASE_URL}/users/me`, { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } });
     if (!accountRes.ok)
@@ -390,7 +388,7 @@ export async function initStatsView(friendPseudo: string | null = null) {
         accountPseudo: accountData.pseudo,
         accountIngame: accountData.game_username,
         currentMainGuest: accountData.game_username,
-        friendPseudo: friendPseudo,
+        friendPseudo: friendsPseudo,
         selectedMatchup: null,
     }
     if (info.friendPseudo)

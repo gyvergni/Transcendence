@@ -1,9 +1,9 @@
-<div class="max-w-7xl w-full p-6 rounded-none">
+<div class="max-w-7xl w-full p-6 rounded-none h-[85vh]">
     <h2 class="text-2xl mb-4 font-bold text-center text-purple-300 drop-shadow-lg" data-i18n="stats.statistics">
       Statistics
     </h2>
 
-    <div class="flex flex-col w-full h-[85vh] gap-4 p-4">
+    <div class="flex flex-col w-full h-full gap-4 p-4">
       <!-- User Selector - Made larger and more prominent -->
         <div class="flex justify-center mb-2">
             <label for="main-user-select" class="mr-2 text-lg font-semibold text-cyan-300" data-i18n="stats.selectUser"></label>
@@ -41,7 +41,7 @@
         <!-- Match History - Scrollable content -->
         <div class="bg-cyan-900/20 border border-cyan-400/20 rounded-xl flex flex-col">
           <h3 class="p-3 font-semibold text-lg text-purple-300" data-i18n="stats.matchHistory"></h3>
-          <ul id="match-history" class="flex-1 overflow-auto p-3">
+          <ul id="match-history" class="flex-1 max-h-140 overflow-y-auto p-3">
             <!-- JS injects li elements -->
           </ul>
         </div>
