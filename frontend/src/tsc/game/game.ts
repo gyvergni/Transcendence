@@ -43,7 +43,7 @@ export class Game {
 	private resolveEnd!: (match: MatchSetup) => void;
 	private promiseEnd: Promise<MatchSetup>;
 
-    constructor(canvas: HTMLCanvasElement, match_setup: MatchSetup, type: number)
+    constructor(canvas: HTMLCanvasElement, match_setup: MatchSetup)
 	{
 		this.gameover = false;
 		this.pause = false;
@@ -68,7 +68,6 @@ export class Game {
 		this.createSkybox();
         this.createObjects();
 		this.createParticles();
-
 		this.clock.start();
 
         this.scene.registerBeforeRender(() => this.update());

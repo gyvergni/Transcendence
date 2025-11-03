@@ -49,6 +49,6 @@ export async function setupTournament() {
         tournament.firstRound[1].gameMode = "t-first";
 
         startTournament(tournament);
-        setGameView();
+        setGameView("t-match");
     })
 }

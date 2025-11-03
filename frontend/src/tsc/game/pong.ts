@@ -127,10 +127,10 @@ export async function postMatchStats(stats: matchStatsSend) {
 }
 
 // ################### Run the Game ###################
-export function startMatch(match_setup: MatchSetup, type: number): Promise<MatchSetup> {
+export function startMatch(match_setup: MatchSetup): Promise<MatchSetup> {
     const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
     setUpSettings();
-    const game = new Game(canvas, match_setup, type);
+    const game = new Game(canvas, match_setup);
     match_setup.game = game;
     match_setup.escape();
     game.launch();
@@ -140,11 +140,11 @@ export function startMatch(match_setup: MatchSetup, type: number): Promise<Match
 
 export async function startTournament(tournament: TournamentManager): Promise<void>
 {
-    await startMatch(tournament.firstRound[0], 1);
+    await startMatch(tournament.firstRound[0]);
     if (!tournament.firstRound[0].winner)
         return ;
 	await setupTournamentWaitingRoom(tournament);
-	await startMatch(tournament.firstRound[1], 1);
+	await startMatch(tournament.firstRound[1]);
     if (!tournament.firstRound[1].winner)
         return ;
 	tournament.currentRound = 1;
@@ -156,7 +156,7 @@ export async function startTournament(tournament: TournamentManager): Promise<vo
 		tournament.final.gameMode = "t-final";
 		await setupTournamentWaitingRoom(tournament);
     	tournament.currentRound = 2;
-		await startMatch(tournament.final, 2);
+		await startMatch(tournament.final);
 		if (tournament.final?.game?.pause === false)
         {
             postMatchStats(tournament.firstRound[0].stats!);

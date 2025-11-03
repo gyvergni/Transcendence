@@ -4,6 +4,8 @@ import { DashboardContext, MatchStatsResponse } from "../features/stats.js";
 
 
 export class UIManager {
+    private currentView: string = "login";
+    private isAnimating = false;
     private friendsPseudo: string | null = null;
     private matchDetail: {match: MatchStatsResponse["matchHistory"][0] | null, info: DashboardContext | null} = {match: null, info: null}
 	public doorLeft = document.getElementById("door-left")!;
@@ -14,21 +16,21 @@ export class UIManager {
 	match: MatchSetup | null = null;
 
 	public getCurrentView() {
-		return currentView;
+		return this.currentView;
 	}
 
 	async setCurrentView(view: string): Promise<void> {
-		currentView = view;
+		this.currentView = view;
 		loadSettings();
         return ;
 	}
 
 	public getIsAnimating() {
-		return isAnimating;
+		return this.isAnimating;
 	}
 
 	public setIsAnimating(value: boolean) {
-		isAnimating = value;
+		this.isAnimating = value;
         return ;
 	}
 
@@ -58,6 +60,5 @@ export class UIManager {
 }
 
 
-let currentView: string = "login"; // default at start
-let isAnimating = false;
+
 

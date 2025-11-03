@@ -62,7 +62,6 @@ export async function setupPause(match: MatchSetup)
 	}
 	const html = await loadHTML("views/pause.html");
 	uiManager.contentInner.innerHTML = html;
-	uiManager.setCurrentView("pause");
 	toggleBackButton(false);
 	uiManager.setIsAnimating(false);
 	setLang(currentLang); 
@@ -72,8 +71,10 @@ export async function setupPause(match: MatchSetup)
             if (option === "resume") {
 		        match.game!.clock.resumeTimer();
 		        match!.game!.pause = false;
-		        setGameView();
-	        }
+                console.log("Match gamemode before: " + match.gameMode);
+		        setGameView(match.gameMode);
+                console.log("Match gamemode after: " + match.gameMode);	        
+            }
             else if (option === "quit")
 	        {
 		        match!.game?.endGame();
@@ -87,16 +88,15 @@ export async function setupPause(match: MatchSetup)
 
 //Transition to gameScreen
 
-export function setGameView() {
-    uiManager.setCurrentView("game");
+export function setGameView(type: string) {
     animateContentBoxOut();
+    uiManager.setCurrentView(type);
 }
 
 // Setup login form behavior
 function setupLoginEvents() {
 	localStorage.removeItem("pong-settings");
 	const contentBox = document.querySelector("#content-box")! as HTMLElement;
-	uiManager.setCurrentView("login");
 	toggleBackButton(false);
 	const form = document.querySelector("#login-form") as HTMLFormElement;
 	const signupBtn = document.querySelector("#signup-btn");
@@ -134,7 +134,6 @@ function setupLoginEvents() {
 
 // Setup home view behavior
 function setupHomeEvents() {
-	uiManager.setCurrentView("home");
 	animateContentBoxIn();
 	toggleBackButton(false);
 	document.querySelectorAll("[data-view]").forEach((btn) => {
@@ -149,16 +148,12 @@ function setupHomeEvents() {
 				setContentView("views/quick-match.html")
 			else if (view === "tournament")
 				setContentView("views/tournament.html")
-			else {
-				setGameView();
-			}
 		});
 	});
 }
 
 function setupAccountEvents() {
 	checkTokenValidity();
-	uiManager.setCurrentView("account");
 	animateContentBoxIn();
 	toggleBackButton(true, () => {
 		history.back();
@@ -238,7 +233,6 @@ function setupAccountEvents() {
 }
 
 function setupSignupEvents() {
-	uiManager.setCurrentView("signup");
 	const form = document.querySelector("#signup-form") as HTMLFormElement;
 	const loginBtn = document.querySelector("#login-btn");
 
@@ -275,7 +269,6 @@ function setupSignupEvents() {
 }
 
 function setupSettingsEvents() {
-	uiManager.setCurrentView("settings");
 	toggleBackButton(true, () => 
 	{
 		history.back();
@@ -346,8 +339,8 @@ async function setQuickMatchView() {
             return;
         }
 
-        setGameView();
-        await startMatch(match, 0);
+        setGameView("game");
+        await startMatch(match);
 	if (match.game?.pause === false)
 	{	
         postMatchStats(match.stats!);

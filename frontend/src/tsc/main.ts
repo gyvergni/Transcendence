@@ -27,9 +27,23 @@ window.addEventListener("popstate", async (event) => {
         history.replaceState({view: "views/home.html"}, "", "#" + "views/home.html");
         return ;
     }
-    if (uiManager.getCurrentView().includes("game") || uiManager.getCurrentView().includes("pause") || uiManager.getCurrentView().includes("waiting") || uiManager.getCurrentView().includes("-end") || stateView.includes("-end"))
+    if (uiManager.getCurrentView().includes("game") || uiManager.getCurrentView().includes("quickMatch") || stateView.includes("game-end"))
+    {
+        if (stateView.includes("quick-match"))
+            history.replaceState({view: "views/quick-match.html"}, "", "#" + "views/quick-match.html");    
+        else
+            history.pushState({view: "views/quick-match.html"}, "", "#" + "views/quick-match.html");
         return;
-   //normal pop, no push to preserve history
+    }
+    if (uiManager.getCurrentView().includes("t-"))
+    {
+        if (stateView.includes("tournament"))
+            history.replaceState({view: "views/tournament.html"}, "", "#" + "views/tournament.html");
+        else
+            history.pushState({view: "views/tournament.html"}, "", "#" + "views/tournament.html");
+        return;
+    }
+    //normal pop, no push to preserve history
     await setContentView(stateView, { push: false });
 });
 

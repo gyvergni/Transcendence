@@ -44,7 +44,7 @@ export async function setupTournamentWaitingRoom(tournament: TournamentManager):
                 rightplayer.textContent = translateName(tournament.final!.players[1].name);
         }
         resumeBtn.addEventListener("click", () => {
-        setGameView();
+        setGameView("t-match");
         resolve();
         }, { once: true });
     });
@@ -98,15 +98,14 @@ export async function setupGameEndScreen(match: MatchSetup): Promise<void> {
 export function pause(match: MatchSetup, e: KeyboardEvent) {
     if (e.key === "Escape" && uiManager.getIsAnimating() === false && match.game != null) {
         uiManager.setIsAnimating(true);
-        if (uiManager.getCurrentView().includes("pause"))
+        if (match?.game?.pause == true)
         {
-            if (match.game != null && match.game.pause == true)
-                match.game.pause = false;
+            match.game.pause = false;
             match.game.clock.resumeTimer();
             animateContentBoxOut();
-            setGameView();
+            setGameView(match.gameMode);
         }
-        else if (uiManager.getCurrentView().includes("game"))
+        else if (uiManager.getCurrentView().includes("game") || uiManager.getCurrentView().includes("tournament") || uiManager.getCurrentView().includes("quickMatch") || uiManager.getCurrentView().includes("t-"))
         {
             if (match.game != null && match.game.pause == false) {
                 match.game.pause = true;
