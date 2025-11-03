@@ -4,6 +4,7 @@ import { API_BASE_URL } from "./utilsApi.js";
 import { getApiErrorText } from "./utilsApi.js";
 import {pause} from "../display/gameScreens.js"
 import { getTranslatedKey } from "./translation.js";
+import uiManager from "../main.js";
 
 export type PlayerType = "human" | "ai";
 export type AIDifficulty = "easy" | "medium" | "hard" | null;
@@ -88,7 +89,8 @@ export class MatchSetup implements GameTypeManager {
 	async escape(): Promise<void> {
 		// Store the listener function so we can remove it later
 		this.keydownHandler = (e: KeyboardEvent) => {
-
+			if (uiManager.getIsAnimating() === true)
+				return;
 			if (this.rm) {
 				this.rm = false;
 				document.removeEventListener("keydown", this.keydownHandler!);

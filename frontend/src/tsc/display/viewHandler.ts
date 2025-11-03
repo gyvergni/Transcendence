@@ -63,12 +63,11 @@ export async function setupPause(match: MatchSetup)
 	const html = await loadHTML("views/pause.html");
 	uiManager.contentInner.innerHTML = html;
 	toggleBackButton(false);
-	uiManager.setIsAnimating(false);
 	setLang(currentLang); 
 	document.querySelectorAll("[data-view]").forEach((btn) => {
         btn.addEventListener("click", () => {
             const option = (btn as HTMLElement).dataset.view;
-            if (option === "resume") {
+            if (option === "resume" && uiManager.getIsAnimating() === false) {
 		        match.game!.clock.resumeTimer();
 		        match!.game!.pause = false;
                 console.log("Match gamemode before: " + match.gameMode);
