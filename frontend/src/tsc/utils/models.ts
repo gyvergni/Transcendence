@@ -82,6 +82,7 @@ export class MatchSetup implements GameTypeManager {
 	}
 
 	isReady(): boolean {
+		if (this.players.length < 2) return false;
 		return this.players[0].isReady() === true && this.players[1]?.isReady() === true;
 	}
 

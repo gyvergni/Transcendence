@@ -33,8 +33,10 @@ export async function setupTournament() {
             alert("All 4 players must be locked in before starting!");
             return;
         }
-        if (tournament.players.length !== 4)
+        if (tournament.players.length !== 4) {
+			alert("All 4 players must be locked in before starting!");
             throw new Error("Need 4 players to start tournament");
+		}
 
         const shuffled = [...tournament.players].sort(() => Math.random() - 0.5);
         tournament.firstRound = [new MatchSetup(), new MatchSetup()];
