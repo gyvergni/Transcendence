@@ -1,7 +1,7 @@
 {
 	"name": "tailwind-quick",
 	"scripts": {
-		"build:bundler": "esbuild src/tsc/main.ts --bundle --outfile=dist/main.js --minify --sourcemap --define:process.env.IP='\"'$IP'\"'",
+		"build:bundler": "esbuild src/tsc/main.ts --bundle --outfile=dist/main.js --minify --define:process.env.IP='\"'$IP'\"'",
 		"build:css": "npx tailwindcss -i src/css/input.css -o ./dist/style.css",
 		"build:assets": "mkdir -p dist && cp ./src/index.html ./dist/ && cp -r ./public/* ./dist/ && mkdir -p dist/views && cp -r ./src/views/* ./dist/views/",
 		"build": "rm -rf dist && npm run build:bundler && npm run build:css && npm run build:assets"

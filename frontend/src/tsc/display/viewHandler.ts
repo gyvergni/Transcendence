@@ -26,14 +26,21 @@ async function loadHTML(path: string): Promise<string> {
 
 // Inject content into the content box and initialize events
 export async function setContentView(viewPath: string, options: {push?: boolean, replace?: boolean} = {push : true, replace : false}): Promise<void> {
-	if (!uiManager.contentInner) {
+	if (!uiManager.contentInner)
+    {
 		console.error("Missing content-box in DOM");
 		return;
 	}
-    console.log("current view: " + uiManager.getCurrentView() + "\nviewPath: " + viewPath);
-
-	const html = await loadHTML(viewPath);
-	uiManager.contentInner.innerHTML = html;
+    try
+    {
+	    const html = await loadHTML(viewPath);
+        uiManager.contentInner.innerHTML = html;
+    }
+    catch (e)
+    {
+        console.error("View html failed", e);
+        return ;
+    }
 	if (!viewPath.includes("-end") && !viewPath.includes("waiting") && !viewPath.includes("pause") && !viewPath.includes("game"))
         uiManager.setCurrentView(viewPath);
 	setLang(currentLang);
@@ -60,9 +67,17 @@ export async function setupPause(match: MatchSetup)
 		console.error("Missing content-box in DOM");
 		return;
 	}
-	const html = await loadHTML("views/pause.html");
-	uiManager.contentInner.innerHTML = html;
-	toggleBackButton(false);
+    try
+    {
+	    const html = await loadHTML("views/pause.html");
+        uiManager.contentInner.innerHTML = html;
+    }
+    catch (e)
+    {
+        console.error("Loading pause view failed", e);
+        return ;
+    }
+    toggleBackButton(false);
 	setLang(currentLang); 
 	document.querySelectorAll("[data-view]").forEach((btn) => {
         btn.addEventListener("click", () => {
@@ -323,29 +338,36 @@ async function setQuickMatchView() {
     let match = new MatchSetup();
     
     //uiManager.match = match;
-    const player1 = await createPlayerSlot("player1-select", player1Config, match);
-    const player2 = await createPlayerSlot("player2-select", player2Config, match);
-    player1Config.position = 0; //left
-    player2Config.position = 1; //right
-    container.appendChild(player1);
-    container.appendChild(player2);
-    
-    setLang(currentLang);
+    try
+    {
+        const player1 = await createPlayerSlot("player1-select", player1Config, match);
+        const player2 = await createPlayerSlot("player2-select", player2Config, match);
+        player1Config.position = 0; //left
+        player2Config.position = 1; //right
+        container.appendChild(player1);
+        container.appendChild(player2);
+        
+        setLang(currentLang);
 
-    startBtn?.addEventListener("click", async () => {
-        if (!match.isReady()) {
-            alert(getTranslatedKey("error.views.notlockedin"));
-            return;
-        }
-
-        setGameView("game");
-        await startMatch(match);
-	if (match.game?.pause === false)
-	{	
-        postMatchStats(match.stats!);
-		await setupGameEndScreen(match);
-	}
-        });
+        startBtn?.addEventListener("click", async () => {
+            if (!match.isReady()) {
+                alert(getTranslatedKey("error.views.notlockedin"));
+                return;
+            }
+            setGameView("game");
+            await startMatch(match);
+	        if (match.game?.pause === false)
+	        {	
+                postMatchStats(match.stats!);
+	        	await setupGameEndScreen(match);
+	        }
+        })
+    }
+    catch (e)
+    {
+        console.error(e);
+        return ;
+    };
 }
 
 function setupFriendsEvents() {

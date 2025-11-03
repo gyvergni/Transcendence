@@ -84,8 +84,15 @@ export class Game {
     }
 
 	async createText() {
-		var fontData = await (await fetch("./fonts/MaximumImpact_Regular.json")).json();
-
+        try
+		{
+            var fontData = await (await fetch("./fonts/MaximumImpact_Regular.json")).json();
+        }
+        catch (e)
+        {
+            console.error("failed fetching fontData");
+            return ;
+        }
 		if (this.match.players[0].name)
         {
             const player1name = translateName(this.match.players[0].name);

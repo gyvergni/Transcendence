@@ -62,7 +62,6 @@ async function fetchStats(info: DashboardContext): Promise<MatchStatsResponse | 
         });
 
         if (!res.ok) {
-            try { console.error("Failed to fetch stats:", getApiErrorText(await res.json())); } catch {}
             throw new Error(`HTTP ${res.status}`);
         }
         return await res.json() as MatchStatsResponse;
@@ -375,28 +374,35 @@ function populateDropdown(select: HTMLSelectElement, options: string[], defaultT
 
 // -------------------- INIT --------------------
 export async function initStatsView() {
-    let accountRes;
-    const friendsPseudo = uiManager.getFriendsPseudo();
-    console.log("friendsPseudo: " + friendsPseudo);
-    if (friendsPseudo != null)
-        accountRes = await fetch(`${API_BASE_URL}/users/${friendsPseudo}`, { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } }); 
-    else
-        accountRes = await fetch(`${API_BASE_URL}/users/me`, { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } });
-    if (!accountRes.ok)
-        return console.error("Failed to get account info");
-    let accountData = await accountRes.json();
-    let info: DashboardContext = {
-        accountPseudo: accountData.pseudo,
-        accountIngame: accountData.game_username,
-        currentMainGuest: accountData.game_username,
-        friendPseudo: friendsPseudo,
-        selectedMatchup: null,
+    try{
+        let accountRes;
+        const friendsPseudo = uiManager.getFriendsPseudo();
+        console.log("friendsPseudo: " + friendsPseudo);
+        if (friendsPseudo != null)
+            accountRes = await fetch(`${API_BASE_URL}/users/${friendsPseudo}`, { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } }); 
+        else
+            accountRes = await fetch(`${API_BASE_URL}/users/me`, { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } });
+        if (!accountRes.ok)
+            return console.error("Failed to get account info");
+        let accountData = await accountRes.json();
+        let info: DashboardContext = {
+            accountPseudo: accountData.pseudo,
+            accountIngame: accountData.game_username,
+            currentMainGuest: accountData.game_username,
+            friendPseudo: friendsPseudo,
+            selectedMatchup: null,
+        }
+        if (info.friendPseudo)
+        {
+            info.accountPseudo = accountData[0].pseudo;
+            info.accountIngame = accountData[0].game_username;
+            info.currentMainGuest = info.accountIngame;
+        }
+        loadDashboard(info);
     }
-    if (info.friendPseudo)
+    catch (e)
     {
-        info.accountPseudo = accountData[0].pseudo;
-        info.accountIngame = accountData[0].game_username;
-        info.currentMainGuest = info.accountIngame;
+        console.error("Dashboard display failed", e);
+        return ;
     }
-    loadDashboard(info);
 }
