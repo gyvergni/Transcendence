@@ -112,7 +112,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"quick.title": "Quick Match Setup",
 		"quick.instructions": "Choose 2 players or AI",
 		"quick.start": "Start Match",
-		"quick.command": "Left : W D, Right : ↑ ↓",
+		"quick.command": "To move : Left : W D, Right : ↑ ↓",
 
 		//settings.html
 		"settings.paddle-size": "Paddle Size",
@@ -402,7 +402,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"quick.title": "Configuration de la partie rapide",
 		"quick.instructions": "Choisissez 2 joueurs ou IA",
 		"quick.start": "Lancer la partie",
-		"quick.command": "Gauche : W D, Droite : ↑ ↓",
+		"quick.command": "Pour se deplacer : Gauche : W D, Droite : ↑ ↓",
 		
 		//settings.html
 		"settings.paddle-size": "Taille de la raquette",
@@ -690,7 +690,7 @@ const translations: Record<Lang, Record<string, string>> =
 		"quick.title": "Configuración de partida rápida",
 		"quick.instructions": "Elija 2 jugadores o IA",
 		"quick.start": "Iniciar partida",
-		"quick.command": "Izquierda : W D, Derecha : ↑ ↓",
+		"quick.command": "Para moverse : Izquierda : W D, Derecha : ↑ ↓",
 		
 		//settings.html
 		"settings.paddle-size": "Tamaño de la paleta",
