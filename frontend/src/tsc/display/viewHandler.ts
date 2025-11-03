@@ -64,12 +64,11 @@ export async function setupPause(match: MatchSetup)
 	uiManager.contentInner.innerHTML = html;
 	uiManager.setCurrentView("pause");
 	toggleBackButton(false);
-	uiManager.setIsAnimating(false);
 	setLang(currentLang); 
 	document.querySelectorAll("[data-view]").forEach((btn) => {
         btn.addEventListener("click", () => {
             const option = (btn as HTMLElement).dataset.view;
-            if (option === "resume") {
+            if (option === "resume" && uiManager.getIsAnimating() === false) {
 		        match.game!.clock.resumeTimer();
 		        match!.game!.pause = false;
 		        setGameView();
