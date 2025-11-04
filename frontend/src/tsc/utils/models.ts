@@ -33,13 +33,7 @@ export class PlayerConfig {
   }
 
 	lockIn() {
-    	if (this.type === "human" && !this.name) {
-    		throw new Error("Human player must have a name before locking in");
-    	}
-    	if (this.type === "ai" && !this.difficulty) {
-    		throw new Error("AI must have a difficulty before locking in");
-    	}
-    this.lockedIn = true;
+    	this.lockedIn = true;
 	}
 
 	isReady(): boolean {

@@ -16,6 +16,7 @@
       environment:
         - DATABASE_URL=${DATABASE_URL}
         - JWT_SECRET=${JWT_SECRET}
+        - BACKEND_PORT=${BACKEND_PORT}
       volumes:
         - ./app/api:/app/data
         - api_public:/app/public

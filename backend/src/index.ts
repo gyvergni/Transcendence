@@ -127,7 +127,8 @@ async function main() {
 
     try {
         await createAIIdentities();
-        await server.listen({ port: 3000, host: "0.0.0.0" });
+		const port = parseInt(process.env.BACKEND_PORT || '3000', 10);
+        await server.listen({ port: port, host: "0.0.0.0" });
         console.log('Server ready');
     }
     catch (e) {
