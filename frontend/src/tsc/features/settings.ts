@@ -183,7 +183,6 @@ export function resetSettings() {
 // Initialize current settings
 var settings: GameSettings = loadSettings();
 
-// ---------- Paddle Size ----------
 export function PaddleSizeSetting() {
 	const paddleSizeInput = document.getElementById("paddle-size-value") as HTMLInputElement;
 	if (paddleSizeInput) {
@@ -196,7 +195,6 @@ export function PaddleSizeSetting() {
 	}
 }
 
-// ---------- Paddle Color ----------
 export function PaddleColorSetting() {
 	const paddleColorButtons = document.querySelectorAll<HTMLDivElement>("[data-pdl-color]");
 	paddleColorButtons.forEach((btn) => {
@@ -230,7 +228,6 @@ export function PaddleColorSetting() {
 	});
 }
 
-// ---------- Paddle Speed ----------
 export function PaddleSpeedSetting() {
 	const paddleSpeedInput = document.getElementById("paddle-speed-value") as HTMLInputElement;
 	if (paddleSpeedInput) {
@@ -243,7 +240,6 @@ export function PaddleSpeedSetting() {
 	}
 }
 
-// ---------- Ball Color ----------
 export function BallColorSetting() {
 	const ballColorButtons = document.querySelectorAll<HTMLDivElement>("[data-ball-color]");
 	ballColorButtons.forEach((btn) => {
@@ -276,7 +272,6 @@ export function BallColorSetting() {
 	});
 }
 
-// ---------- Ball Size ----------
 export function BallSizeSetting() {
 	const ballSizeInput = document.getElementById("ball-size") as HTMLInputElement;
 
@@ -290,7 +285,6 @@ export function BallSizeSetting() {
 	}
 }
 
-// ---------- Ball Speed ----------
 export function BallSpeedSetting() {
 	const ballSpeedInput = document.getElementById("ball-speed") as HTMLInputElement;
 
@@ -306,7 +300,6 @@ export function BallSpeedSetting() {
 	}
 }
 
-// ---------- Ball Shape ----------
 export function BallShapeSetting() {
 	const ballShapeButtons = document.querySelectorAll<HTMLDivElement>("[data-ball-shape]");
 	ballShapeButtons.forEach((btn) => {
@@ -342,7 +335,6 @@ export function SettingsResetButton() {
 }
 
 
-// ---------- Language Selection ----------
 export function LanguageSetting() {
 	const langButtons = document.querySelectorAll<HTMLImageElement>("[data-lang]");
 	langButtons.forEach((flag) => {
@@ -368,8 +360,6 @@ export function LanguageSetting() {
 		}
 	}
 }
-
-
 
 // Export settings loader for the game to return saved version
 export function getSettings(): GameSettings {

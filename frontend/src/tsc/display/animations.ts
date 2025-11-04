@@ -34,10 +34,7 @@ export function animateContentBoxIn() {
 	setTimeout(() =>
 	{
 		uiManager.contentBox.classList.remove("hidden");
-
-	  // Force reflow
-	  uiManager.contentBox.getBoundingClientRect();
-
+	    uiManager.contentBox.getBoundingClientRect();
 		uiManager.contentBox.classList.remove("opacity-0", "scale-0");
 		uiManager.contentBox.classList.add("opacity-100", "scale-100");
 		toggleIsAnimation(false);

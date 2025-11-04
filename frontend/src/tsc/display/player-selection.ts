@@ -89,32 +89,36 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
 	});
 
 	deleteBtn.addEventListener("click", async () => {
-	let registeredUsers: string[] = guestsManager.guests.map(guest => guest.pseudo);
-	registeredUsers.push(guestsManager.host);
-		const name = input.value.trim();
-		if (!name) return;
-	if (name === guestsManager.host) {
-		alert(getTranslatedKey("error.guest.delete_host"));
-		return;
-	} else if (!guestsManager.pseudoExists(name)) {
-			alert(getTranslatedKey("error.guest.delete.not_found"));
-			return;
-	} else if (gameType.getPlayers().some(p => p && p.name === name)) {
-		alert(getTranslatedKey("error.guest.delete_locked_in"));
-		return;
-	} else {
-			const result = await guestsManager.deleteGuest(name);
-			if (result.succes == true)
+	    let registeredUsers: string[] = guestsManager.guests.map(guest => guest.pseudo);
+	    registeredUsers.push(guestsManager.host);
+	    const name = input.value.trim();
+	    if (!name)
+            return;
+	    if (name === guestsManager.host) {
+	    	alert(getTranslatedKey("error.guest.delete_host"));
+	    	return;
+	    }
+        else if (!guestsManager.pseudoExists(name)) {
+	    	alert(getTranslatedKey("error.guest.delete.not_found"));
+	    	return;
+	    }
+        else if (gameType.getPlayers().some(p => p && p.name === name)) {
+	    	alert(getTranslatedKey("error.guest.delete_locked_in"));
+	    	return;
+	    }
+        else {
+	    	const result = await guestsManager.deleteGuest(name);
+	    	if (result.succes == true)
             {
-				registeredUsers = guestsManager.guests.map(guest => guest.pseudo);
-				input.value = "";
-				updateDropdown("");
-			}
+	    		registeredUsers = guestsManager.guests.map(guest => guest.pseudo);
+	    		input.value = "";
+	    		updateDropdown("");
+	    	}
             else
             {
-				alert(getTranslatedKey("error.guest.delete_failed") + `: ${result.message}`);
-			}
-		}
+	    		alert(getTranslatedKey("error.guest.delete_failed") + `: ${result.message}`);
+	    	}
+	    }
 	})
 
 	lockInBtn.addEventListener("click", () => {
@@ -148,17 +152,15 @@ async function loadPlayerSelect(id: string, config: PlayerConfig, gameType: Game
 
 
 async function loadAISelect(id: string, config: PlayerConfig): Promise<HTMLElement> {
-	const res = await fetch("views/ai-selection.html");
+    const res = await fetch("views/ai-selection.html");
 	const html = await res.text();
 	const wrapper = document.createElement("div");
 	wrapper.innerHTML = html.trim();
-
 	const selector = wrapper.querySelector(".ai-selector") as HTMLElement;
 	if (!selector) throw new Error("Could not find .ai-selector in template");
-
-	let selectedDifficulty: string | null = null;
+    let selectedDifficulty: string | null = null;
 	const buttons = selector.querySelectorAll<HTMLButtonElement>(".difficulty-btn");
-
+	
 	buttons.forEach((btn) => {
 		btn.addEventListener("click", () => {
 			buttons.forEach((b) => { b.classList.remove("bg-cyan-700"); b.classList.add("bg-slate-700"); });
@@ -190,7 +192,6 @@ async function loadTemplate(path: string, templateId: string): Promise<HTMLTempl
 	const res = await fetch(path);
 	const html = await res.text();
 
-	// Parser en DocumentFragment
 	const temp = document.createElement("div");
 	temp.innerHTML = html.trim();
 	const template = temp.querySelector(`#${templateId}`) as HTMLTemplateElement | null;
@@ -203,30 +204,38 @@ async function loadTemplate(path: string, templateId: string): Promise<HTMLTempl
 export async function createPlayerSlot(id: string, config: PlayerConfig, gameType: GameTypeManager): Promise<HTMLElement> {
 	const template = await loadTemplate("views/player-slot-template.html", "player-slot-template") as HTMLTemplateElement;
 	const clone = template.content.querySelector(".player-slot")?.cloneNode(true) as HTMLElement;
-	if (!clone) throw new Error(".player-slot not found in template");
+	if (!clone)
+        throw new Error(".player-slot not found in template");
 	clone.id = id;
 	clone.addEventListener("click", async (event) => {
-		const target = event.target as HTMLElement;
-		const roleElement = target.closest("[data-choice]") as HTMLElement | null;
-		if (!roleElement) return;
+		try
+        {
+            const target = event.target as HTMLElement;
+		    const roleElement = target.closest("[data-choice]") as HTMLElement | null;
+		    if (!roleElement) return;
 
-		const container = clone.parentElement!;
-		const role = roleElement.dataset.choice;
-		gameType.addPlayer(config);
-		let selector: HTMLElement;
-		if (role === "player") {
-			config.type = "human";
-			selector = await loadPlayerSelect(id, config, gameType);
-		}
-		else if (role === "ai") {
-			config.type = "ai";
-			selector = await loadAISelect(id, config);
-		}
-		else
-			return;
+		    const container = clone.parentElement!;
+		    const role = roleElement.dataset.choice;
+		    gameType.addPlayer(config);
+		    let selector: HTMLElement;
+		    if (role === "player") {
+		    	config.type = "human";
+		    	selector = await loadPlayerSelect(id, config, gameType);
+		    }
+		    else if (role === "ai") {
+		    	config.type = "ai";
+		    	selector = await loadAISelect(id, config);
+		    }
+		    else
+		    	return;
 
-		container.replaceChild(selector, clone);
-		setLang(currentLang);
+		    container.replaceChild(selector, clone);
+		    setLang(currentLang);
+        }
+        catch (e)
+        {
+            console.error("Error creating player slot", e);
+        }
 	});
 
 	return clone;

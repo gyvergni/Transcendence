@@ -229,10 +229,10 @@ export class Game {
 		this.particleSystem.particleTexture = new BABYLON.Texture("assets/game/textures/flare.png", this.scene);
     	this.particleSystem.emitter = BABYLON.Vector3.Zero();
 
-		// Size of each particle (random between...
+		// Size of each particle
 		this.particleSystem.minSize = 0.1;
     	this.particleSystem.maxSize = 0.3;
-    	// Life time of each particle (random between...
+    	// Life time of each particle
     	this.particleSystem.minLifeTime = 0.3;
     	this.particleSystem.maxLifeTime = 1.5;
 
@@ -326,7 +326,7 @@ export class Game {
         this.engine.stopRenderLoop();
 		this.match.players[0].score = this.ball.score1;
 		this.match.players[1].score = this.ball.score2;
-		//resetSettings();
+
         this.ball.timeOrder.slice(0, -1);
 		if (this.pause === false)
 			getMatchStats(this.match);

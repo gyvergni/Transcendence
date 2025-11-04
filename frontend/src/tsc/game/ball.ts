@@ -174,8 +174,7 @@ export class Ball {
             const impact = (bz - pz) / (paddle_size / 2);
             // Clamp impact to [-1, 1]
             const clampedImpact = Math.max(-1, Math.min(impact, 1));
-            // Max angle from X axis (70° from perpendicular = 20° from X axis)
-            const maxAngle = Math.PI / 2 - Math.PI / 9; // 70° from perpendicular
+            const maxAngle = Math.PI / 2 - Math.PI / 9; // MAX ANGLE 70° from perpendicular
             const angle = clampedImpact * maxAngle;
             const signX = hitX > 0 ? -1 : 1;
             let newDirZ = this.speed * Math.sin(angle);

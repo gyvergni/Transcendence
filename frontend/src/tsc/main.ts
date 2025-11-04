@@ -12,7 +12,6 @@ window.addEventListener("beforeunload", () => {
 window.addEventListener("popstate", async (event) => {
     const stateView = event.state?.view as string | undefined;
     const isAuth = await checkTokenValidity();
-    console.log("current view: " + uiManager.getCurrentView() + "\ntarget view: " + stateView);
     if (!isAuth) {
         // Unauthenticated: back to login or to signup if we just went back from there
         if (uiManager.getCurrentView().includes("login") && stateView?.includes("signup"))

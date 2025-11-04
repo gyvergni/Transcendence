@@ -17,7 +17,7 @@ export async function handleMatchDetail(match: MatchStatsResponse["matchHistory"
         history.back();
     }
 
-    // ---------------- SETTINGS ----------------
+    // SETTINGS
     const s = match.matchSettings;
     (document.getElementById("ball-size") as HTMLElement).textContent = String(s.ballSize);
     (document.getElementById("ball-speed") as HTMLElement).textContent = String(s.ballSpeed);
@@ -25,13 +25,13 @@ export async function handleMatchDetail(match: MatchStatsResponse["matchHistory"
     (document.getElementById("paddle-speed") as HTMLElement).textContent = String(s.paddleSpeed);
     (document.getElementById("game-mode") as HTMLElement).textContent = getTranslatedKey("stats." + s.gameMode);
 
-    // ---------------- MATCH STATS ----------------
+    // MATCH STATS
     const ms = match.matchStats;
     (document.getElementById("total-hits") as HTMLElement).textContent = String(ms.totalHits);
     (document.getElementById("longest-rally") as HTMLElement).textContent = String(ms.longestRallyHits);
     (document.getElementById("total-time") as HTMLElement).textContent = `${Math.round(ms.timeDuration / 1000)}s`;
 
-    // ---------------- PLAYER ROWS ----------------
+    // PLAYERS ROWS
     (document.getElementById("player1.name") as HTMLElement).textContent = translateName(match.player1Username);
     (document.getElementById("player1.score") as HTMLElement).textContent = String(match.player1Score);
     (document.getElementById("player1.wallbounces") as HTMLElement).textContent = String(match.matchStats.wallBounce1);
@@ -42,7 +42,7 @@ export async function handleMatchDetail(match: MatchStatsResponse["matchHistory"
     (document.getElementById("player2.wallbounces") as HTMLElement).textContent = String(match.matchStats.wallBounce2);
     (document.getElementById("player2.inputs") as HTMLElement).textContent = String(match.matchStats.totalInputs2);
     
-    // ---------------- TIMELINE CHART ----------------
+    // TIMELINE CHART
     const canvas = document.getElementById("match-points-timeline") as HTMLCanvasElement;
     if ((canvas as any)._chart) (canvas as any)._chart.destroy();
 

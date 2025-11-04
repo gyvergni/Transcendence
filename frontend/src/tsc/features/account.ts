@@ -13,7 +13,6 @@ export async function accountEditAvatar() {
 		const file = fileInput.files?.[0];
 		if (!file) return ;
 
-		// Validation côté client
 		const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
 		if (!allowedTypes.includes(file.type)) {
 			alert(getTranslatedKey("account.avatar.upload.invalid-type"));
@@ -22,7 +21,6 @@ export async function accountEditAvatar() {
 			return;
 		}
 
-		// Vérifier la taille (5MB max côté client)
 		const maxSize = 5 * 1024 * 1024; // 5MB
 		if (file.size > maxSize) {
 			alert(getTranslatedKey("account.avatar.upload.too-large"));

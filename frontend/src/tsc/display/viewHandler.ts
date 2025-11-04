@@ -85,9 +85,7 @@ export async function setupPause(match: MatchSetup)
             if (option === "resume" && uiManager.getIsAnimating() === false) {
 		        match.game!.clock.resumeTimer();
 		        match!.game!.pause = false;
-                console.log("Match gamemode before: " + match.gameMode);
 		        setGameView(match.gameMode);
-                console.log("Match gamemode after: " + match.gameMode);	        
             }
             else if (option === "quit")
 	        {
@@ -172,9 +170,7 @@ function setupAccountEvents() {
 	toggleBackButton(true, () => {
 		history.back();
 	});
-	// loadAccountInfos;
 
-	// Load account infos
 	loadAccountInfo();
 
 	// Edit avatar

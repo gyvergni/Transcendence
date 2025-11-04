@@ -174,7 +174,6 @@ function renderHistory(matchHistory: MatchStatsResponse["matchHistory"], info: D
             cursor-pointer transition-colors
         `;
 
-        // --- first line: player names and score
         const topLine = document.createElement("div");
         topLine.className = "flex justify-between text-sm font-medium text-white";
 
@@ -187,20 +186,16 @@ function renderHistory(matchHistory: MatchStatsResponse["matchHistory"], info: D
 
         topLine.append(nameSpan, scoreSpan);
 
-        // --- second line: metadata
         const bottomLine = document.createElement("div");
         bottomLine.className = "text-xs text-gray-300 mt-1";
 
-        // safer: build full text manually
         bottomLine.textContent = `${getTranslatedKey("stats.mode")}: ${getTranslatedKey("stats." + m.matchSettings.gameMode)} | ${m.date}`;
 
-        // --- add click event
         li.addEventListener("click", async () => {
             uiManager.setMatchDetail(m, info);
             await setContentView("../views/match-detail.html");
         });
 
-        // --- append to li
         li.append(topLine, bottomLine);
         container.appendChild(li);
     });
@@ -341,7 +336,6 @@ function resetMatchupChart() {
 }
 
 
-// -------------------- DROPDOWN HANDLERS --------------------
 async function handleMainGuestChange(info: DashboardContext, matchupSelect: HTMLSelectElement) {
     const stats = await updateMatchupDropdown(info, matchupSelect);
     if (!stats)
@@ -372,12 +366,10 @@ function populateDropdown(select: HTMLSelectElement, options: string[], defaultT
     });
 }
 
-// -------------------- INIT --------------------
 export async function initStatsView() {
     try{
         let accountRes;
         const friendsPseudo = uiManager.getFriendsPseudo();
-        console.log("friendsPseudo: " + friendsPseudo);
         if (friendsPseudo != null)
             accountRes = await fetch(`${API_BASE_URL}/users/${friendsPseudo}`, { headers: { Authorization: `Bearer ${localStorage.getItem("accessToken")}` } }); 
         else

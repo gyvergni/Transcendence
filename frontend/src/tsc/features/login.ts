@@ -62,6 +62,7 @@ export async function loginUser(e: Event, form: HTMLFormElement) {
 		}
 	} catch (error) {
 		console.error("Login failed:", error);
+        return ;
 	}
 };
 

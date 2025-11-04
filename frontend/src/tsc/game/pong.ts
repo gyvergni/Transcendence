@@ -111,7 +111,8 @@ export async function postMatchStats(stats: matchStatsSend) {
 			try {
 				const body = await res.json();
 				console.error("Failed to post stats:", getApiErrorText(body));
-			} catch (e) {
+			}
+            catch (e) {
 				const errorText = await res.text();
 				console.error(`Failed to post stats: ${res.status} ${res.statusText}`, errorText);
 			}
@@ -126,7 +127,6 @@ export async function postMatchStats(stats: matchStatsSend) {
 	}
 }
 
-// ################### Run the Game ###################
 export function startMatch(match_setup: MatchSetup): Promise<MatchSetup> {
     const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
     setUpSettings();
@@ -140,29 +140,36 @@ export function startMatch(match_setup: MatchSetup): Promise<MatchSetup> {
 
 export async function startTournament(tournament: TournamentManager): Promise<void>
 {
-    await startMatch(tournament.firstRound[0]);
-    if (!tournament.firstRound[0].winner)
-        return ;
-	await setupTournamentWaitingRoom(tournament);
-	await startMatch(tournament.firstRound[1]);
-    if (!tournament.firstRound[1].winner)
-        return ;
-	tournament.currentRound = 1;
-    tournament.final = new MatchSetup;
-    if (tournament.firstRound[0].winner && tournament.firstRound[1].winner)
+    try
     {
-    	tournament.final.addPlayer(tournament.firstRound[0].winner);
-    	tournament.final.addPlayer(tournament.firstRound[1].winner);
-		tournament.final.gameMode = "t-final";
-		await setupTournamentWaitingRoom(tournament);
-    	tournament.currentRound = 2;
-		await startMatch(tournament.final);
-		if (tournament.final?.game?.pause === false)
+        await startMatch(tournament.firstRound[0]);
+        if (!tournament.firstRound[0].winner)
+            return ;
+	    await setupTournamentWaitingRoom(tournament);
+	    await startMatch(tournament.firstRound[1]);
+        if (!tournament.firstRound[1].winner)
+            return ;
+	    tournament.currentRound = 1;
+        tournament.final = new MatchSetup;
+        if (tournament.firstRound[0].winner && tournament.firstRound[1].winner)
         {
-            postMatchStats(tournament.firstRound[0].stats!);
-            postMatchStats(tournament.firstRound[1].stats!);
-			postMatchStats(tournament.final.stats!);
-            await setupTournamentEndScreen(tournament);
+        	tournament.final.addPlayer(tournament.firstRound[0].winner);
+        	tournament.final.addPlayer(tournament.firstRound[1].winner);
+	    	tournament.final.gameMode = "t-final";
+	    	await setupTournamentWaitingRoom(tournament);
+        	tournament.currentRound = 2;
+	    	await startMatch(tournament.final);
+	    	if (tournament.final?.game?.pause === false)
+            {
+                postMatchStats(tournament.firstRound[0].stats!);
+                postMatchStats(tournament.firstRound[1].stats!);
+	    		postMatchStats(tournament.final.stats!);
+                await setupTournamentEndScreen(tournament);
+            }
         }
+    }
+    catch (e)
+    {
+        console.error("")
     }
 }
